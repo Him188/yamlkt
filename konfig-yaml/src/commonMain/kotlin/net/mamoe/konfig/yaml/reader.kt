@@ -140,17 +140,30 @@ internal class YamlReader(
             TokenClass.findByValue(char) ?: char
         }
 
+    /**
+     * @return `null` if EOF
+     */
     fun nextValue(): String? = when (currentToken) {
         COLON, // "": "" // map element
         COMMA,
-        TokenClass.CURLY_BRACKET_LEFT -> { // [1, 2, 3] // array
+        TokenClass.CURLY_BRACKET_LEFT,
+        TokenClass.SQUARE_BRACKET_LEFT, // [1, 2, 3] // array
+        is TokenClass.QUOTATION -> {  // " " or ' '
             when (val next = nextTokenOrNull()) {
-                is TokenClass -> {
-                    check(next is TokenClass.QUOTATION) {
-                        "required a value but found token $next"
-                    }
-                    readStringUntil(*next.ESCAPE_PATTERN, end = next.value)
+                is TokenClass.QUOTATION -> {
+                    // quoted string doesn't need to trim
+                    var doTrimStart = false
+                    readStringUntil(*next.ESCAPE_PATTERN, filterNot = {
+                        if (doTrimStart) {
+                            if (it == ' ') true
+                            else {
+                                doTrimStart = false
+                                false
+                            }
+                        } else false
+                    }, end = next.value)
                 }
+                is TokenClass -> error("required a value but found token $next")
                 is Char -> {
                     readStringUntil {
                         if (it in TokenClass.LINE_SEPARATOR.values) {
@@ -160,14 +173,14 @@ internal class YamlReader(
                             error("Unexpected token $token when reading a value")
                         }
                         false
-                    }
+                    }.trim() // unquoted string should be trimmed
                 }
                 null -> null
                 else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
             }
         }
         else -> {
-            TODO()
+            error("unexpected token:")
         }
     }
 }
@@ -175,11 +188,11 @@ internal class YamlReader(
 /**
  * Read a [String], decoding escapes
  */
-internal fun CharStream.readStringUntil(vararg escape: Char, end: Char): String {
-    return readStringUntil(*escape) { it == end }
+internal fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -> Boolean = { false }, end: Char): String {
+    return readStringUntil(*escape, filterNot = filterNot) { it == end }
 }
 
-internal inline fun CharStream.readStringUntil(vararg escape: Char, endMatcher: (Char) -> Boolean): String {
+internal inline fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -> Boolean = { false }, endMatcher: (Char) -> Boolean): String {
     var isEscape = false
     return buildString {
         readAhead {
@@ -192,7 +205,11 @@ internal inline fun CharStream.readStringUntil(vararg escape: Char, endMatcher: 
                 }
                 escape.isNotEmpty() && it == '\\' -> isEscape = true
                 endMatcher(it) -> return@readAhead
-                else -> append(it)
+                else -> {
+                    if (!filterNot(it)) {
+                        append(it)
+                    }
+                }
             }
         }
     }
