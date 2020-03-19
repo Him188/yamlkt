@@ -20,7 +20,7 @@ kotlin {
         fun kotlinx(name: String, version: String): String = "org.jetbrains.kotlinx:kotlinx-$name:$version"
 
         all {
-            languageSettings.useExperimentalAnnotation("kotlin.Experimental")
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
         }
 
         val commonMain by getting {

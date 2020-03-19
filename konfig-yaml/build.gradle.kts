@@ -20,7 +20,7 @@ kotlin {
         fun kotlinx(name: String, version: String): String = "org.jetbrains.kotlinx:kotlinx-$name:$version"
 
         all {
-            languageSettings.useExperimentalAnnotation("kotlin.Experimental")
+            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
             dependencies {
                 api(project(":konfig-core"))
             }
@@ -47,6 +47,21 @@ kotlin {
                 implementation(kotlin("stdlib-js"))
                 api(kotlinx("serialization-runtime-js", serializationVersion))
                 api(kotlinx("io-js", kotlinXIoVersion))
+            }
+        }
+
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit5"))
             }
         }
     }
