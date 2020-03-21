@@ -209,7 +209,7 @@ internal class YamlDecoder(
     private fun fail(message: String, descriptor: SerialDescriptor?, index: Int?): Nothing {
         throw YamlSerializationException(
             "$message " +
-                "when reading value for ${index?.let { descriptor?.getElementName(it) ?: "<unknown element indexed $index>" } ?: "<unknown element>"} " +
+                "when reading ${index?.let { descriptor?.getElementName(it) ?: "<unknown element indexed $index>" } ?: "<unknown element>"} " +
                 "in ${descriptor?.serialName ?: "<unknown descriptor>"}"
         )
     }
