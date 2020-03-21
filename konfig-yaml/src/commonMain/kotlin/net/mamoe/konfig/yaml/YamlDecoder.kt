@@ -10,43 +10,6 @@ open class YamlSerializationException : Exception {
     constructor(message: String, cause: Exception?) : super(message, cause)
 }
 
-
-val test = """
-
-level1: str
-test:
-  quoted: ""
-  str: test string 
-  number: 1
-  "quoted key": quoted
-  hex: 0x1F
-  list: [123, 123, 123
-]
-  multilineList: 
-    - s
-    - s2
-  map: 
-    a: 1
-    b: 2
-
-""".trimIndent()
-
-/*
-解析思路:
-1. top-level 必须为 object / map
-2. 第一步 beginStructure
-*/
-
-/*
-
-
-
- */
-
-
-
-
-
 @OptIn(InternalSerializationApi::class)
 internal class YamlDecoder(
     private val configuration: YamlConfiguration,
@@ -59,8 +22,6 @@ internal class YamlDecoder(
     private abstract inner class BaseReader(
         var parentIndentSpaceCount: Int
     ) : Decoder by this {
-        val indentLevel: Int = this@YamlDecoder.currentIndentLevel++
-
         var currentIndentSpaceCount: Int = -1
         fun setCurrentIndentSpaceCountIfAbsent(count: Int, descriptor: SerialDescriptor, name: String) {
             if (currentIndentSpaceCount == -1) {
@@ -100,8 +61,6 @@ internal class YamlDecoder(
         }
     }
 
-    private var currentIndentLevel: Int = 0
-
     private var lastElementName: YamlReader.IndentedValue? = null
 
     private inner class ClassReader(parentIndentSpaceCount: Int) : BaseReader(parentIndentSpaceCount), CompositeDecoder by this {
@@ -120,8 +79,10 @@ internal class YamlDecoder(
                 lastElementName = null // ensure used one-time
                 it
             } ?: when (indentedToken.token) {
+                is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.CURLY_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
+                is TokenClass.LINE_SEPARATOR,
                 is Char -> {
                     val indentedValue = reader.nextValue() ?: return CompositeDecoder.READ_DONE
                     if (!checkIndent(indentedValue, descriptor)) {
@@ -134,27 +95,30 @@ internal class YamlDecoder(
                         check(next?.token is TokenClass.COLON) { "unexpected token $next, required colon" }
                     }
                      */
-                    return descriptor.getElementIndex(indentedValue.value)
+                    indentedValue
+                    //return descriptor.getElementIndex(indentedValue.value)
                 }
-                is TokenClass.LINE_SEPARATOR -> {
-                    val elementName = reader.nextValue() ?: return CompositeDecoder.READ_DONE
-                    if (!checkIndent(elementName, descriptor)) {
-                        return CompositeDecoder.READ_DONE
-                    }
-                    println("${spacesForDebug()}read elementName: ${elementName.value}")
-                    reader.nextTokenOrNull().let { next ->
-                        check(next?.token is TokenClass.COLON) { "unexpected token $next, required colon" }
-                    }
-                    elementName
-                }
+                /* -> {
+                     val elementName = reader.nextValue() ?: return CompositeDecoder.READ_DONE
+                     if (!checkIndent(elementName, descriptor)) {
+                         return CompositeDecoder.READ_DONE
+                     }
+                     println("${spacesForDebug()}read elementName: ${elementName.value}")
+                     reader.nextTokenOrNull()
+                     elementName
+                 }*/
                 else -> error("unexpected token: $indentedToken when reading class or map")
             }
 
             descriptor.getElementIndex(elementName.value).let { index ->
-                if (index == CompositeDecoder.UNKNOWN_NAME) {
-                    TODO("skip element")
+                return if (index == CompositeDecoder.UNKNOWN_NAME) {
+                    if (reader.skipElement(currentIndentSpaceCount) == null) {
+                        // EOF
+                        return CompositeDecoder.READ_DONE
+                    }
+                    decodeElementIndex(descriptor) // try next element
                 } else {
-                    return index
+                    index
                 }
             }
         }

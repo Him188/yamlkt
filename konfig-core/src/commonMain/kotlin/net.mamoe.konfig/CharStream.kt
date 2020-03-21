@@ -18,6 +18,14 @@ interface CharStream {
     fun read(): Char
 }
 
+fun CharStream.readAll(): String {
+    return buildString {
+        while (!endOfInput) {
+            append(read())
+        }
+    }
+}
+
 fun String.asCharStream(): CharStream = object : CharStream {
     var cur = 0
 

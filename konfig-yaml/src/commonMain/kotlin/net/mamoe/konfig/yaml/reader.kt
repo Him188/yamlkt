@@ -34,6 +34,8 @@ internal sealed class TokenClass(val value: Char) {
         }
     }
 
+    object MULTILINE_LIST_FLAG : TokenClass('-')
+
     object PARENTHESES_LEFT : TokenClass('(')
     object PARENTHESES_RIGHT : TokenClass('(')
 
@@ -74,7 +76,8 @@ internal sealed class TokenClass(val value: Char) {
             CURLY_BRACKET_LEFT,
             LINE_SEPARATOR.N,
             LINE_SEPARATOR.R,
-            MULTILINE
+            MULTILINE,
+            MULTILINE_LIST_FLAG
         )
 
         fun findByValue(value: Char): TokenClass? = values.firstOrNull { it.value == value }
@@ -171,6 +174,173 @@ internal class YamlReader(
         return token
     }
 
+    /**
+     * Skips a element
+     *
+     * @return `null` if EOF, [Unit] is successfully skipped one element
+     */
+    fun skipElement(baseIndent: Int): Unit? {
+        // cur is at `:`
+        //
+        // <baseIndent>map:
+        // <baseIndent>··test: s
+        // <baseIndent>··test2: 1
+        //
+        // <baseIndent>list: [asd]
+        //
+        // <baseIndent>mList:
+        // <baseIndent>··- test1
+        // <baseIndent>··- test2
+        //
+        println("skipping!")
+
+        /*nextTokenOrNull()?.token?.let {
+            check(it == COLON) {
+                "internal error: skipElement: next token must be COLON but found $it, remaining=${input.readAll()}"
+            }
+        } ?: return null*/
+
+        /**
+         * Identify whether a line had been skipped
+         */
+        val skippedLine = currentToken.token is TokenClass.LINE_SEPARATOR // because we are just to `skipLineSeparators()` next
+
+        val indentedToken = skipLineSeparators() ?: return null
+        val newIndent = indentedToken.indentSpaceCount
+
+        println("indentedToken = $indentedToken")
+        println("newIndent = $newIndent")
+
+        @Suppress("SpellCheckingInspection")
+        if (newIndent < baseIndent) {
+            // <baseIndent>map:
+            // <baseInde>        // missing key or value here due to indent reduced
+
+            // TODO: 2020/3/21 contextual exception
+            error("missing value for list or key for map, because new indent is shorter($newIndent) than base'($baseIndent)")
+        }
+
+        // <baseIndent>map:
+        // <new___Indent>
+
+        // or
+
+        // <baseIndent>map:
+        // <new_Indent>
+
+
+        when (indentedToken.token) {
+            TokenClass.SQUARE_BRACKET_LEFT -> {
+                // redundant: [test, t]
+
+                // we are now at `[`
+                // hence list type is inferred
+                loop@ while (!endOfInput) {
+                    skipElement(newIndent)
+                    skipLineSeparators()?.also {
+                        when (it.token) {
+                            is COMMA -> { // expected. more elements are being read
+                            }
+                            is TokenClass.SQUARE_BRACKET_RIGHT -> {
+                                return Unit // skip done
+                            }
+                            else -> error("unexpected token while skipping a list: $it")
+                        }
+                    } ?: error("cannot find trailing `]` for list") // TODO: 2020/3/21 NON STRICT MODE: ignore missing trailing ]
+                }
+            }
+            TokenClass.MULTILINE_LIST_FLAG -> {
+                if (skippedLine) {
+                    // redundant:
+                    //   - v
+                    check(read() == ' ') { "there must be a ' ' between '-' and a multiline list element" }
+                    // we're now at `-`
+                    // inferred type: multiline list
+                    loop@ while (!endOfInput) {
+                        skipElement(newIndent)
+                        skipLineSeparators()?.also {
+                            when {
+                                it.token is TokenClass.MULTILINE_LIST_FLAG -> {
+                                    if (it.indentSpaceCount < newIndent) {
+                                        // redundant:
+                                        //   - v
+                                        //  - s  // illegal syntax
+                                        // TODO: 2020/3/21 contextual exception
+                                        error("syntax error: not uniform indent found")
+                                    }
+                                }
+                                it.indentSpaceCount < newIndent -> {
+                                    // redundant:
+                                    //   - v
+                                    // value: s  // here indent is shorter
+                                    return Unit
+                                }
+                                else -> error("unexpected token while skipping a list: $it")
+                            }
+                        } ?: error("cannot find trailing `]` for list") // TODO: 2020/3/21 NON STRICT MODE: ignore missing trailing ]
+                    }
+                } else {
+                    // redundant: -1
+
+                    // inferred type: single value
+                    nextValue() // don't `skipElement`, type is already inferred
+                    Unit
+                }
+            }
+
+            is TokenClass.QUOTATION,
+            is Char -> {
+                println("nextValue=" + nextValue())
+                if (skippedLine) {
+                    // redundant:
+                    //   v
+                    val next = nextTokenOrNull() ?: return Unit // considered as a single value
+                    when (next.token) {
+                        TokenClass.LINE_SEPARATOR -> {
+                            // redundant:
+                            //   v
+                            //
+                            return Unit // single value
+                        }
+                        COLON -> {
+                            // redundant:
+                            //   v:
+
+                            // inferred type: map
+                            loop@ while (!endOfInput) {
+                                skipElement(newIndent)
+                                val token = skipLineSeparators() ?: return Unit // considered normally end
+                                when (token.token) {
+                                    is TokenClass.QUOTATION,
+                                    is Char -> { // key
+                                        if (token.indentSpaceCount < newIndent) {
+                                            return Unit
+                                        }
+                                        skipElement(newIndent)
+                                    }
+
+                                    else -> error("unexpected token while skipping a map: $token")
+                                }
+                            }
+                            // unreachable here
+                        }
+                    }
+                } else {
+                    // redundant: s
+
+                    // inferred type: single value
+                    nextValue()
+                }
+
+                // we are now at `s`, no enough info to infer type
+
+            }
+            else -> error("unexpected token while skipping (can't infer type): $indentedToken")
+        }
+
+        return Unit
+    }
+
     class IndentedValue(
         internal var _indentSpaceCount: Int,
         internal var _value: String
@@ -230,7 +400,13 @@ internal class YamlReader(
                     else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
                 }
             }
-
+            is TokenClass.MULTILINE_LIST_FLAG -> {
+                // negative number
+                indentedValueTemp.apply {
+                    _indentSpaceCount = currentToken.indentSpaceCount
+                    _value = "-" + readUnquotedString(TokenClass.LINE_SEPARATOR.N) // stub
+                }
+            }
             is TokenClass.QUOTATION -> { // " " or ' '
                 indentedValueTemp.apply {
                     _indentSpaceCount = currentToken.indentSpaceCount
