@@ -8,9 +8,39 @@ class YamlSerializationException : Exception {
     constructor(message: String, cause: Exception?) : super(message, cause)
 }
 
-internal class Tag(
-    val serialName: String
-)
+
+val test = """
+
+level1: str
+test:
+  quoted: ""
+  str: test string 
+  number: 1
+  "quoted key": quoted
+  hex: 0x1F
+  list: [123, 123, 123]
+  multilineList: 
+    - s
+    - s2
+  map: 
+    a: 1
+    b: 2
+
+""".trimIndent()
+
+/*
+解析思路:
+1. top-level 必须为 object / map
+2. 第一步 beginStructure
+*/
+
+/*
+
+
+
+ */
+
+
 
 
 
@@ -90,7 +120,13 @@ internal class YamlDecoder(
                     reader.nextTokenOrNull().let { next ->
                         check(next?.token is TokenClass.COLON) { "unexpected token $next, required colon" }
                     }
-                    return descriptor.getElementIndex(elementName.value)
+                    descriptor.getElementIndex(elementName.value).let { index ->
+                        if (index == CompositeDecoder.UNKNOWN_NAME) {
+                            TODO("skip element")
+                        } else {
+                            return index
+                        }
+                    }
                 }
             }
             error("unexpected token: $indentedToken when reading class or map")
@@ -136,7 +172,6 @@ internal class YamlDecoder(
     override fun decodeSequentially(): Boolean = false
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
         error("top-level reading is not supported")
-        return CompositeDecoder.READ_DONE
     }
 
 
@@ -277,9 +312,9 @@ internal class YamlDecoder(
         if (this.length > 2) {
             if (this[0] == '0') {
                 if (this[1] == 'x' || this[1] == 'X') {
-                    HexConverter.hexToLong(this, 2)
+                    return HexConverter.hexToLong(this, 2)
                 } else if (this[1] == 'b' || this[1] == 'B') {
-                    BinaryConverter.binToLong(this, 2)
+                    return BinaryConverter.binToLong(this, 2)
                 }
             }
         }

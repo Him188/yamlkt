@@ -266,6 +266,8 @@ internal fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -
     return readStringUntil(*escape, filterNot = filterNot) { it == end }
 }
 
+// TODO: 2020/3/21 重构 readString, 直接写成固定的几个读取模式
+
 internal inline fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -> Boolean = { false }, endMatcher: (Char) -> Boolean): String {
     var isEscape = false
     return buildString {
