@@ -1,9 +1,11 @@
+@file:Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
+
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 
-class YamlSerializationException : Exception {
+open class YamlSerializationException : Exception {
     constructor(message: String) : super(message)
     constructor(message: String, cause: Exception?) : super(message, cause)
 }
@@ -18,7 +20,8 @@ test:
   number: 1
   "quoted key": quoted
   hex: 0x1F
-  list: [123, 123, 123]
+  list: [123, 123, 123
+]
   multilineList: 
     - s
     - s2
@@ -44,7 +47,6 @@ test:
 
 
 
-@Suppress("DELEGATED_MEMBER_HIDES_SUPERTYPE_OVERRIDE")
 @OptIn(InternalSerializationApi::class)
 internal class YamlDecoder(
     private val configuration: YamlConfiguration,
@@ -56,13 +58,14 @@ internal class YamlDecoder(
 
     private abstract inner class BaseReader(
         var parentIndentSpaceCount: Int
-    ) : CompositeDecoder, Decoder by this {
+    ) : Decoder by this {
         val indentLevel: Int = this@YamlDecoder.currentIndentLevel++
 
         var currentIndentSpaceCount: Int = -1
-        fun setCurrentIndentSpaceCountIfAbsent(count: Int) {
+        fun setCurrentIndentSpaceCountIfAbsent(count: Int, descriptor: SerialDescriptor, name: String) {
             if (currentIndentSpaceCount == -1) {
                 currentIndentSpaceCount = count
+                println("set currentIndentSpaceCount=$count, when descriptor=${descriptor.serialName}, name=$name")
             }
         }
 
@@ -73,14 +76,21 @@ internal class YamlDecoder(
             } else " ".repeat(count)
         }
 
-        fun checkIndent(actualIndent: Int) {
-            setCurrentIndentSpaceCountIfAbsent(actualIndent)
-            check(actualIndent == currentIndentSpaceCount) {
-                "illegal indent, expected $currentIndentSpaceCount, actual $actualIndent"
+        fun checkIndent(indentedValue: YamlReader.IndentedValue, descriptor: SerialDescriptor): Boolean {
+            val actualIndent = indentedValue.indentSpaceCount
+            setCurrentIndentSpaceCountIfAbsent(actualIndent, descriptor, indentedValue.value)
+            if (actualIndent < currentIndentSpaceCount) {
+                lastElementName = indentedValue
+                return false
             }
+            check(actualIndent == currentIndentSpaceCount) {
+                "illegal indent, expected $currentIndentSpaceCount, actual $actualIndent. " +
+                    "recent descriptor=${descriptor.serialName}, element=${indentedValue.value}"
+            }
+            return true
         }
 
-        override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
+        final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
             println("BaseReader.beginStructure: ${descriptor.serialName}")
             return when (descriptor.kind) {
                 StructureKind.LIST -> ListReader(currentIndentSpaceCount)
@@ -92,44 +102,61 @@ internal class YamlDecoder(
 
     private var currentIndentLevel: Int = 0
 
+    private var lastElementName: YamlReader.IndentedValue? = null
+
     private inner class ClassReader(parentIndentSpaceCount: Int) : BaseReader(parentIndentSpaceCount), CompositeDecoder by this {
 
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             println("${spacesForDebug()}ClassReader.decodeElementIndex: ${descriptor.serialName}")
 
+
             val indentedToken = reader.nextTokenOrNull() ?: return CompositeDecoder.READ_DONE
-            when (indentedToken.token) {
+
+            val elementName = lastElementName?.let {
+                if (!checkIndent(it, descriptor)) {
+                    return CompositeDecoder.READ_DONE
+                }
+                lastElementName = null // ensure used one-time
+                it
+            } ?: when (indentedToken.token) {
                 is TokenClass.CURLY_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
                 is Char -> {
-                    val elementName = reader.nextValue() ?: return CompositeDecoder.READ_DONE
-                    println("${spacesForDebug()}read elementName: ${elementName.value}")
+                    val indentedValue = reader.nextValue() ?: return CompositeDecoder.READ_DONE
+                    if (!checkIndent(indentedValue, descriptor)) {
+                        return CompositeDecoder.READ_DONE
+                    }
+                    println("${spacesForDebug()}read elementName: ${indentedValue.value}")
                     reader.nextTokenOrNull()
                     /*
                     .let { next ->
                         check(next?.token is TokenClass.COLON) { "unexpected token $next, required colon" }
                     }
                      */
-                    return descriptor.getElementIndex(elementName.value)
+                    return descriptor.getElementIndex(indentedValue.value)
                 }
                 is TokenClass.LINE_SEPARATOR -> {
                     val elementName = reader.nextValue() ?: return CompositeDecoder.READ_DONE
-                    checkIndent(elementName.indentSpaceCount)
+                    if (!checkIndent(elementName, descriptor)) {
+                        return CompositeDecoder.READ_DONE
+                    }
                     println("${spacesForDebug()}read elementName: ${elementName.value}")
                     reader.nextTokenOrNull().let { next ->
                         check(next?.token is TokenClass.COLON) { "unexpected token $next, required colon" }
                     }
-                    descriptor.getElementIndex(elementName.value).let { index ->
-                        if (index == CompositeDecoder.UNKNOWN_NAME) {
-                            TODO("skip element")
-                        } else {
-                            return index
-                        }
-                    }
+                    elementName
+                }
+                else -> error("unexpected token: $indentedToken when reading class or map")
+            }
+
+            descriptor.getElementIndex(elementName.value).let { index ->
+                if (index == CompositeDecoder.UNKNOWN_NAME) {
+                    TODO("skip element")
+                } else {
+                    return index
                 }
             }
-            error("unexpected token: $indentedToken when reading class or map")
         }
     }
 
@@ -139,7 +166,11 @@ internal class YamlDecoder(
         var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             // TODO: 2020/3/21 支持 indent
-            val token = reader.nextTokenOrNull()?.token ?: return CompositeDecoder.READ_DONE
+            var token: Any
+            do {
+                token = reader.nextTokenOrNull()?.token ?: return CompositeDecoder.READ_DONE
+            } while (token is TokenClass.LINE_SEPARATOR)
+
             when (token) {
                 is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
@@ -147,7 +178,7 @@ internal class YamlDecoder(
                     return index++
                 }
             }
-            error("unexpected token: $token")
+            error("unexpected token: ${token::class.qualifiedName} $token")
         }
     }
 

@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.InternalSerializationApi
@@ -53,10 +55,9 @@ internal sealed class TokenClass(val value: Char) {
     }
 
     object MULTILINE : TokenClass('|')
-    ;
 
     companion object {
-        val values: Array<TokenClass> = arrayOf(
+        private val values: Array<TokenClass> = arrayOf(
             COMMA, PERIOD, COLON, SINGLE_QUOTATION, DOUBLE_QUOTATION,
             PARENTHESES_LEFT, PARENTHESES_RIGHT,
             SQUARE_BRACKET_RIGHT, SQUARE_BRACKET_LEFT,
@@ -68,20 +69,6 @@ internal sealed class TokenClass(val value: Char) {
         )
 
         fun findByValue(value: Char): TokenClass? = values.firstOrNull { it.value == value }
-
-        fun isValueEnd(value: Char): Boolean {
-            return when (value) {
-                DOUBLE_QUOTATION.value,
-                SINGLE_QUOTATION.value,
-                COMMA.value,
-                LINE_SEPARATOR.N.value,
-                LINE_SEPARATOR.R.value,
-                SQUARE_BRACKET_RIGHT.value
-                -> true
-
-                else -> false
-            }
-        }
     }
 }
 
@@ -158,6 +145,10 @@ internal class YamlReader(
         internal var _indentSpaceCount: Int,
         internal var _value: String
     ) {
+        override fun toString(): String {
+            return "Value($value, indent=$indentSpaceCount)"
+        }
+
         val indentSpaceCount: Int get() = _indentSpaceCount
         val value: String get() = _value
     }
@@ -173,17 +164,18 @@ internal class YamlReader(
         if (currentToken.token == null) {
             nextTokenOrNull() // try start
         }
+        while (currentToken.token is TokenClass.LINE_SEPARATOR) {
+            nextTokenOrNull() ?: return null
+        }
         return when (val currentTokenToken = currentToken.token) {
             is Char -> {
                 indentedValueTemp.apply {
-                    _indentSpaceCount = 0
-                    _value = currentTokenToken + readStringUntil(endMatcher = {
-                        it in TokenClass.LINE_SEPARATOR.values || it == COLON.value
-                        // TODO: 2020/3/21 rewrite, 区分 `nextStringUntilColon`
-                    })
+                    _indentSpaceCount = currentToken.indentSpaceCount
+                    _value = currentTokenToken + readUnquotedString(COLON)
                 }
             }
             null -> null
+
             COLON, // "": "" // map element
             COMMA,
             TokenClass.CURLY_BRACKET_LEFT, // [1, 2, 3] // array
@@ -192,33 +184,16 @@ internal class YamlReader(
                 when (val next = indentedToken?.token) {
                     is TokenClass.QUOTATION -> {
                         // quoted string doesn't need to trim
-                        var doTrimStart = false
                         indentedValueTemp.apply {
-                            _indentSpaceCount = indentedToken.indentSpaceCount
-                            _value = readStringUntil(*next.ESCAPE_PATTERN, filterNot = {
-                                if (doTrimStart) {
-                                    if (it == ' ') true
-                                    else {
-                                        doTrimStart = false
-                                        false
-                                    }
-                                } else false
-                            }, end = next.value)
+                            _indentSpaceCount = currentToken.indentSpaceCount
+                            _value = readQuotedString(next)
                         }
                     }
                     is TokenClass -> error("required a value but found token $next")
                     is Char -> {
                         indentedValueTemp.apply {
-                            _indentSpaceCount = indentedToken.indentSpaceCount
-                            _value = readStringUntil {
-                                if (it in TokenClass.LINE_SEPARATOR.values) {
-                                    return@readStringUntil true
-                                }
-                                TokenClass.findByValue(it)?.let { token ->
-                                    error("Unexpected token $token when reading a value")
-                                }
-                                false
-                            }.trim() // unquoted string should be trimmed
+                            _indentSpaceCount = currentToken.indentSpaceCount
+                            _value = readUnquotedString(currentTokenToken as TokenClass)
                         }
                     }
                     null -> null
@@ -226,30 +201,12 @@ internal class YamlReader(
                 }
             }
 
-            is TokenClass.QUOTATION -> {// " " or ' '
-                val indentedToken = nextTokenOrNull()
-                when (val next = indentedToken?.token) {
-                    null -> null
-                    currentToken -> indentedValueTemp.apply {
+            is TokenClass.QUOTATION -> { // " " or ' '
+                nextTokenOrNull()?.let { indentedToken ->
+                    indentedValueTemp.apply {
                         _indentSpaceCount = indentedToken.indentSpaceCount
-                        _value = ""
-                    } // same quotation, which means a quotation block: `""` or `''`
-                    is TokenClass -> error("required a value but found token $next")
-                    is Char -> {
-                        indentedValueTemp.apply {
-                            _indentSpaceCount = indentedToken.indentSpaceCount
-                            _value = readStringUntil {
-                                if (it in TokenClass.LINE_SEPARATOR.values) {
-                                    return@readStringUntil true
-                                }
-                                TokenClass.findByValue(it)?.let { token ->
-                                    error("Unexpected token $token when reading a value")
-                                }
-                                false
-                            }.trim() // unquoted string should be trimmed
-                        }
+                        _value = readQuotedString(currentTokenToken)
                     }
-                    else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
                 }
             }
             else -> {
@@ -259,31 +216,97 @@ internal class YamlReader(
     }
 }
 
+private val QUOTED_STRING_ESCAPE = arrayOf(
+    '\'' to '\'',
+    '\"' to '\"',
+    '\\' to '\\'
+)
+
 /**
- * Read a [String], decoding escapes
+ * Reads a quoted string, with replacement of escaping, until [endQuotation]
  */
-internal fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -> Boolean = { false }, end: Char): String {
-    return readStringUntil(*escape, filterNot = filterNot) { it == end }
+internal fun CharStream.readQuotedString(endQuotation: TokenClass.QUOTATION): String {
+    // quoted string, with escape, until quotation
+    return readStringUntil(
+        escape = QUOTED_STRING_ESCAPE,
+        endMatcher = { it == endQuotation.value }
+    ).trim() // unquoted string should be trimmed
 }
 
-// TODO: 2020/3/21 重构 readString, 直接写成固定的几个读取模式
+private val UNQUOTED_STRING_ESCAPE = arrayOf(
+    'n' to '\n',
+    'r' to '\r',
+    '\'' to '\'',
+    '\"' to '\"',
+    '\\' to '\\'
+)
 
-internal inline fun CharStream.readStringUntil(vararg escape: Char, filterNot: (Char) -> Boolean = { false }, endMatcher: (Char) -> Boolean): String {
+/**
+ * Thrown when met with an unexpected [TokenClass] when [readUnquotedString]
+ */
+class IllegalTokenClassInUnquotedStringException internal constructor(token: TokenClass) : YamlSerializationException(generateMessage(token)) {
+    companion object { // TODO: 2020/3/21 add context-specific message
+        internal fun generateMessage(token: TokenClass): String = "illegal char '${token.value}' found when reading an unquoted string"
+    }
+}
+
+/**
+ * Reads a quoted string, with replacement of escaping and leading-space trimmed, until [endToken]
+ *
+ * @throws IllegalTokenClassInUnquotedStringException when met with an unexpected [TokenClass]
+ */
+internal fun CharStream.readUnquotedString(endToken: TokenClass): String {
+    // unquoted String, until : ] }
+    var trimStart = true
+    return readStringUntil(
+        escape = UNQUOTED_STRING_ESCAPE,
+        filterNot = {
+            if (trimStart) {
+                if (it != ' ') {
+                    trimStart = false
+                }
+            }
+            TokenClass.findByValue(it)?.let { token ->
+                if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
+                    throw IllegalTokenClassInUnquotedStringException(token)
+                }
+            }
+            false
+        },
+        endMatcher = {
+            it == endToken.value
+                || it in TokenClass.LINE_SEPARATOR.values
+                || it == COMMA.value
+                || it == TokenClass.SQUARE_BRACKET_RIGHT.value
+        }
+    ).trimEnd()
+}
+
+/**
+ * @param escape \n will be resolved to new line
+ */
+internal inline fun CharStream.readStringUntil(
+    escape: Array<Pair<Char, Char>>,
+    filterNot: (Char) -> Boolean = { false },
+    endMatcher: (Char) -> Boolean
+): String {
     var isEscape = false
     return buildString {
-        readAhead {
+        readAhead { char ->
             when {
                 isEscape -> {
-                    if (it in escape) {
-                        append(it)
-                        isEscape = false
-                    } else error("unsupported escape: '$it'")
+                    val es = escape.firstOrNull { it.first == char }
+                    when {
+                        es != null -> append(es.second)
+                        else -> error("unsupported escape: '$char'")
+                    }
+                    isEscape = false
                 }
-                escape.isNotEmpty() && it == '\\' -> isEscape = true
-                endMatcher(it) -> return@buildString
+                escape.isNotEmpty() && char == '\\' -> isEscape = true
+                endMatcher(char) -> return@buildString
                 else -> {
-                    if (!filterNot(it)) {
-                        append(it)
+                    if (!filterNot(char)) {
+                        append(char)
                     }
                 }
             }
