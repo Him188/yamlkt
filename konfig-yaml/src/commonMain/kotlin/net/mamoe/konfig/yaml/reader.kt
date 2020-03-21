@@ -12,7 +12,7 @@ import net.mamoe.konfig.yaml.TokenClass.QUOTATION.SINGLE_QUOTATION
 
 @Suppress("ClassName", "PropertyName")
 internal sealed class TokenClass(val value: Char) {
-    final override fun toString(): String {
+    override fun toString(): String {
         return this::class.simpleName + "('$value')"
     }
 
@@ -44,8 +44,17 @@ internal sealed class TokenClass(val value: Char) {
     object CURLY_BRACKET_RIGHT : TokenClass('}')
 
     sealed class LINE_SEPARATOR(value: Char) : TokenClass(value) {
-        object N : LINE_SEPARATOR('\n')
-        object R : LINE_SEPARATOR('\r')
+        object N : LINE_SEPARATOR('\n') {
+            override fun toString(): String {
+                return "LINE_SEPARATOR.N(\\n)"
+            }
+        }
+
+        object R : LINE_SEPARATOR('\r') {
+            override fun toString(): String {
+                return "LINE_SEPARATOR.R(\\r)"
+            }
+        }
 
         companion object {
             val values: CharArray by lazy {
@@ -95,7 +104,7 @@ data class YamlConfiguration(
 internal class YamlReader(
     private val input: CharStream
 ) : CharStream by input {
-    private var currentToken: IndentedToken = IndentedToken(0)
+    var currentToken: IndentedToken = IndentedToken(0)
 
     /**
      * null means EOF
@@ -118,6 +127,9 @@ internal class YamlReader(
             return "Token($token, indent=$indentSpaceCount)"
         }
 
+        /**
+         * `null`(EOF) or [TokenClass] or [Char]
+         */
         internal var _token: Any? = null
             set(value) {
                 check(value == null || value is Char || value is TokenClass) { "internal error: illegal token: $value" }
@@ -131,7 +143,9 @@ internal class YamlReader(
     /**
      * Reads the next token. Next non-blank value must be a token or null is returned
      *
-     * @return `null` if EOF, or [TokenClass] if the char is a token, or [Char] otherwise.
+     * @return `null` if EOF,
+     * or a [IndentedToken] wrapping a [TokenClass] if the char is a token,
+     * or a [IndentedToken] wrapping a [Char] otherwise.
      */
     fun nextTokenOrNull(): IndentedToken? =
         nextNotSpaceOrNull()?.let { indentedToken ->
@@ -140,6 +154,22 @@ internal class YamlReader(
                 indentedToken._token = find ?: indentedToken._token
             }
         }
+
+    /**
+     * Skips [TokenClass.LINE_SEPARATOR]s
+     *
+     * @return `null` if EOF,
+     * or a [IndentedToken] wrapping [TokenClass] that is not a [TokenClass.LINE_SEPARATOR]
+     * or a [Char] otherwise.
+     */
+    fun skipLineSeparators(): IndentedToken? {
+        var token: IndentedToken
+        do {
+            token = nextTokenOrNull() ?: return null
+            println("immediate = $token")
+        } while (token.token is TokenClass.LINE_SEPARATOR)
+        return token
+    }
 
     class IndentedValue(
         internal var _indentSpaceCount: Int,
@@ -202,11 +232,9 @@ internal class YamlReader(
             }
 
             is TokenClass.QUOTATION -> { // " " or ' '
-                nextTokenOrNull()?.let { indentedToken ->
-                    indentedValueTemp.apply {
-                        _indentSpaceCount = indentedToken.indentSpaceCount
-                        _value = readQuotedString(currentTokenToken)
-                    }
+                indentedValueTemp.apply {
+                    _indentSpaceCount = currentToken.indentSpaceCount
+                    _value = readQuotedString(currentTokenToken)
                 }
             }
             else -> {

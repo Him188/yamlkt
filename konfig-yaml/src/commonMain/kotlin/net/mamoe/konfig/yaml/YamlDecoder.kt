@@ -165,11 +165,25 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            // TODO: 2020/3/21 支持 indent
-            var token: Any
-            do {
+
+            val isLastQuotation = reader.currentToken.token is TokenClass.QUOTATION
+            println("------")
+            println("last = ${reader.currentToken.token}")
+
+            var token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
+
+            println("finally = $token")
+            println("------")
+
+            if (isLastQuotation) {
+                // [ "a", "b" ]
+                // must ensure the token next to ending double quotation is comma
+                // TODO: 2020/3/21 contextual exception
+                check(token is TokenClass.COMMA) { "the token next to ending double quotation must be comma, but found $token" }
                 token = reader.nextTokenOrNull()?.token ?: return CompositeDecoder.READ_DONE
-            } while (token is TokenClass.LINE_SEPARATOR)
+
+                token = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
+            }
 
             when (token) {
                 is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
