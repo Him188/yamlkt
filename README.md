@@ -7,7 +7,7 @@ This project is under development.
 
 
 #### Gradle
-Replace `<version>` with the newest version here: <not yet published>
+Replace `<version>` with the newest version here: \<not yet published\>
 
 ```kotlin
 implementation("net.mamoe:konfig-yaml:<version>")
