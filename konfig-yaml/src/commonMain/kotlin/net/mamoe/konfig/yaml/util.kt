@@ -49,32 +49,32 @@ internal object BinaryConverter {
 }
 
 
-fun Long.limitToByte(): Byte {
+internal fun Long.limitToByte(): Byte {
     if (this in Byte.MIN_VALUE.toLong()..Byte.MAX_VALUE.toLong()) return this.toByte()
     error("value is too large for byte: $this")
 }
 
-fun Long.limitToChar(): Char {
+internal fun Long.limitToChar(): Char {
     if (this in Char.MIN_VALUE.toLong()..Char.MAX_VALUE.toLong()) return this.toChar()
     error("value is too large for char: $this")
 }
 
-fun Long.limitToShort(): Short {
+internal fun Long.limitToShort(): Short {
     if (this in Short.MIN_VALUE.toLong()..Short.MAX_VALUE.toLong()) return this.toShort()
     error("value is too large for short: $this")
 }
 
-fun Long.limitToInt(): Int {
+internal fun Long.limitToInt(): Int {
     if (this in Int.MIN_VALUE.toLong()..Int.MAX_VALUE.toLong()) return this.toInt()
     error("value is too large for int: $this")
 }
 
-fun Long.limitToFloat(): Float {
+internal fun Long.limitToFloat(): Float {
     if (this.toFloat().toLong() == this) return this.toFloat()
     error("value is too large for float: $this")
 }
 
-fun Long.limitToDouble(): Double {
+internal fun Long.limitToDouble(): Double {
     if (this.toDouble().toLong() == this) return this.toDouble()
     error("value is too large for double: $this")
 }
