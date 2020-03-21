@@ -42,12 +42,14 @@ internal sealed class TokenClass(val value: Char) {
     object CURLY_BRACKET_RIGHT : TokenClass('}')
 
     sealed class LINE_SEPARATOR(value: Char) : TokenClass(value) {
-        companion object {
-            val values: CharArray = charArrayOf(N.value, R.value)
-        }
-
         object N : LINE_SEPARATOR('\n')
         object R : LINE_SEPARATOR('\r')
+
+        companion object {
+            val values: CharArray by lazy {
+                charArrayOf(N.value, R.value)
+            }
+        }
     }
 
     object MULTILINE : TokenClass('|')
@@ -106,28 +108,37 @@ data class YamlConfiguration(
 internal class YamlReader(
     private val input: CharStream
 ) : CharStream by input {
-    private val tokenStack: MutableList<TokenClass> = ArrayList(8)
-    private fun pushToken(token: TokenClass) {
-        tokenStack.add(token)
-    }
-
-    private val currentToken: TokenClass
-        get() = tokenStack.last()
-
-    private val currentTokenOrNull: TokenClass?
-        get() = tokenStack.lastOrNull()
-
-    private fun popToken(): TokenClass {
-        if (tokenStack.isEmpty()) error("tokenStack is empty")
-        return tokenStack.removeAt(0)
-    }
+    private var currentToken: IndentedToken = IndentedToken(0)
 
     /**
      * null means EOF
      */
-    private fun nextNotSpaceOrNull(): Char? {
-        input.readAhead { if (it != ' ') return it }
+    private fun nextNotSpaceOrNull(): IndentedToken? {
+        var spaceCount = 0
+        input.readAhead {
+            if (it != ' ') return currentToken.apply {
+                _indentSpaceCount = spaceCount
+                _token = it
+            } else spaceCount++
+        }
         return null
+    }
+
+    class IndentedToken(
+        internal var _indentSpaceCount: Int
+    ) {
+        override fun toString(): String {
+            return "Token($token, indent=$indentSpaceCount)"
+        }
+
+        internal var _token: Any? = null
+            set(value) {
+                check(value == null || value is Char || value is TokenClass) { "internal error: illegal token: $value" }
+                field = value
+            }
+
+        val indentSpaceCount: Int get() = _indentSpaceCount
+        val token: Any? get() = _token
     }
 
     /**
@@ -135,52 +146,115 @@ internal class YamlReader(
      *
      * @return `null` if EOF, or [TokenClass] if the char is a token, or [Char] otherwise.
      */
-    fun nextTokenOrNull(): Any? =
-        nextNotSpaceOrNull()?.let { char ->
-            TokenClass.findByValue(char) ?: char
-        }
-
-    /**
-     * @return `null` if EOF
-     */
-    fun nextValue(): String? = when (currentToken) {
-        COLON, // "": "" // map element
-        COMMA,
-        TokenClass.CURLY_BRACKET_LEFT,
-        TokenClass.SQUARE_BRACKET_LEFT, // [1, 2, 3] // array
-        is TokenClass.QUOTATION -> {  // " " or ' '
-            when (val next = nextTokenOrNull()) {
-                is TokenClass.QUOTATION -> {
-                    // quoted string doesn't need to trim
-                    var doTrimStart = false
-                    readStringUntil(*next.ESCAPE_PATTERN, filterNot = {
-                        if (doTrimStart) {
-                            if (it == ' ') true
-                            else {
-                                doTrimStart = false
-                                false
-                            }
-                        } else false
-                    }, end = next.value)
-                }
-                is TokenClass -> error("required a value but found token $next")
-                is Char -> {
-                    readStringUntil {
-                        if (it in TokenClass.LINE_SEPARATOR.values) {
-                            return@readStringUntil true
-                        }
-                        TokenClass.findByValue(it)?.let { token ->
-                            error("Unexpected token $token when reading a value")
-                        }
-                        false
-                    }.trim() // unquoted string should be trimmed
-                }
-                null -> null
-                else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
+    fun nextTokenOrNull(): IndentedToken? =
+        nextNotSpaceOrNull()?.let { indentedToken ->
+            indentedToken.apply {
+                val find = TokenClass.findByValue(indentedToken._token as Char)
+                indentedToken._token = find ?: indentedToken._token
             }
         }
-        else -> {
-            error("unexpected token:")
+
+    class IndentedValue(
+        internal var _indentSpaceCount: Int,
+        internal var _value: String
+    ) {
+        val indentSpaceCount: Int get() = _indentSpaceCount
+        val value: String get() = _value
+    }
+
+    private val indentedValueTemp = IndentedValue(0, "")
+
+    /**
+     * Directly read next string value. Automatically solve quotations and escaping.
+     *
+     * @return `null` if EOF
+     */
+    fun nextValue(): IndentedValue? {
+        if (currentToken.token == null) {
+            nextTokenOrNull() // try start
+        }
+        return when (val currentTokenToken = currentToken.token) {
+            is Char -> {
+                indentedValueTemp.apply {
+                    _indentSpaceCount = 0
+                    _value = currentTokenToken + readStringUntil(endMatcher = {
+                        it in TokenClass.LINE_SEPARATOR.values || it == COLON.value
+                        // TODO: 2020/3/21 rewrite, 区分 `nextStringUntilColon`
+                    })
+                }
+            }
+            null -> null
+            COLON, // "": "" // map element
+            COMMA,
+            TokenClass.CURLY_BRACKET_LEFT, // [1, 2, 3] // array
+            TokenClass.SQUARE_BRACKET_LEFT -> {
+                val indentedToken = nextTokenOrNull()
+                when (val next = indentedToken?.token) {
+                    is TokenClass.QUOTATION -> {
+                        // quoted string doesn't need to trim
+                        var doTrimStart = false
+                        indentedValueTemp.apply {
+                            _indentSpaceCount = indentedToken.indentSpaceCount
+                            _value = readStringUntil(*next.ESCAPE_PATTERN, filterNot = {
+                                if (doTrimStart) {
+                                    if (it == ' ') true
+                                    else {
+                                        doTrimStart = false
+                                        false
+                                    }
+                                } else false
+                            }, end = next.value)
+                        }
+                    }
+                    is TokenClass -> error("required a value but found token $next")
+                    is Char -> {
+                        indentedValueTemp.apply {
+                            _indentSpaceCount = indentedToken.indentSpaceCount
+                            _value = readStringUntil {
+                                if (it in TokenClass.LINE_SEPARATOR.values) {
+                                    return@readStringUntil true
+                                }
+                                TokenClass.findByValue(it)?.let { token ->
+                                    error("Unexpected token $token when reading a value")
+                                }
+                                false
+                            }.trim() // unquoted string should be trimmed
+                        }
+                    }
+                    null -> null
+                    else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
+                }
+            }
+
+            is TokenClass.QUOTATION -> {// " " or ' '
+                val indentedToken = nextTokenOrNull()
+                when (val next = indentedToken?.token) {
+                    null -> null
+                    currentToken -> indentedValueTemp.apply {
+                        _indentSpaceCount = indentedToken.indentSpaceCount
+                        _value = ""
+                    } // same quotation, which means a quotation block: `""` or `''`
+                    is TokenClass -> error("required a value but found token $next")
+                    is Char -> {
+                        indentedValueTemp.apply {
+                            _indentSpaceCount = indentedToken.indentSpaceCount
+                            _value = readStringUntil {
+                                if (it in TokenClass.LINE_SEPARATOR.values) {
+                                    return@readStringUntil true
+                                }
+                                TokenClass.findByValue(it)?.let { token ->
+                                    error("Unexpected token $token when reading a value")
+                                }
+                                false
+                            }.trim() // unquoted string should be trimmed
+                        }
+                    }
+                    else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
+                }
+            }
+            else -> {
+                error("unexpected token: ${currentToken.token}")
+            }
         }
     }
 }
@@ -204,7 +278,7 @@ internal inline fun CharStream.readStringUntil(vararg escape: Char, filterNot: (
                     } else error("unsupported escape: '$it'")
                 }
                 escape.isNotEmpty() && it == '\\' -> isEscape = true
-                endMatcher(it) -> return@readAhead
+                endMatcher(it) -> return@buildString
                 else -> {
                     if (!filterNot(it)) {
                         append(it)
