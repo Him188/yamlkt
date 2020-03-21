@@ -5,6 +5,11 @@ This project is under development.
 
 ## Setup
 
+Dependency requirements:
+
+| konfig | Required Kotlin | Required kotlinx.serialization |
+|:-------|:----------------|:-------------------------------|
+| 0.1.0  | 1.3.70          | 0.20.0                         |
 
 #### Gradle
 Replace `<version>` with the newest version here: \<not yet published\>
@@ -15,6 +20,7 @@ implementation("net.mamoe:konfig-yaml:<version>")
 
 
 #### Maven
+Replace `$version` with the newest version here: \<not yet published\>
 
 ```xml
 <dependency>
@@ -46,12 +52,12 @@ data class Test(
     )
 }
 
-yaml.parse(Test.serializer(), """
+println(yaml.parse(Test.serializer(), """
 test: testString
 test2: "quoted"
 nest: 
   nestedTest: String
   numberCast: 0xFE
 list: [str, "str2"]
-""")
+"""))
 ```
