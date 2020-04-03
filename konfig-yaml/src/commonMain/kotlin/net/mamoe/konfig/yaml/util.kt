@@ -2,7 +2,8 @@ package net.mamoe.konfig.yaml
 
 import kotlin.math.pow
 
-private inline fun <R> CharSequence.foldFromRightOffsetIndexed(offset: Int, initial: R, operation: (index: Int, acc: R, Char) -> R): R {
+// No generic type: Long will be transformed to primitive `long` on JVM, best performance
+private inline fun CharSequence.foldFromRightOffsetIndexed(offset: Int, initial: Long, operation: (index: Int, acc: Long, Char) -> Long): Long {
     require(offset <= this.length - 1) { "length < offset" }
     var accumulator = initial
 

@@ -10,6 +10,9 @@ import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.IOFormat
 import net.mamoe.konfig.asCharStream
 
+/**
+ * The main entry point to work with YAML serialization.
+ */
 class Yaml(
     private val configuration: YamlConfiguration = YamlConfiguration(),
     override val context: SerialModule = EmptyModule

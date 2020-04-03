@@ -83,7 +83,8 @@ internal class YamlDecoder(
                 is TokenClass.CURLY_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
                 is TokenClass.LINE_SEPARATOR,
-                is Char -> {
+                is Char
+                -> {
                     val indentedValue = reader.nextValue() ?: return CompositeDecoder.READ_DONE
                     if (!checkIndent(indentedValue, descriptor)) {
                         return CompositeDecoder.READ_DONE
@@ -134,6 +135,8 @@ internal class YamlDecoder(
             println("------")
             println("last = ${reader.currentToken.token}")
 
+            val skippedLine = reader.currentToken.token is TokenClass.MULTILINE_LIST_FLAG
+
             var token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
 
             println("finally = $token")
@@ -153,6 +156,13 @@ internal class YamlDecoder(
                 is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
                 is Char -> {
+                    return index++
+                }
+                is TokenClass.MULTILINE_LIST_FLAG -> {
+                    // TODO: 2020/3/21 check here
+                    if (!skippedLine) {
+                        return CompositeDecoder.READ_DONE // single value
+                    }
                     return index++
                 }
             }

@@ -113,6 +113,9 @@ internal class YamlReader(
      * null means EOF
      */
     private fun nextNotSpaceOrNull(): IndentedToken? {
+        if (currentToken.isOverRead) {
+            return currentToken.apply { isOverRead = false }
+        }
         var spaceCount = 0
         input.readAhead {
             if (it != ' ') return currentToken.apply {
@@ -141,6 +144,7 @@ internal class YamlReader(
 
         val indentSpaceCount: Int get() = _indentSpaceCount
         val token: Any? get() = _token
+        var isOverRead = false
     }
 
     /**
@@ -150,13 +154,15 @@ internal class YamlReader(
      * or a [IndentedToken] wrapping a [TokenClass] if the char is a token,
      * or a [IndentedToken] wrapping a [Char] otherwise.
      */
-    fun nextTokenOrNull(): IndentedToken? =
-        nextNotSpaceOrNull()?.let { indentedToken ->
+    fun nextTokenOrNull(): IndentedToken? {
+        println(" > calling nextTokenOrNull")
+        return nextNotSpaceOrNull()?.let { indentedToken ->
             indentedToken.apply {
                 val find = TokenClass.findByValue(indentedToken._token as Char)
                 indentedToken._token = find ?: indentedToken._token
             }
         }
+    }
 
     /**
      * Skips [TokenClass.LINE_SEPARATOR]s
@@ -179,7 +185,11 @@ internal class YamlReader(
      *
      * @return `null` if EOF, [Unit] is successfully skipped one element
      */
-    fun skipElement(baseIndent: Int): Unit? {
+    fun skipElement(baseIndent: Int, debuggingHierarchy: Int = 0, isInnerList: Boolean = false): Unit? {
+        fun println(v: Any?) {
+            kotlin.io.println(" ".repeat(debuggingHierarchy) + v)
+        }
+
         // cur is at `:`
         //
         // <baseIndent>map:
@@ -211,13 +221,15 @@ internal class YamlReader(
         println("indentedToken = $indentedToken")
         println("newIndent = $newIndent")
 
-        @Suppress("SpellCheckingInspection")
-        if (newIndent < baseIndent) {
-            // <baseIndent>map:
-            // <baseInde>        // missing key or value here due to indent reduced
+        if (skippedLine) {
+            @Suppress("SpellCheckingInspection")
+            if (newIndent < baseIndent) {
+                // <baseIndent>map:
+                // <baseInde>        // missing key or value here due to indent reduced
 
-            // TODO: 2020/3/21 contextual exception
-            error("missing value for list or key for map, because new indent is shorter($newIndent) than base'($baseIndent)")
+                // TODO: 2020/3/21 contextual exception
+                error("missing value for list or key for map, because new indent is shorter($newIndent) than base'($baseIndent)")
+            }
         }
 
         // <baseIndent>map:
@@ -236,7 +248,7 @@ internal class YamlReader(
                 // we are now at `[`
                 // hence list type is inferred
                 loop@ while (!endOfInput) {
-                    skipElement(newIndent)
+                    skipElement(newIndent, debuggingHierarchy + 1)
                     skipLineSeparators()?.also {
                         when (it.token) {
                             is COMMA -> { // expected. more elements are being read
@@ -246,10 +258,12 @@ internal class YamlReader(
                             }
                             else -> error("unexpected token while skipping a list: $it")
                         }
-                    } ?: error("cannot find trailing `]` for list") // TODO: 2020/3/21 NON STRICT MODE: ignore missing trailing ]
+                    }
+                        ?: error("cannot find trailing `]` for list") // TODO: 2020/3/21 NON STRICT MODE: ignore missing trailing ]
                 }
             }
             TokenClass.MULTILINE_LIST_FLAG -> {
+                println("!MULTILINE_LIST_FLAG: skippedLine=$skippedLine")
                 if (skippedLine) {
                     // redundant:
                     //   - v
@@ -257,40 +271,66 @@ internal class YamlReader(
                     // we're now at `-`
                     // inferred type: multiline list
                     loop@ while (!endOfInput) {
-                        skipElement(newIndent)
+                        skipElement(newIndent, debuggingHierarchy + 1)
                         skipLineSeparators()?.also {
-                            when {
-                                it.token is TokenClass.MULTILINE_LIST_FLAG -> {
+                            when (it.token) {
+                                is TokenClass.MULTILINE_LIST_FLAG -> {
+                                    // SYNTAX CHECK: ESSENTIAL 
                                     if (it.indentSpaceCount < newIndent) {
                                         // redundant:
                                         //   - v
                                         //  - s  // illegal syntax
                                         // TODO: 2020/3/21 contextual exception
-                                        error("syntax error: not uniform indent found")
+                                        error("syntax error: not uniform indent found when reading multiline list: current indent=${it.indentSpaceCount}, while newIndent=$newIndent")
+                                    } else if (it.indentSpaceCount > newIndent) {
+                                        // SYNTAX CHECK: STRICT
+                                        error("unsupported: multiline list elements must have equal indent")
                                     }
                                 }
-                                it.indentSpaceCount < newIndent -> {
+
+                                else -> {
+                                    // we've reached the end of the multiline list.
+                                    // and we've read one excessive token.
+                                    // e.g:
+                                    // ```
+                                    // multiline:
+                                    //   - s
+                                    // nextKey: value // we are now at `n`
+                                    // ```
+                                    // Next step is to `decodeElementIndex`, which will do `reader.nextTokenOrNull()` once more
+                                    // , which will miss the previous token `n`
+
+                                    println("   $it")
+                                    it.isOverRead = true
+                                    return Unit
+                                }
+                                /*
+                                 it.indentSpaceCount < newIndent -> {
                                     // redundant:
                                     //   - v
                                     // value: s  // here indent is shorter
                                     return Unit
                                 }
-                                else -> error("unexpected token while skipping a list: $it")
+                                 */
+                                //  else -> return Unit
                             }
-                        } ?: error("cannot find trailing `]` for list") // TODO: 2020/3/21 NON STRICT MODE: ignore missing trailing ]
+                        } ?: return Unit
                     }
                 } else {
                     // redundant: -1
 
+                    println("current token = $currentToken")
                     // inferred type: single value
-                    nextValue() // don't `skipElement`, type is already inferred
-                    Unit
+                    val skipped = nextValue() // don't `skipElement`, type is already inferred
+                    println("skipped value: $skipped")
                 }
             }
 
             is TokenClass.QUOTATION,
-            is Char -> {
+            is Char
+            -> {
                 println("nextValue=" + nextValue())
+                println("$skippedLine")
                 if (skippedLine) {
                     // redundant:
                     //   v
@@ -308,15 +348,16 @@ internal class YamlReader(
 
                             // inferred type: map
                             loop@ while (!endOfInput) {
-                                skipElement(newIndent)
+                                skipElement(newIndent, debuggingHierarchy + 1)
                                 val token = skipLineSeparators() ?: return Unit // considered normally end
                                 when (token.token) {
                                     is TokenClass.QUOTATION,
-                                    is Char -> { // key
+                                    is Char
+                                    -> { // key
                                         if (token.indentSpaceCount < newIndent) {
                                             return Unit
                                         }
-                                        skipElement(newIndent)
+                                        skipElement(newIndent, debuggingHierarchy + 1)
                                     }
 
                                     else -> error("unexpected token while skipping a map: $token")
@@ -326,16 +367,40 @@ internal class YamlReader(
                         }
                     }
                 } else {
-                    // redundant: s
-
                     // inferred type: single value
-                    nextValue()
+                    // now processing end of a value
+
+                    if (currentToken.token is TokenClass.QUOTATION) {
+                        // we've read like:
+                        // ```
+                        // multiline:
+                        //  - "s" // we are not at right `"`
+                        // nextKey: value // we have to move cur to `n`
+                        nextTokenOrNull() // just skip `"`, empty lines will be skipped in next turn
+                    } else {
+                        if (!isInnerList) {
+                            // ```
+                            // redundant: s
+                            // ```
+                            val nextValue = nextValue()
+                            println("nextValue(starting from char)=$nextValue")
+                        } else {
+                            // sss:
+                            //   - value // <- we are skipping `value`
+
+                            // nothing to do
+                        }
+                    }
+
                 }
 
                 // we are now at `s`, no enough info to infer type
 
             }
-            else -> error("unexpected token while skipping (can't infer type): $indentedToken")
+            else -> error(
+                "illegal token while skipping (can't infer type): $indentedToken, " +
+                    "that might because a token like COLON appeared at the beginning"
+            )
         }
 
         return Unit
@@ -379,7 +444,8 @@ internal class YamlReader(
             COLON, // "": "" // map element
             COMMA,
             TokenClass.CURLY_BRACKET_LEFT, // [1, 2, 3] // array
-            TokenClass.SQUARE_BRACKET_LEFT -> {
+            TokenClass.SQUARE_BRACKET_LEFT
+            -> {
                 val indentedToken = nextTokenOrNull()
                 when (val next = indentedToken?.token) {
                     is TokenClass.QUOTATION -> {
@@ -471,7 +537,7 @@ internal fun CharStream.readUnquotedString(endToken: TokenClass): String {
                 }
             }
             TokenClass.findByValue(it)?.let { token ->
-                if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
+                if (token != endToken && token !is TokenClass.LINE_SEPARATOR && token != TokenClass.MULTILINE_LIST_FLAG) {
                     throw IllegalTokenClassInUnquotedStringException(token)
                 }
             }
