@@ -60,13 +60,15 @@ kotlin {
 
         val jvmTest by getting {
             dependencies {
+                dependsOn(commonTest)
                 implementation(kotlin("test"))
-                implementation(kotlin("test-junit5"))
+                implementation(kotlin("test-junit"))
             }
         }
 
         val jsTest by getting {
             dependencies {
+                dependsOn(commonTest)
                 implementation(kotlin("test-js"))
             }
         }
