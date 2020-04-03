@@ -96,6 +96,7 @@ internal class YamlReader(
      */
     private fun nextNotSpaceOrNull(): IndentedToken? {
         if (currentToken.isOverRead) {
+            println(" :overRead:$currentToken")
             return currentToken.apply { isOverRead = false }
         }
         var spaceCount = 0
@@ -112,7 +113,7 @@ internal class YamlReader(
         internal var _indentSpaceCount: Int
     ) {
         override fun toString(): String {
-            return "Token($token, indent=$indentSpaceCount)"
+            return "Token($token, indent=$indentSpaceCount, isOverRead=$isOverRead)"
         }
 
         /**
@@ -140,7 +141,10 @@ internal class YamlReader(
         println(" > calling nextTokenOrNull")
         return nextNotSpaceOrNull()?.let { indentedToken ->
             indentedToken.apply {
-                val find = TokenClass.findByValue(indentedToken._token as Char)
+                val find = when (indentedToken.token) {
+                    is TokenClass -> indentedToken.token
+                    else -> TokenClass.findByValue(indentedToken._token as Char)
+                }
                 indentedToken._token = find ?: indentedToken._token
             }
         }
@@ -398,6 +402,7 @@ internal class YamlReader(
 
         val indentSpaceCount: Int get() = _indentSpaceCount
         val value: String get() = _value
+        internal var isFromOverRead: Boolean = false
     }
 
     private val indentedValueTemp = IndentedValue(0, "")
@@ -409,16 +414,23 @@ internal class YamlReader(
      */
     fun nextValue(): IndentedValue? {
         if (currentToken.token == null) {
-            nextTokenOrNull() // try start
+            nextTokenOrNull() ?: return null // try start
         }
         while (currentToken.token is TokenClass.LINE_SEPARATOR) {
             nextTokenOrNull() ?: return null
         }
+        val theBeginningTokenOverRead = currentToken.isOverRead
+        println("theBeginningTokenOverRead=$theBeginningTokenOverRead")
         return when (val currentTokenToken = currentToken.token) {
             is Char -> {
-                indentedValueTemp.apply {
-                    _indentSpaceCount = currentToken.indentSpaceCount
-                    _value = currentTokenToken + readUnquotedString(COLON)
+                kotlin.runCatching {
+                    return indentedValueTemp.apply {
+                        this.isFromOverRead = theBeginningTokenOverRead
+                        _indentSpaceCount = currentToken.indentSpaceCount
+                        _value = currentTokenToken + readUnquotedString(COLON)
+                    }
+                }.exceptionOrNull()?.let { e ->
+                    throw YamlSerializationException("when nextValue(): currentToken=$currentTokenToken, nextToken=${nextTokenOrNull()}", e)
                 }
             }
             null -> null
@@ -433,6 +445,7 @@ internal class YamlReader(
                     is TokenClass.QUOTATION -> {
                         // quoted string doesn't need to trim
                         indentedValueTemp.apply {
+                            this.isFromOverRead = theBeginningTokenOverRead
                             _indentSpaceCount = currentToken.indentSpaceCount
                             _value = readQuotedString(next)
                         }
@@ -440,6 +453,7 @@ internal class YamlReader(
                     is TokenClass -> error("required a value but found token $next")
                     is Char -> {
                         indentedValueTemp.apply {
+                            this.isFromOverRead = theBeginningTokenOverRead
                             _indentSpaceCount = currentToken.indentSpaceCount
                             _value = readUnquotedString(currentTokenToken as TokenClass)
                         }
@@ -451,12 +465,14 @@ internal class YamlReader(
             is TokenClass.MULTILINE_LIST_FLAG -> {
                 // negative number
                 indentedValueTemp.apply {
+                    this.isFromOverRead = theBeginningTokenOverRead
                     _indentSpaceCount = currentToken.indentSpaceCount
                     _value = "-" + readUnquotedString(TokenClass.LINE_SEPARATOR.N) // stub
                 }
             }
             is TokenClass.QUOTATION -> { // " " or ' '
                 indentedValueTemp.apply {
+                    this.isFromOverRead = theBeginningTokenOverRead
                     _indentSpaceCount = currentToken.indentSpaceCount
                     _value = readQuotedString(currentTokenToken)
                 }
@@ -519,7 +535,7 @@ internal fun CharInputStream.readUnquotedString(endToken: TokenClass): String {
                 }
             }
             TokenClass.findByValue(it)?.let { token ->
-                if (token != endToken && token !is TokenClass.LINE_SEPARATOR && token != TokenClass.MULTILINE_LIST_FLAG) {
+                if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
                     throw IllegalTokenClassInUnquotedStringException(token)
                 }
             }
@@ -530,8 +546,9 @@ internal fun CharInputStream.readUnquotedString(endToken: TokenClass): String {
                 || it in TokenClass.LINE_SEPARATOR.values
                 || it == COMMA.value
                 || it == TokenClass.SQUARE_BRACKET_RIGHT.value
+                || it == TokenClass.MULTILINE_LIST_FLAG.value
         }
-    ).trimEnd()
+    ).also { println("readUnquotedString(untrimmed)=$it") }.trimEnd()
 }
 
 /**

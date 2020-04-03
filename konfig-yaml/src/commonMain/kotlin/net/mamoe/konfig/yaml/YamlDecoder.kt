@@ -66,7 +66,7 @@ internal class YamlDecoder(
             }
             check(actualIndent == currentIndentSpaceCount) {
                 "illegal indent, expected $currentIndentSpaceCount, actual $actualIndent. " +
-                    "recent descriptor=${descriptor.serialName}, element=${indentedValue.value}"
+                    "recent descriptor=${descriptor.serialName}, indentedValue=${indentedValue.value}"
             }
             return true
         }
@@ -89,7 +89,7 @@ internal class YamlDecoder(
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             println("${spacesForDebug()}ClassReader.decodeElementIndex: ${descriptor.serialName}")
 
-
+            val tokenOverRead = reader.currentToken.isOverRead
             val indentedToken = reader.nextTokenOrNull() ?: return CompositeDecoder.READ_DONE
 
             val elementName = lastElementName?.let {
@@ -106,7 +106,7 @@ internal class YamlDecoder(
                 is Char
                 -> {
                     val indentedValue = reader.nextValue() ?: return CompositeDecoder.READ_DONE
-                    if (!checkIndent(indentedValue, descriptor)) {
+                    if (!tokenOverRead && !checkIndent(indentedValue, descriptor)) {
                         return CompositeDecoder.READ_DONE
                     }
                     println("${spacesForDebug()}read elementName: ${indentedValue.value}")
@@ -145,6 +145,16 @@ internal class YamlDecoder(
         }
     }
 
+    private inner class MapReader : BaseReader(), CompositeDecoder by this {
+        override fun decodeSequentially(): Boolean = false
+        var index = 0
+        override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+            if (reader.endOfInput) {
+                return CompositeDecoder.READ_DONE
+            }
+            return index++
+        }
+    }
 
     private inner class ListReader : BaseReader(), CompositeDecoder by this {
         override fun decodeSequentially(): Boolean = false
@@ -190,6 +200,7 @@ internal class YamlDecoder(
         return when (descriptor.kind) {
             StructureKind.LIST -> ListReader()
             StructureKind.CLASS -> ClassReader()
+            StructureKind.MAP -> MapReader()
             else -> error("unsupported descriptor: $descriptor")
         }
     }
