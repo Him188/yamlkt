@@ -6,7 +6,7 @@ import kotlinx.io.core.readTextExactCharacters
 /**
  * A stream of [Char]s
  */
-interface CharStream {
+interface CharInputStream {
     /**
      * Indicates whether the stream has ended
      */
@@ -18,7 +18,7 @@ interface CharStream {
     fun read(): Char
 }
 
-fun String.asCharStream(): CharStream = object : CharStream {
+fun String.asCharStream(): CharInputStream = object : CharInputStream {
     var cur = 0
 
     override val endOfInput: Boolean
@@ -29,7 +29,7 @@ fun String.asCharStream(): CharStream = object : CharStream {
     }
 }
 
-fun Input.asCharStream(): CharStream = object : CharStream {
+fun Input.asCharStream(): CharInputStream = object : CharInputStream {
     override val endOfInput: Boolean
         get() = this@asCharStream.endOfInput
 
@@ -41,6 +41,6 @@ fun Input.asCharStream(): CharStream = object : CharStream {
 /**
  * Read all the remaining available chars and call [block]
  */
-inline fun CharStream.readAhead(block: (char: Char) -> Unit) {
+inline fun CharInputStream.readAhead(block: (char: Char) -> Unit) {
     while (!endOfInput) block(read())
 }

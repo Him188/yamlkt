@@ -2,8 +2,9 @@
 
 package net.mamoe.konfig.yaml
 
+import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.InternalSerializationApi
-import net.mamoe.konfig.CharStream
+import net.mamoe.konfig.CharInputStream
 import net.mamoe.konfig.readAhead
 import net.mamoe.konfig.yaml.TokenClass.COLON
 import net.mamoe.konfig.yaml.TokenClass.COMMA
@@ -89,6 +90,9 @@ internal sealed class TokenClass(val value: Char) {
  * Configurations to [Yaml]
  */
 data class YamlConfiguration(
+
+    // decoding
+
     /**
      * Recognize `null` as `0`, `0.0`, `0f`, "", '', or `false`
      */
@@ -99,16 +103,24 @@ data class YamlConfiguration(
      * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
      */
     val nonStrictNumber: Boolean = false,
+
+    // encoding
+
     /**
-     * Quote all [String]s
+     * Whether the format should encode values that are equal to the default values.
+     * @see CompositeEncoder.shouldEncodeElementDefault for more information
+     */
+    val encodeDefaultValues: Boolean = false,
+    /**
+     * Encode all strings with quotation.
      */
     val forceQuotation: Boolean = false
 )
 
 @OptIn(InternalSerializationApi::class)
 internal class YamlReader(
-    private val input: CharStream
-) : CharStream by input {
+    private val input: CharInputStream
+) : CharInputStream by input {
     var currentToken: IndentedToken = IndentedToken(0)
 
     /**
@@ -497,7 +509,7 @@ private val QUOTED_STRING_ESCAPE = arrayOf(
 /**
  * Reads a quoted string, with replacement of escaping, until [endQuotation]
  */
-internal fun CharStream.readQuotedString(endQuotation: TokenClass.QUOTATION): String {
+internal fun CharInputStream.readQuotedString(endQuotation: TokenClass.QUOTATION): String {
     // quoted string, with escape, until quotation
     return readStringUntil(
         escape = QUOTED_STRING_ESCAPE,
@@ -527,7 +539,7 @@ class IllegalTokenClassInUnquotedStringException internal constructor(token: Tok
  *
  * @throws IllegalTokenClassInUnquotedStringException when met with an unexpected [TokenClass]
  */
-internal fun CharStream.readUnquotedString(endToken: TokenClass): String {
+internal fun CharInputStream.readUnquotedString(endToken: TokenClass): String {
     // unquoted String, until : ] }
     var trimStart = true
     return readStringUntil(
@@ -557,7 +569,7 @@ internal fun CharStream.readUnquotedString(endToken: TokenClass): String {
 /**
  * @param escape \n will be resolved to new line
  */
-internal inline fun CharStream.readStringUntil(
+internal inline fun CharInputStream.readStringUntil(
     escape: Array<Pair<Char, Char>>,
     filterNot: (Char) -> Boolean = { false },
     endMatcher: (Char) -> Boolean
