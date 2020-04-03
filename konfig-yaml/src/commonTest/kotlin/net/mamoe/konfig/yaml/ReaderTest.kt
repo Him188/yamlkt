@@ -6,9 +6,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
 internal class ReaderTest {
-    val default = Yaml()
-    val nonStrictNullability = Yaml(configuration = YamlConfiguration(nonStrictNullability = true))
-    val nonStrictNumber = Yaml(configuration = YamlConfiguration(nonStrictNumber = true))
+    private val default = Yaml()
+    private val nonStrictNullability = Yaml(configuration = YamlConfiguration(nonStrictNullability = true))
+    private val nonStrictNumber = Yaml(configuration = YamlConfiguration(nonStrictNumber = true))
 
 
     @Test
