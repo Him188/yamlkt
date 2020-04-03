@@ -317,8 +317,11 @@ internal class YamlDecoder(
             ?: ""
 
     private fun decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int?) {
-        decodeStringElementOrNull(descriptor, index)
-            ?: checkNonStrictNullability(descriptor, index)
+        val value = (decodeStringElementOrNull(descriptor, index)
+            ?: checkNonStrictNullability(descriptor, index))
+            ?: return
+
+        check(value == "kotlin.Unit") { "value is not 'kotlin.Unit' for kotlin.Unit" }
     }
 
     private fun String?.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
@@ -346,7 +349,7 @@ internal class YamlDecoder(
     }
 
     /**
-     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     * Ensure the string is a **decimal** value, return this value
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */

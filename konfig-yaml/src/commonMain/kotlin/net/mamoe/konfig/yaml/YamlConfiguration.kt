@@ -1,4 +1,8 @@
+@file:Suppress("unused")
+
 package net.mamoe.konfig.yaml
+
+import kotlinx.serialization.CompositeEncoder
 
 /**
  * Configurations to [Yaml]
@@ -29,7 +33,7 @@ data class YamlConfiguration(
     /**
      * Encode all strings with quotation.
      */
-    val forceQuotation: Boolean = false,
+    val stringSerialization: StringSerialization = StringSerialization.NONE,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
@@ -41,6 +45,26 @@ data class YamlConfiguration(
      */
     val nullSerialization: NullSerialization = NullSerialization.NULL
 ) {
+    /**
+     * The value set for [String] serialization
+     */
+    enum class StringSerialization {
+        /**
+         * Quote all [String]s with `"`
+         */
+        SINGLE_QUOTATION,
+
+        /**
+         * Quote all [String]s with "'"
+         */
+        DOUBLE_QUOTATION,
+
+        /**
+         * Don't quote any [String].
+         */
+        NONE
+    }
+
     /**
      * The value set for [Boolean] serialization
      */
