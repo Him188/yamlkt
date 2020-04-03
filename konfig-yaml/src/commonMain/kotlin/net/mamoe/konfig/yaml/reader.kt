@@ -94,7 +94,9 @@ data class YamlConfiguration(
      */
     val nonStrictNullability: Boolean = false,
     /**
-     * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int]
+     * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int].
+     *
+     * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
      */
     val nonStrictNumber: Boolean = false,
     /**

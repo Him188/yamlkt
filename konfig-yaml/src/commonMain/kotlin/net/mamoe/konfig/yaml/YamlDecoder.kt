@@ -265,7 +265,17 @@ internal class YamlDecoder(
                     "null" -> null
                     "true", "on" -> true
                     "false", "off" -> false
-                    else -> fail("unexpected boolean value: $value", descriptor, index)
+                    else -> {
+                        if (configuration.nonStrictNumber) {
+                            when (value.withDecimalValue("boolean", descriptor, index) {
+                                it.toInt()
+                            }) {
+                                1 -> return true
+                                0 -> return false
+                            }
+                        }
+                        fail("illegal boolean value: $value", descriptor, index)
+                    }
                 }
             }
         } ?: kotlin.run {
@@ -314,10 +324,7 @@ internal class YamlDecoder(
     }
 
     private fun String?.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
-        if (this == null) {
-            return null
-        }
-        if (this == "~" || (this.length == 4 && this.toLowerCase() == "null")) {
+        if (this == null || this == "~" || (this.length == 4 && this.toLowerCase() == "null")) {
             if (configuration.nonStrictNullability) {
                 return 0
             } else throw YamlUnexpectedNullException(descriptor, index)
