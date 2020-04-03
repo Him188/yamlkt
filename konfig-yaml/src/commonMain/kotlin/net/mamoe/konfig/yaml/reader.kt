@@ -18,7 +18,7 @@ internal sealed class TokenClass(val value: Char) {
 
     object COMMA : TokenClass(',')
 
-    object PERIOD : TokenClass('.')
+    //object PERIOD : TokenClass('.')
 
     object COLON : TokenClass(':')
 
@@ -69,7 +69,8 @@ internal sealed class TokenClass(val value: Char) {
 
     companion object {
         private val values: Array<TokenClass> = arrayOf(
-            COMMA, PERIOD, COLON, SINGLE_QUOTATION, DOUBLE_QUOTATION,
+            COMMA,
+            /*PERIOD,*/ COLON, SINGLE_QUOTATION, DOUBLE_QUOTATION,
             PARENTHESES_LEFT, PARENTHESES_RIGHT,
             SQUARE_BRACKET_RIGHT, SQUARE_BRACKET_LEFT,
             CURLY_BRACKET_RIGHT,
@@ -94,7 +95,6 @@ data class YamlConfiguration(
     val nonStrictNullability: Boolean = false,
     /**
      * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int]
-     * TODO
      */
     val nonStrictNumber: Boolean = false,
     /**

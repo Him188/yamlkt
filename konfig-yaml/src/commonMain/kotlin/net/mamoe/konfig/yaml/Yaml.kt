@@ -33,4 +33,21 @@ class Yaml(
         TODO("not implemented")
     }
 
+    companion object {
+        /**
+         * The [Yaml] using all default configurations
+         */
+        val Default: Yaml = Yaml()
+
+        /**
+         * The [Yaml] using all non-strict configurations.
+         * Some incompatible types may be casted unsafely.
+         */
+        val NonStrict: Yaml = Yaml(
+            configuration = YamlConfiguration(
+                nonStrictNumber = true,
+                nonStrictNullability = true
+            )
+        )
+    }
 }

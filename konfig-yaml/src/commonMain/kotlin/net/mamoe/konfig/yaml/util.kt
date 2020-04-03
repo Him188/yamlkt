@@ -26,7 +26,7 @@ internal object HexConverter {
                 in 'A'..'F' -> (char - 'A' + 10) * HEX_POW_TABLE[index]
                 in 'a'..'f' -> (char - 'a' + 10) * HEX_POW_TABLE[index]
                 in '0'..'9' -> (char - '0') * HEX_POW_TABLE[index]
-                else -> error("illegal hex digit: $char")
+                else -> error("illegal digit '$char' in hexadecimal string $value") // no need to drop
             }
         }
     }
@@ -43,7 +43,7 @@ internal object BinaryConverter {
             acc + when (char) {
                 '0' -> 0
                 '1' -> BINARY_POW_TABLE[index]
-                else -> error("illegal binary digit: $char")
+                else -> error("illegal digit '$char' in binary string $value") // no need to drop
             }
         }
     }

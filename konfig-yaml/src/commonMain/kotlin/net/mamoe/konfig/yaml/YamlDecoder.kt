@@ -7,8 +7,30 @@ import kotlinx.serialization.modules.SerialModule
 
 open class YamlSerializationException : Exception {
     constructor(message: String) : super(message)
-    constructor(message: String, cause: Exception?) : super(message, cause)
+    constructor(message: String, cause: Throwable?) : super(message, cause)
 }
+
+class YamlUnexpectedNullException internal constructor(
+    descriptor: SerialDescriptor?,
+    index: Int? // -1 if null
+) : YamlSerializationException(
+    "unexpected null value " +
+        "when reading property '${index.takeIf { it != -1 }?.let { descriptor?.getElementName(it) ?: "<unknown element indexed $index>" } ?: "<unknown element>"}' " +
+        "for ${descriptor?.serialName ?: "<unknown descriptor>"} " +
+        "you can enable `nonStrictNullability` to cast null to 0 or false."
+)
+
+class YamlIllegalNumberFormatException internal constructor(
+    numberString: String,
+    type: String,
+    descriptor: SerialDescriptor?,
+    index: Int?,
+    cause: Throwable?
+) : YamlSerializationException(
+    "'$numberString' is not a valid $type " +
+        "when reading property '${index?.let { descriptor?.getElementName(it) ?: "<unknown element indexed $index>" } ?: "<unknown element>"}' " +
+        "for ${descriptor?.serialName ?: "<unknown descriptor>"}", cause
+)
 
 @OptIn(InternalSerializationApi::class)
 internal class YamlDecoder(
@@ -19,9 +41,7 @@ internal class YamlDecoder(
     override val updateMode: UpdateMode
         get() = UpdateMode.BANNED
 
-    private abstract inner class BaseReader(
-        var parentIndentSpaceCount: Int
-    ) : Decoder by this {
+    private abstract inner class BaseReader : Decoder by this {
         var currentIndentSpaceCount: Int = -1
         fun setCurrentIndentSpaceCountIfAbsent(count: Int, descriptor: SerialDescriptor, name: String) {
             if (currentIndentSpaceCount == -1) {
@@ -54,8 +74,8 @@ internal class YamlDecoder(
         final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
             println("BaseReader.beginStructure: ${descriptor.serialName}")
             return when (descriptor.kind) {
-                StructureKind.LIST -> ListReader(currentIndentSpaceCount)
-                StructureKind.CLASS -> ClassReader(currentIndentSpaceCount)
+                StructureKind.LIST -> ListReader()
+                StructureKind.CLASS -> ClassReader()
                 else -> error("unsupported descriptor: $descriptor")
             }
         }
@@ -63,7 +83,7 @@ internal class YamlDecoder(
 
     private var lastElementName: YamlReader.IndentedValue? = null
 
-    private inner class ClassReader(parentIndentSpaceCount: Int) : BaseReader(parentIndentSpaceCount), CompositeDecoder by this {
+    private inner class ClassReader : BaseReader(), CompositeDecoder by this {
 
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
@@ -126,21 +146,14 @@ internal class YamlDecoder(
     }
 
 
-    private inner class ListReader(parentIndentSpaceCount: Int) : BaseReader(parentIndentSpaceCount), CompositeDecoder by this {
+    private inner class ListReader : BaseReader(), CompositeDecoder by this {
         override fun decodeSequentially(): Boolean = false
         var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
 
             val isLastQuotation = reader.currentToken.token is TokenClass.QUOTATION
-            println("------")
-            println("last = ${reader.currentToken.token}")
-
             val skippedLine = reader.currentToken.token is TokenClass.MULTILINE_LIST_FLAG
-
             var token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
-
-            println("finally = $token")
-            println("------")
 
             if (isLastQuotation) {
                 // [ "a", "b" ]
@@ -155,7 +168,8 @@ internal class YamlDecoder(
             when (token) {
                 is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
                 is TokenClass.QUOTATION,
-                is Char -> {
+                is Char
+                -> {
                     return index++
                 }
                 is TokenClass.MULTILINE_LIST_FLAG -> {
@@ -174,8 +188,8 @@ internal class YamlDecoder(
         println("top-level.beginStructure: ${descriptor.serialName}")
 
         return when (descriptor.kind) {
-            StructureKind.LIST -> ListReader(0)
-            StructureKind.CLASS -> ClassReader(0)
+            StructureKind.LIST -> ListReader()
+            StructureKind.CLASS -> ClassReader()
             else -> error("unsupported descriptor: $descriptor")
         }
     }
@@ -188,14 +202,14 @@ internal class YamlDecoder(
         )
     }
 
-    override fun decodeSequentially(): Boolean = false
+    override fun decodeSequentially(): Boolean = true // it's ok because specific decoders will be used after `beginStructure`
     override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-        error("top-level reading is not supported")
+        error("shouldn't be reached")
     }
 
 
     override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
-        TODO("not implemented")
+        return deserializer.deserialize(this)
     }
 
     override fun <T> decodeSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T>): T {
@@ -203,15 +217,8 @@ internal class YamlDecoder(
     }
 
     override fun endStructure(descriptor: SerialDescriptor) {
-        when (descriptor.kind) {
-            PrimitiveKind.STRING -> {
-                TODO()
-            }
-            else -> {
-            }
-        }
-    }
 
+    }
 
     // region Decoder primitives override
     override fun decodeShort(): Short = decodeShortElementImpl(null, null)
@@ -264,80 +271,57 @@ internal class YamlDecoder(
         } ?: kotlin.run {
             if (configuration.nonStrictNullability) {
                 return false
-            } else fail("unexpected null value", descriptor, index)
+            } else throw YamlUnexpectedNullException(descriptor, index)
         }
     }
 
-    private fun decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int?): Byte = decodeStringElementOrNull(descriptor, index)
-        ?.let { (it.castToLongMagicalOrNull(descriptor, index) ?: it.toLongOrNull())?.limitToByte() ?: fail("illegal byte value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0
+    private fun decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int?): Byte =
+        decodeStringElementOrNull(descriptor, index)
+            .withIntegerValue("byte", descriptor, index) { it.limitToByte() }
 
-    private fun decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?): Char = decodeStringElementOrNull(descriptor, index)
-        ?.let { (it.castToLongMagicalOrNull(descriptor, index) ?: it.toLongOrNull())?.limitToChar() ?: fail("illegal char value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0.toChar()
+    private fun decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?): Char =
+        decodeStringElementOrNull(descriptor, index)
+            .withIntegerValue("char", descriptor, index) { it.limitToChar() }
 
-    private fun decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?): Double = decodeStringElementOrNull(descriptor, index)
-        ?.let { it.castToLongMagicalOrNull(descriptor, index)?.limitToDouble() ?: it.toDoubleOrNull() ?: fail("illegal double value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0.0
+    private fun decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?): Double =
+        decodeStringElementOrNull(descriptor, index)
+            .withDecimalValue("double", descriptor, index) { it }
 
-    private fun decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int?): Float = decodeStringElementOrNull(descriptor, index)
-        ?.let { it.castToLongMagicalOrNull(descriptor, index)?.limitToFloat() ?: it.toFloatOrNull() ?: fail("illegal float value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0f
+    private fun decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int?): Float =
+        decodeStringElementOrNull(descriptor, index)
+            .withDecimalValue("float", descriptor, index) { it.toFloat() }
 
-    private fun decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int?): Int = decodeStringElementOrNull(descriptor, index)
-        ?.let { it.castToLongMagicalOrNull(descriptor, index)?.limitToInt() ?: it.toIntOrNull() ?: fail("illegal int value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0
+    private fun decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int?): Int =
+        decodeStringElementOrNull(descriptor, index)
+            .withIntegerValue("int", descriptor, index) { it.limitToInt() }
 
-    private fun decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int?): Long = decodeStringElementOrNull(descriptor, index)
-        ?.let { it.castToLongMagicalOrNull(descriptor, index) ?: it.toLongOrNull() ?: fail("illegal long value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0
+    private fun decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int?): Long =
+        decodeStringElementOrNull(descriptor, index)
+            .withIntegerValue("long", descriptor, index) { it }
 
-    private fun decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int?): Short = decodeStringElementOrNull(descriptor, index)
-        ?.let { it.castToLongMagicalOrNull(descriptor, index)?.limitToShort() ?: it.toShortOrNull() ?: fail("illegal short value: $it", descriptor, index) }
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: 0
+    private fun decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int?): Short =
+        decodeStringElementOrNull(descriptor, index)
+            .withIntegerValue("short", descriptor, index) { it.limitToShort() }
 
-    private fun decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int?): String = decodeStringElementOrNull(descriptor, index)
-        ?: checkNonStrictNullability(descriptor, index)
-        ?: ""
+    private fun decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int?): String =
+        decodeStringElementOrNull(descriptor, index)
+            ?: checkNonStrictNullability(descriptor, index)
+            ?: ""
 
     private fun decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int?) {
         decodeStringElementOrNull(descriptor, index)
             ?: checkNonStrictNullability(descriptor, index)
     }
 
-    private fun String.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
-        when {
-            this == "~" || (this.length == 4 && this.toLowerCase() == "null") -> {
-                if (configuration.nonStrictNullability) {
-                    return 0
-                } else fail("unexpected null value", descriptor, index)
-            }
+    private fun String?.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
+        if (this == null) {
+            return null
         }
-        return null
-    }
-
-    private fun String.castToLongMagicalOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
-        castFromNullToZeroOrNull(descriptor, index)?.let {
-            return it
+        if (this == "~" || (this.length == 4 && this.toLowerCase() == "null")) {
+            if (configuration.nonStrictNullability) {
+                return 0
+            } else throw YamlUnexpectedNullException(descriptor, index)
         }
-
-        if (this.length > 2) {
-            if (this[0] == '0') {
-                if (this[1] == 'x' || this[1] == 'X') {
-                    return HexConverter.hexToLong(this, 2)
-                } else if (this[1] == 'b' || this[1] == 'B') {
-                    return BinaryConverter.binToLong(this, 2)
-                }
-            }
-        }
-
         return null
     }
 
@@ -353,6 +337,63 @@ internal class YamlDecoder(
                 value.equals("null", ignoreCase = true) -> null
                 else -> value
             }
+        }
+    }
+
+    /**
+     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     *
+     * @param typeName the name of the type, e.g. "double", "float"
+     */
+    private inline fun <R> String?.withDecimalValue(typeName: String, descriptor: SerialDescriptor?, index: Int?, consumer: (value: Double) -> R): R {
+        return castFromNullToZeroOrNull(descriptor, index)?.let {
+            consumer(0.0)
+        } ?: kotlin.run {
+            check(this != null) // contract
+            val canBeHexOrBin = this.length > 2 && this[0] == '0'
+
+            val value = when {
+                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2).limitToDouble()
+                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2).limitToDouble()
+                else -> kotlin.runCatching {
+                    this.toDouble()
+                }.getOrElse {
+                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+                }
+            }
+
+            value.let(consumer)
+        }
+    }
+
+
+    /**
+     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     *
+     * @param typeName the name of the type, e.g. "double", "float"
+     */
+    private inline fun <R> String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int?, consumer: (value: Long) -> R): R {
+        return castFromNullToZeroOrNull(descriptor, index)?.let {
+            consumer(0L)
+        } ?: kotlin.run {
+            check(this != null) // contract
+            val canBeHexOrBin = this.length > 2 && this[0] == '0'
+
+            val value = when {
+                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2)
+                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2)
+                else -> kotlin.runCatching {
+                    if (configuration.nonStrictNumber) {
+                        this.toDouble().toLong()
+                    } else {
+                        this.toLong()
+                    }
+                }.getOrElse {
+                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+                }
+            }
+
+            value.let(consumer)
         }
     }
     // endregion

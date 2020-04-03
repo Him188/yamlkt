@@ -8,6 +8,71 @@ internal class ReaderTest {
     private val yaml = Yaml()
 
     @Test
+    fun testNonStrictNumberCasting() {
+        @Serializable
+        data class TestData(
+            val byte: Byte
+        )
+
+        val yaml = Yaml(
+            configuration = YamlConfiguration(
+                nonStrictNumber = true
+            )
+        )
+
+        assertEquals(
+            TestData(123),
+            yaml.parse(
+                TestData.serializer(), """
+                byte: 123.8
+            """.trimIndent()
+            )
+        )
+
+        assertEquals(
+            TestData(123),
+            yaml.parse(
+                TestData.serializer(), """
+                byte: 123.0
+            """.trimIndent()
+            )
+        )
+    }
+
+    @Test
+    fun testNonStrictBooleanCasting() {
+        @Serializable
+        data class TestData(
+            val bool: Boolean
+        )
+
+        val yaml = Yaml(
+            configuration = YamlConfiguration(
+                nonStrictNumber = true
+            )
+        )
+
+        assertEquals(
+            TestData(true),
+            yaml.parse(
+                TestData.serializer(), """
+                bool: true
+            """.trimIndent()
+            )
+        )
+
+        assertEquals(
+            TestData(true),
+            yaml.parse(
+                TestData.serializer(), """
+                bool: 1
+            """.trimIndent()
+            )
+        )
+    }
+
+    // primitive types and casting
+    @Test
     fun testSimpleStructure() {
 
         @Serializable
