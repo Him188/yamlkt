@@ -64,5 +64,11 @@ kotlin {
                 implementation(kotlin("test-junit5"))
             }
         }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
     }
 }
