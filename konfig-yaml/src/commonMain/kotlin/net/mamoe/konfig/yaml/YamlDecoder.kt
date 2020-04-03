@@ -267,9 +267,7 @@ internal class YamlDecoder(
                     "false", "off" -> false
                     else -> {
                         if (configuration.nonStrictNumber) {
-                            when (value.withDecimalValue("boolean", descriptor, index) {
-                                it.toInt()
-                            }) {
+                            when (value.withDoubleValue("boolean", descriptor, index).toInt()) {
                                 1 -> return true
                                 0 -> return false
                             }
@@ -287,31 +285,31 @@ internal class YamlDecoder(
 
     private fun decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int?): Byte =
         decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("byte", descriptor, index) { it.limitToByte() }
+            .withIntegerValue("byte", descriptor, index).limitToByte()
 
     private fun decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?): Char =
         decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("char", descriptor, index) { it.limitToChar() }
+            .withIntegerValue("char", descriptor, index).limitToChar()
 
     private fun decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?): Double =
         decodeStringElementOrNull(descriptor, index)
-            .withDecimalValue("double", descriptor, index) { it }
+            .withDoubleValue("double", descriptor, index)
 
     private fun decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int?): Float =
         decodeStringElementOrNull(descriptor, index)
-            .withDecimalValue("float", descriptor, index) { it.toFloat() }
+            .withFloatValue("float", descriptor, index)
 
     private fun decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int?): Int =
         decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("int", descriptor, index) { it.limitToInt() }
+            .withIntegerValue("int", descriptor, index).limitToInt()
 
     private fun decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int?): Long =
         decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("long", descriptor, index) { it }
+            .withIntegerValue("long", descriptor, index)
 
     private fun decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int?): Short =
         decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("short", descriptor, index) { it.limitToShort() }
+            .withIntegerValue("short", descriptor, index).limitToShort()
 
     private fun decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int?): String =
         decodeStringElementOrNull(descriptor, index)
@@ -352,41 +350,62 @@ internal class YamlDecoder(
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */
-    private inline fun <R> String?.withDecimalValue(typeName: String, descriptor: SerialDescriptor?, index: Int?, consumer: (value: Double) -> R): R {
+    private fun String?.withDoubleValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Double {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
-            consumer(0.0)
+            return 0.0
         } ?: kotlin.run {
             check(this != null) // contract
             val canBeHexOrBin = this.length > 2 && this[0] == '0'
 
-            val value = when {
+            return when {
                 canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2).limitToDouble()
                 canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2).limitToDouble()
                 else -> kotlin.runCatching {
-                    this.toDouble()
+                    toDouble()
                 }.getOrElse {
                     throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
                 }
             }
-
-            value.let(consumer)
         }
     }
-
 
     /**
      * Ensure the string is a **decimal** value, read this value then call [consumer]
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */
-    private inline fun <R> String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int?, consumer: (value: Long) -> R): R {
+    private fun String?.withFloatValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Float {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
-            consumer(0L)
+            return 0f
         } ?: kotlin.run {
             check(this != null) // contract
             val canBeHexOrBin = this.length > 2 && this[0] == '0'
 
-            val value = when {
+            return when {
+                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2).limitToFloat()
+                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2).limitToFloat()
+                else -> kotlin.runCatching {
+                    this.toFloat()
+                }.getOrElse {
+                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+                }
+            }
+        }
+    }
+
+    /**
+     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     *
+     * @param typeName the name of the type, e.g. "double", "float"
+     */
+    private fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Long {
+        return castFromNullToZeroOrNull(descriptor, index)?.let {
+            return 0L
+        } ?: kotlin.run {
+            check(this != null) // contract
+            val canBeHexOrBin = this.length > 2 && this[0] == '0'
+
+            return when {
                 canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2)
                 canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2)
                 else -> kotlin.runCatching {
@@ -399,8 +418,6 @@ internal class YamlDecoder(
                     throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
                 }
             }
-
-            value.let(consumer)
         }
     }
     // endregion
