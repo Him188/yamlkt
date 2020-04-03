@@ -1,8 +1,7 @@
-@file:Suppress("PropertyName")
+@file:Suppress("PropertyName", "unused")
 
 package net.mamoe.konfig.yaml
 
-import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.InternalSerializationApi
 import net.mamoe.konfig.CharInputStream
 import net.mamoe.konfig.readAhead
@@ -86,40 +85,9 @@ internal sealed class TokenClass(val value: Char) {
     }
 }
 
-/**
- * Configurations to [Yaml]
- */
-data class YamlConfiguration(
-
-    // decoding
-
-    /**
-     * Recognize `null` as `0`, `0.0`, `0f`, "", '', or `false`
-     */
-    val nonStrictNullability: Boolean = false,
-    /**
-     * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int].
-     *
-     * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
-     */
-    val nonStrictNumber: Boolean = false,
-
-    // encoding
-
-    /**
-     * Whether the format should encode values that are equal to the default values.
-     * @see CompositeEncoder.shouldEncodeElementDefault for more information
-     */
-    val encodeDefaultValues: Boolean = false,
-    /**
-     * Encode all strings with quotation.
-     */
-    val forceQuotation: Boolean = false
-)
-
 @OptIn(InternalSerializationApi::class)
 internal class YamlReader(
-    private val input: CharInputStream
+    input: CharInputStream
 ) : CharInputStream by input {
     var currentToken: IndentedToken = IndentedToken(0)
 
@@ -131,7 +99,7 @@ internal class YamlReader(
             return currentToken.apply { isOverRead = false }
         }
         var spaceCount = 0
-        input.readAhead {
+        readAhead {
             if (it != ' ') return currentToken.apply {
                 _indentSpaceCount = spaceCount
                 _token = it
