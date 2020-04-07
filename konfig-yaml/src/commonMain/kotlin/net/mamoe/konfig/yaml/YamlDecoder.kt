@@ -169,6 +169,9 @@ internal class YamlDecoder(
                 // [ "a", "b" ]
                 // must ensure the token next to ending double quotation is comma
                 // TODO: 2020/3/21 contextual exception
+                if (token == TokenClass.SQUARE_BRACKET_RIGHT) {
+                    return CompositeDecoder.READ_DONE
+                }
                 check(token is TokenClass.COMMA) { "the token next to ending double quotation must be comma, but found $token" }
                 token = reader.nextTokenOrNull()?.token ?: return CompositeDecoder.READ_DONE
 
@@ -187,6 +190,9 @@ internal class YamlDecoder(
                     if (!skippedLine) {
                         return CompositeDecoder.READ_DONE // single value
                     }
+                    return index++
+                }
+                is TokenClass.SQUARE_BRACKET_LEFT -> {
                     return index++
                 }
             }

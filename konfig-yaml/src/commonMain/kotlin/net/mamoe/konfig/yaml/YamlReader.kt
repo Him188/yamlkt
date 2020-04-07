@@ -57,7 +57,6 @@ internal class YamlReader(
      * or a [IndentedToken] wrapping a [Char] otherwise.
      */
     fun nextTokenOrNull(): IndentedToken? {
-        println(" > calling nextTokenOrNull")
         return nextNotSpaceOrNull()?.let { indentedToken ->
             indentedToken.apply {
                 val find = when (indentedToken.token) {
@@ -72,6 +71,8 @@ internal class YamlReader(
     /**
      * Skips [TokenClass.LINE_SEPARATOR]s and gets the first token that is not a [TokenClass.LINE_SEPARATOR].
      * WARNING: THIS METHOD ALWAYS OVER-READ ONE CHAR.
+     *
+     * If the current token isn't a [TokenClass.LINE_SEPARATOR], this function returns immediately
      *
      * @return `null` if EOF,
      * or a [IndentedToken] wrapping [TokenClass] that is not a [TokenClass.LINE_SEPARATOR]
@@ -153,8 +154,11 @@ internal class YamlReader(
                 // we are now at `[`
                 // hence list type is inferred
                 loop@ while (!endOfInput) {
-                    skipElement(newIndent, debuggingHierarchy + 1)
-                    skipLineSeparators()?.also {
+                    skipElement(newIndent, debuggingHierarchy + 1) ?: return null
+                    (if (currentToken.isOverRead) {
+                        currentToken.isOverRead = false
+                        currentToken
+                    } else skipLineSeparators())?.also {
                         when (it.token) {
                             is TokenClass.COMMA -> { // expected. more elements are being read
                             }
@@ -210,7 +214,7 @@ internal class YamlReader(
                                     // Next step is to `decodeElementIndex`, which will do `reader.nextTokenOrNull()` once more
                                     // , which will miss the previous token `n`
 
-                                    println("   $it")
+                                    println("   skipped plain: $it")
                                     // it.isOverRead = true
                                     return Unit
                                 }
