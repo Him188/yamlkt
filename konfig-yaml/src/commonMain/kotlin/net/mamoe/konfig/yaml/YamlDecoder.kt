@@ -5,7 +5,7 @@ package net.mamoe.konfig.yaml
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 
-open class YamlSerializationException : Exception {
+open class YamlSerializationException : SerializationException {
     constructor(message: String) : super(message)
     constructor(message: String, cause: Throwable?) : super(message, cause)
 }
