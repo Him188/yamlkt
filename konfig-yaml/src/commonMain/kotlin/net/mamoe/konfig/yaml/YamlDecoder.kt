@@ -384,7 +384,7 @@ internal class YamlDecoder(
     }
 
     /**
-     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     * Ensure the string is a **decimal** value, read this value and return
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */
@@ -408,9 +408,9 @@ internal class YamlDecoder(
     }
 
     /**
-     * Ensure the string is a **decimal** value, read this value then call [consumer]
+     * Ensure the string is a **integer** value, read this value and return
      *
-     * @param typeName the name of the type, e.g. "double", "float"
+     * @param typeName the name of the type, e.g. "int", "long"
      */
     private fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Long {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
