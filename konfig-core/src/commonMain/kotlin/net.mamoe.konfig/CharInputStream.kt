@@ -33,6 +33,8 @@ interface CharInputStream {
      * read next char
      */
     fun read(): Char
+
+    fun peakRemaining(): String
 }
 
 fun String.asCharStream(): CharInputStream = object : CharInputStream {
@@ -44,6 +46,11 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
     override fun read(): Char {
         return this@asCharStream[cur].also { cur++ } // don't move cur++ into []
     }
+
+    override fun peakRemaining(): String {
+        val cur = this.cur
+        return readRemaining().also { this.cur = cur }
+    }
 }
 
 fun Input.asCharStream(): CharInputStream = object : CharInputStream {
@@ -52,6 +59,10 @@ fun Input.asCharStream(): CharInputStream = object : CharInputStream {
 
     override fun read(): Char {
         return readTextExactCharacters(1)[0]
+    }
+
+    override fun peakRemaining(): String {
+        TODO("not implemented")
     }
 }
 
@@ -80,4 +91,8 @@ fun Output.asCharStream(): CharOutputStream = object : CharOutputStream {
  */
 inline fun CharInputStream.readAhead(block: (char: Char) -> Unit) {
     while (!endOfInput) block(read())
+}
+
+fun CharInputStream.readRemaining(): String {
+    return buildString { readAhead { append(it) } }
 }

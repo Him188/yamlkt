@@ -122,32 +122,45 @@ class IllegalTokenClassInUnquotedStringException internal constructor(token: Tok
  *
  * @throws IllegalTokenClassInUnquotedStringException when met with an unexpected [TokenClass]
  */
-internal fun CharInputStream.readUnquotedString(endToken: TokenClass): String {
+internal fun YamlReader.readUnquotedString(start: Char? = null, endToken: TokenClass): YamlReader.IndentedValue {
+    return indentedValueTemp.apply {
+        // this.isFromOverRead = theBeginningTokenOverRead
+        _indentSpaceCount = currentToken.indentSpaceCount
+
+        var trimStart = true
+        val tail = readStringUntil(
+            escape = UNQUOTED_STRING_ESCAPE,
+            filterNot = {
+                if (trimStart) {
+                    if (it != ' ') {
+                        trimStart = false
+                    }
+                }
+                TokenClass.findByValue(it)?.let { token ->
+                    if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
+                        throw IllegalTokenClassInUnquotedStringException(token)
+                    }
+                }
+                false
+            },
+            endMatcher = { char ->
+                println(char)
+                (char == endToken.value
+                    || char in TokenClass.LINE_SEPARATOR.values
+                    || char == COMMA.value
+                    || char == TokenClass.SQUARE_BRACKET_RIGHT.value
+                    || char == TokenClass.MULTILINE_LIST_FLAG.value).also {
+                    currentToken.apply {
+                        this._token = TokenClass.findByValue(char)
+                    }
+                }
+            }
+        ).also { println("readUnquotedString(untrimmed)=$it") }.trimEnd()
+
+        _value = if (start == null) tail else start + tail
+    }
     // unquoted String, until : ] }
-    var trimStart = true
-    return readStringUntil(
-        escape = UNQUOTED_STRING_ESCAPE,
-        filterNot = {
-            if (trimStart) {
-                if (it != ' ') {
-                    trimStart = false
-                }
-            }
-            TokenClass.findByValue(it)?.let { token ->
-                if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
-                    throw IllegalTokenClassInUnquotedStringException(token)
-                }
-            }
-            false
-        },
-        endMatcher = {
-            it == endToken.value
-                || it in TokenClass.LINE_SEPARATOR.values
-                || it == COMMA.value
-                || it == TokenClass.SQUARE_BRACKET_RIGHT.value
-                || it == TokenClass.MULTILINE_LIST_FLAG.value
-        }
-    ).also { println("readUnquotedString(untrimmed)=$it") }.trimEnd()
+
 }
 
 /**

@@ -4,6 +4,7 @@ package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
+import net.mamoe.konfig.readRemaining
 
 open class YamlSerializationException : SerializationException {
     constructor(message: String) : super(message)
@@ -72,12 +73,7 @@ internal class YamlDecoder(
         }
 
         final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
-            println("BaseReader.beginStructure: ${descriptor.serialName}")
-            return when (descriptor.kind) {
-                StructureKind.LIST -> ListReader()
-                StructureKind.CLASS -> ClassReader()
-                else -> error("unsupported descriptor: $descriptor")
-            }
+            error("shouldn't be reached")
         }
     }
 
@@ -128,7 +124,7 @@ internal class YamlDecoder(
                      reader.nextTokenOrNull()
                      elementName
                  }*/
-                else -> error("unexpected token: $indentedToken when reading class or map")
+                else -> error("unexpected token: $indentedToken when reading class or map, remaining=${reader.readRemaining()}")
             }
 
             descriptor.getElementIndex(elementName.value).let { index ->
@@ -156,33 +152,22 @@ internal class YamlDecoder(
         }
     }
 
-    private inner class ListReader : BaseReader(), CompositeDecoder by this {
+    private inner class MultilineListReader : BaseReader(), CompositeDecoder by this {
         override fun decodeSequentially(): Boolean = false
         var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
 
-            val isLastQuotation = reader.currentToken.token is TokenClass.QUOTATION
             val skippedLine = reader.currentToken.token is TokenClass.MULTILINE_LIST_FLAG
-            var token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
-
-            if (isLastQuotation) {
-                // [ "a", "b" ]
-                // must ensure the token next to ending double quotation is comma
-                // TODO: 2020/3/21 contextual exception
-                if (token == TokenClass.SQUARE_BRACKET_RIGHT) {
-                    return CompositeDecoder.READ_DONE
-                }
-                check(token is TokenClass.COMMA) { "the token next to ending double quotation must be comma, but found $token" }
-                token = reader.nextTokenOrNull()?.token ?: return CompositeDecoder.READ_DONE
-
-                token = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
-            }
+            val token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
 
             when (token) {
                 is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
-                is TokenClass.QUOTATION,
                 is Char
                 -> {
+                    return index++
+                }
+                is TokenClass.QUOTATION -> { // TODO: 2020/4/7 问题在这里: 无法正确地读 [  ] 的 list
+                    reader.currentToken.isOverRead = true
                     return index++
                 }
                 is TokenClass.MULTILINE_LIST_FLAG -> {
@@ -196,7 +181,71 @@ internal class YamlDecoder(
                     return index++
                 }
             }
-            error("unexpected token: ${token::class.qualifiedName} $token")
+            error("unexpected token: ${token::class} $token")
+        }
+    }
+
+    private inner class SquareBlockListReader : BaseReader(), CompositeDecoder by this {
+        override fun decodeSequentially(): Boolean = false
+        var index = 0
+        override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+            // when index == 0, current token must be '['.
+            // (because `SquareBlockListReader` is returned from top-level `beginStructure` by detecting '[')
+
+            val current = reader.currentToken
+            return when {
+                current.token == TokenClass.SQUARE_BRACKET_RIGHT -> CompositeDecoder.READ_DONE
+                index == 0 -> {
+                    // we've just started.
+                    reader.nextTokenOrNull()
+                    index++
+                }
+                current.token is Char -> {
+                    current.isOverRead = true
+                    index++
+                }
+                else -> {
+                    check(current.token is TokenClass.COMMA) {
+                        "the token next to ending double quotation must be comma, but found $current. remaining=${reader.readRemaining().asSequence().joinToString("", limit = 10)}"
+                    }
+                    reader.nextTokenOrNull()
+                    index++
+                }
+            }
+
+            /*
+            val isLastQuotation = reader.currentToken.token is TokenClass.QUOTATION
+            val skippedLine = reader.currentToken.token is TokenClass.MULTILINE_LIST_FLAG
+            var token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
+
+            if (isLastQuotation) {
+                // [ "a", "b" ]
+                // must ensure the token next to ending double quotation is comma
+                // TODO: 2020/3/21 contextual exception
+            }
+
+            when (token) {
+                is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
+                is Char
+                -> {
+                    return index++
+                }
+                is TokenClass.QUOTATION -> { // TODO: 2020/4/7 问题在这里: 无法正确地读 [  ] 的 list
+                    reader.currentToken.isOverRead = true
+                    return index++
+                }
+                is TokenClass.MULTILINE_LIST_FLAG -> {
+                    // TODO: 2020/3/21 check here
+                    if (!skippedLine) {
+                        return CompositeDecoder.READ_DONE // single value
+                    }
+                    return index++
+                }
+                is TokenClass.SQUARE_BRACKET_LEFT -> {
+                    return index++
+                }
+            }
+            error("unexpected token: ${token::class} $token")*/
         }
     }
 
@@ -204,8 +253,16 @@ internal class YamlDecoder(
         println("top-level.beginStructure: ${descriptor.serialName}")
 
         return when (descriptor.kind) {
-            StructureKind.LIST -> ListReader()
-            StructureKind.CLASS -> ClassReader()
+            StructureKind.LIST -> {
+                if (reader.currentToken.token is TokenClass.SQUARE_BRACKET_LEFT) {
+                    SquareBlockListReader()
+                } else {
+                    MultilineListReader()
+                }
+            }
+            StructureKind.CLASS -> {
+                ClassReader()
+            }
             StructureKind.MAP -> MapReader()
             else -> error("unsupported descriptor: $descriptor")
         }

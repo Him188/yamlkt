@@ -72,17 +72,15 @@ internal class YamlReader(
      * Skips [TokenClass.LINE_SEPARATOR]s and gets the first token that is not a [TokenClass.LINE_SEPARATOR].
      * WARNING: THIS METHOD ALWAYS OVER-READ ONE CHAR.
      *
-     * If the current token isn't a [TokenClass.LINE_SEPARATOR], this function returns immediately
-     *
      * @return `null` if EOF,
      * or a [IndentedToken] wrapping [TokenClass] that is not a [TokenClass.LINE_SEPARATOR]
      * or a [Char] otherwise.
      */
     fun skipLineSeparators(): IndentedToken? {
-        var token: IndentedToken
-        do {
+        var token: IndentedToken? = null
+        while (token?.token is TokenClass.LINE_SEPARATOR) {
             token = nextTokenOrNull() ?: return null
-        } while (token.token is TokenClass.LINE_SEPARATOR)
+        }
         return token
     }
 
@@ -333,7 +331,7 @@ internal class YamlReader(
         internal var isFromOverRead: Boolean = false
     }
 
-    private val indentedValueTemp = IndentedValue(0, "")
+    internal val indentedValueTemp = IndentedValue(0, "")
 
     /**
      * Directly read next string value. Automatically solve quotations and escaping.
@@ -348,15 +346,11 @@ internal class YamlReader(
             nextTokenOrNull() ?: return null
         }
         val theBeginningTokenOverRead = currentToken.isOverRead
-        println("theBeginningTokenOverRead=$theBeginningTokenOverRead")
+        println("theBeginningTokenOverRead=$currentToken")
         return when (val currentTokenToken = currentToken.token) {
             is Char -> {
                 kotlin.runCatching {
-                    return indentedValueTemp.apply {
-                        this.isFromOverRead = theBeginningTokenOverRead
-                        _indentSpaceCount = currentToken.indentSpaceCount
-                        _value = currentTokenToken + readUnquotedString(TokenClass.COLON)
-                    }
+                    return readUnquotedString(currentTokenToken, TokenClass.COLON)
                 }.exceptionOrNull()?.let { e ->
                     throw YamlSerializationException(
                         "when nextValue(): currentToken=$currentTokenToken, nextToken=${nextTokenOrNull()}",
@@ -381,13 +375,17 @@ internal class YamlReader(
                             _value = readQuotedString(next)
                         }
                     }
-                    is TokenClass -> error("required a value but found token $next")
-                    is Char -> {
-                        indentedValueTemp.apply {
+                    is TokenClass.COMMA -> {
+                        // the value is empty
+                        return indentedValueTemp.apply {
                             this.isFromOverRead = theBeginningTokenOverRead
                             _indentSpaceCount = currentToken.indentSpaceCount
-                            _value = readUnquotedString(currentTokenToken as TokenClass)
+                            _value = ""
                         }
+                    }
+                    is TokenClass -> error("required a value but found token $next")
+                    is Char -> {
+                        return readUnquotedString(null, currentTokenToken as TokenClass)
                     }
                     null -> null
                     else -> error("internal error: unexpected return value: ${next::class.simpleName} from nextTokenOrNull")
@@ -398,14 +396,15 @@ internal class YamlReader(
                 indentedValueTemp.apply {
                     this.isFromOverRead = theBeginningTokenOverRead
                     _indentSpaceCount = currentToken.indentSpaceCount
-                    _value = "-" + readUnquotedString(TokenClass.LINE_SEPARATOR.N) // stub
+                    _value = "-" + readUnquotedString(null, TokenClass.LINE_SEPARATOR.N) // stub
                 }
             }
             is TokenClass.QUOTATION -> { // " " or ' '
                 indentedValueTemp.apply {
-                    this.isFromOverRead = theBeginningTokenOverRead
+                    this.isFromOverRead = false
                     _indentSpaceCount = currentToken.indentSpaceCount
                     _value = readQuotedString(currentTokenToken)
+                    println("ENDING QUOTATION READ:" + nextTokenOrNull())
                 }
             }
             else -> {

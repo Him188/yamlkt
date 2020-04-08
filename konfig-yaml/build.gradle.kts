@@ -63,6 +63,7 @@ kotlin {
                 dependsOn(commonTest)
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
+                implementation("com.charleskorn.kaml:kaml:0.17.0")
             }
         }
 
