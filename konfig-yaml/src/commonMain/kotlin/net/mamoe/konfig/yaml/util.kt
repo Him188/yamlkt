@@ -55,11 +55,6 @@ internal fun Long.limitToByte(): Byte {
     error("value is too large for byte: $this")
 }
 
-internal fun Long.limitToChar(): Char {
-    if (this in Char.MIN_VALUE.toLong()..Char.MAX_VALUE.toLong()) return this.toChar()
-    error("value is too large for char: $this")
-}
-
 internal fun Long.limitToShort(): Short {
     if (this in Short.MIN_VALUE.toLong()..Short.MAX_VALUE.toLong()) return this.toShort()
     error("value is too large for short: $this")

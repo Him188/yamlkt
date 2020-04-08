@@ -14,8 +14,8 @@ import net.mamoe.konfig.asCharStream
 /**
  * The main entry point to work with YAML serialization.
  *
- * @see Yaml.Default The instance using default configurations.
- * @see Yaml.NonStrict The instance using all non-strict configurations.
+ * @see Yaml.default The instance using default configurations.
+ * @see Yaml.nonStrict The instance using all non-strict configurations.
  */
 class Yaml(
     private val configuration: YamlConfiguration = YamlConfiguration(),
@@ -41,13 +41,13 @@ class Yaml(
         /**
          * The [Yaml] using all default configurations
          */
-        val Default: Yaml = Yaml()
+        val default: Yaml = Yaml()
 
         /**
          * The [Yaml] using all non-strict configurations.
          * Some incompatible types may be casted unsafely.
          */
-        val NonStrict: Yaml = Yaml(
+        val nonStrict: Yaml = Yaml(
             configuration = YamlConfiguration(
                 nonStrictNumber = true,
                 nonStrictNullability = true

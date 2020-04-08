@@ -362,8 +362,11 @@ internal class YamlDecoder(
             .withIntegerValue("byte", descriptor, index).limitToByte()
 
     private fun decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?): Char =
-        decodeStringElementOrNull(descriptor, index)
-            .withIntegerValue("char", descriptor, index).limitToChar()
+        decodeStringElementOrNull(descriptor, index)?.let {
+            check(it.length == 1) { "too many chars for a char" }
+            it.first()
+        } ?: checkNonStrictNullability(descriptor, index)
+        ?: 0.toChar()
 
     private fun decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?): Double =
         decodeStringElementOrNull(descriptor, index)
