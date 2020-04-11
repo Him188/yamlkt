@@ -24,17 +24,14 @@ def pomConfig = {
 }
 
 bintray {
-    def keyProps = new Properties()
-    def keyFile = file("../keys.properties")
-    if (keyFile.exists()) keyFile.withInputStream { keyProps.load(it) }
-
-    user = keyProps.getProperty("bintrayUser")
-    key = keyProps.getProperty("bintrayKey")
+    user = file("../bintray.user.txt").text
+    key = file("../bintray.key.txt").text
+    version = project.version
 
     pkg {
         repo = 'konfig'
         name = "konfig"
-        licenses = ['AGPL']
+        licenses = ['Apache-2.0']
         vcsUrl = vcs
     }
 }
@@ -69,14 +66,18 @@ bintrayUpload.dependsOn {
     list
 }
 
-try{
+try {
 
 // empty xxx-javadoc.jar
     task javadocJar(type: Jar) {
         archiveClassifier = 'javadoc'
     }
+    task stubJavadoc(type: Jar) {
+        archiveClassifier = 'javadoc'
+    }
 
-} catch (Exception ignored){
+
+} catch (Exception ignored) {
 
 }
 
@@ -92,8 +93,8 @@ publishing {
         switch (type) {
             case 'kotlinMultiplatform':
                 it.artifactId = "$project.name-native"
-                it.artifact stubJavadoc
-                it.artifact sourcesJar
+                //it.artifact stubJavadoc
+                //it.artifact sourcesJar
                 break
             case 'metadata':
                 it.artifactId = "$project.name-common"
@@ -107,7 +108,7 @@ publishing {
                 break
         }
 
-        pom.withXml(configureMavenCentralMetadata)
+        // pom.withXml(configureMavenCentralMetadata)
 
         // disable metadata everywhere, but in native modules
         if (type == 'maven' || type == 'metadata' || type == 'jvm' || type == 'js') {

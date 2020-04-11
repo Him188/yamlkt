@@ -6,16 +6,18 @@ buildscript {
     }
 
     dependencies {
-        val kotlinVersion: String by project
-
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("org.jetbrains.kotlin:kotlin-serialization:$kotlinVersion")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.Kotlin.stdlib}")
+        classpath("org.jetbrains.kotlin:kotlin-serialization:${Versions.Kotlin.stdlib}")
     }
+}
+
+plugins {
+    id("com.jfrog.bintray") version Versions.Publishing.bintray apply false
 }
 
 allprojects {
     group = "net.mamoe"
-    version = getProperty("version")
+    version = Versions.Konfig.version
 
     repositories {
         mavenCentral()
