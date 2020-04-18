@@ -12,7 +12,7 @@ internal fun TokenStream.joinTokenToString(): String =
     sequence<String> {
         while (true) {
             yield(
-                when (val token = this@joinTokenToString.nextToken()) {
+                when (val token = this@joinTokenToString.nextToken(false)) {
                     Token.STRING -> "String(${this@joinTokenToString.strBuff!!})"
                     null -> return@sequence
                     else -> token.toString()

@@ -53,7 +53,7 @@ internal class YamlDecoder(
     override val updateMode: UpdateMode
 ) : Decoder {
     fun nextString(descriptor: SerialDescriptor?, index: Int?): String? {
-        val token = tokenStream.nextToken() ?: return null
+        val token = tokenStream.nextToken(true) ?: return null
         return when (token) {
             Token.MULTILINE_LIST_FLAG -> {
                 "-" + nextString(descriptor, index)
@@ -135,7 +135,7 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             loop@ while (true) {
-                when (val token = tokenStream.nextToken()) {
+                when (val token = tokenStream.nextToken(false)) {
                     null -> return CompositeDecoder.READ_DONE
                     is Token.LINE_SEPARATOR -> {
                         continue@loop
@@ -149,7 +149,7 @@ internal class YamlDecoder(
                         checkIndent(tokenStream.currentIndent, descriptor)
                         val index = descriptor.getElementIndex(tokenStream.strBuff!!)
                         if (index != CompositeDecoder.UNKNOWN_NAME) {
-                            if (tokenStream.nextToken() != Token.COLON) {
+                            if (tokenStream.nextToken(false) != Token.COLON) {
                                 fail("There must be a COLON between map key and value but found ${tokenStream.currentToken}", descriptor, null)
                             }
                             return index
@@ -174,8 +174,54 @@ internal class YamlDecoder(
     inner class JsonLikeMapDecoder : AbstractDecoder() {
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            return when (val token = tokenStream.nextToken()) {
+            return when (val token = tokenStream.nextToken(false)) {
                 Token.MAP_END -> CompositeDecoder.READ_DONE
+                Token.STRING -> {
+                    val index = descriptor.getElementIndex(tokenStream.strBuff!!)
+                    tokenStream.strBuff = null
+                    if (index != CompositeDecoder.UNKNOWN_NAME) {
+                        index
+                    } else decodeElementIndex(descriptor)
+                }
+                else -> {
+                    fail("illegal token $token on decoding element index", descriptor, null)
+                }
+            }
+        }
+
+        override fun endStructure(descriptor: SerialDescriptor) {
+        }
+    }
+
+    /**
+     * Example:
+     * ```
+     * list:
+     *   - a
+     *   - b
+     * ```
+     * Or
+     * ```
+     * list:
+     * - a
+     * - b
+     * ```
+     */
+    inner class MultilineClassDecoder : AbstractDecoder() {
+        override fun decodeSequentially(): Boolean = false
+        var index: Int = 0
+        override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+            tokenStream.nextToken(false).let { token ->
+                check(token == Token.STRING) {
+                    throw contextualDecodingException(
+                        "illegal token $token on decoding multiline list",
+                        "",
+                        token?.value.toString() + tokenStream.readUntilNewLine(10),
+                        0
+                    )
+                }
+            }
+            return when (val token = tokenStream.nextToken(false)) {
                 Token.STRING -> {
                     val index = descriptor.getElementIndex(tokenStream.strBuff!!)
                     tokenStream.strBuff = null
@@ -196,7 +242,7 @@ internal class YamlDecoder(
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
         when (descriptor.kind) {
             is StructureKind.LIST -> {
-                when (val token = tokenStream.nextToken()) {
+                when (val token = tokenStream.nextToken(false)) {
                     Token.LIST_BEGIN -> {
                         TODO("square list decoder")
                     }
@@ -211,7 +257,7 @@ internal class YamlDecoder(
             is StructureKind.CLASS,
             is StructureKind.MAP
             -> {
-                return when (tokenStream.nextToken()) {
+                return when (tokenStream.nextToken(false)) {
                     Token.MAP_BEGIN -> {
                         JsonLikeMapDecoder()
                     }
@@ -437,9 +483,9 @@ private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, ind
 
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
-internal fun contextualDecodingException(context: String, message: String, text: String, cur: Int): YamlDecodingException {
+internal fun contextualDecodingException(hint: String, error: String, text: String, cur: Int): YamlDecodingException {
     return YamlDecodingException(buildString {
-        append(context)
+        append(hint)
         append('\n')
         append(text)
         append('\n')
@@ -448,6 +494,6 @@ internal fun contextualDecodingException(context: String, message: String, text:
         }
         append('^')
         append(' ')
-        append(message)
+        append(error)
     }, null)
 }

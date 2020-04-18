@@ -72,7 +72,8 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
             }
         }
 
-        operator fun get(char: Char): Token? = values[char.toInt()]
+        operator fun get(char: Char): Token? =
+            if (char.toInt() > values.lastIndex) null else values[char.toInt()]
     }
 }
 
@@ -138,7 +139,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(): Token? {
+    fun nextToken(forValue: Boolean): Token? {
         if (reuseTokenStack.isNotEmpty()) {
             val reuse = reuseTokenStack.removeAt(reuseTokenStack.lastIndex)
             if (reuse is String) {
@@ -154,7 +155,7 @@ internal class TokenStream(
         whileNotEOF { char ->
             when (val token = Token[char]) {
                 null -> {
-                    prepareStringAndNextToken(char)
+                    prepareStringAndNextToken(char, forValue)
                     currentToken = Token.STRING
                     return Token.STRING
                 }
@@ -179,7 +180,7 @@ internal class TokenStream(
      *
      * Always read a next token after the string being read, and adds to [reuseTokenStack]
      */
-    private fun prepareStringAndNextToken(begin: Char) = when (begin) {
+    private fun prepareStringAndNextToken(begin: Char, forValue: Boolean) = when (begin) {
         SINGLE_QUOTATION -> {
             strQuoted = true
             TODO("SINGLE_QUOTATION isn't yet supported")
@@ -201,14 +202,18 @@ internal class TokenStream(
                             // no reuse.
                             return@buildString
                         }
-                        is Token.COLON -> throw contextualDecodingException(
-                            "Illegal COLON when reading unquoted String",
-                            "illegal COLON, try with quotation",
-                            this@buildString.toString() + char + readUntilNewLine(10),
-                            this@buildString.length
-                        )
                         null -> append(char)
                         else -> {
+                            if (forValue && token is Token.COLON) {
+                                // `key: my:value`
+                                //         ^ not allowed here
+                                throw contextualDecodingException(
+                                    "Illegal COLON when reading unquoted String",
+                                    "illegal COLON, try with quotation",
+                                    this@buildString.toString() + char + readUntilNewLine(10),
+                                    this@buildString.length
+                                )
+                            }
                             if (token.canStopUnquotedString) {
                                 reuseToken(token)
                                 return@buildString // don't `return`
@@ -240,7 +245,7 @@ private inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothing
 /**
  * Use only when creating contextual exception message.
  */
-private fun TokenStream.readUntilNewLine(limit: Int): String {
+internal fun TokenStream.readUntilNewLine(limit: Int): String {
     return buildString {
         whileNotEOF { char ->
             if (length >= limit) {
