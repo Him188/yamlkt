@@ -1,8 +1,10 @@
 package net.mamoe.konfig
 
+import kotlinx.io.charsets.Charsets
+import kotlinx.io.charsets.decode
+import kotlinx.io.core.ExperimentalIoApi
 import kotlinx.io.core.Input
 import kotlinx.io.core.Output
-import kotlinx.io.core.readTextExactCharacters
 import kotlinx.io.core.writeText
 
 /**
@@ -30,7 +32,13 @@ interface CharInputStream {
     val endOfInput: Boolean
 
     /**
-     * read next char
+     * Join the chars already read.
+     * Refreshes when [read] returns '\n' or '\r'
+     */
+    val currentLine: String
+
+    /**
+     * Read next char
      */
     fun read(): Char
 
@@ -38,14 +46,25 @@ interface CharInputStream {
     fun peakRemaining(): String
 }
 
+fun Char.isLineSeparator() = this == '\n' || this == '\r'
+
 fun String.asCharStream(): CharInputStream = object : CharInputStream {
-    var cur = 0
+    private var cur = 0
 
     override val endOfInput: Boolean
         get() = cur == this@asCharStream.length
+    override val currentLine: String
+        get() = substring(startIndex = lineStartingCur, endIndex = cur)
+
+    private var lineStartingCur = 0
 
     override fun read(): Char {
-        return this@asCharStream[cur].also { cur++ } // don't move cur++ into []
+        return this@asCharStream[cur].also { char ->
+            cur++
+            if (char.isLineSeparator()) {
+                lineStartingCur = cur
+            }
+        } // don't move cur++ into []
     }
 
     override fun peakRemaining(): String {
@@ -54,12 +73,24 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
     }
 }
 
+
 fun Input.asCharStream(): CharInputStream = object : CharInputStream {
-    override val endOfInput: Boolean
-        get() = this@asCharStream.endOfInput
+    override val endOfInput: Boolean get() = this@asCharStream.endOfInput
+    override val currentLine: String get() = line.toString()
+
+    private var line: StringBuilder = StringBuilder()
+
+    @OptIn(ExperimentalIoApi::class)
+    private val decoder = Charsets.UTF_8.newDecoder()
 
     override fun read(): Char {
-        return readTextExactCharacters(1)[0]
+        @OptIn(ExperimentalIoApi::class)
+        decoder.decode(this@asCharStream, line, 1)
+        return line.last().also { last ->
+            if (last == '\n' || last == '\r') {
+                line.clear()
+            }
+        }
     }
 
     override fun peakRemaining(): String {
@@ -96,4 +127,12 @@ inline fun CharInputStream.readAhead(block: (char: Char) -> Unit) {
 
 fun CharInputStream.readRemaining(): String {
     return buildString { readAhead { append(it) } }
+}
+
+fun CharInputStream.readLine(): String = buildString {
+    readAhead { char ->
+        if (char.isLineSeparator()) {
+            return@buildString
+        } else append(char)
+    }
 }

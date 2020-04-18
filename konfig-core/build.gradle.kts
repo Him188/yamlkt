@@ -48,6 +48,31 @@ kotlin {
                 api(kotlinx("io-js", kotlinXIoVersion))
             }
         }
+
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("stdlib-common"))
+                implementation(kotlin("test-common"))
+                implementation(kotlin("test-annotations-common"))
+            }
+        }
+
+        val jvmTest by getting {
+            dependencies {
+                dependsOn(commonTest)
+                implementation(kotlin("test"))
+                implementation(kotlin("test-junit"))
+                implementation("com.charleskorn.kaml:kaml:0.17.0")
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                dependsOn(commonTest)
+                implementation(kotlin("test-js"))
+            }
+        }
     }
 }
 
