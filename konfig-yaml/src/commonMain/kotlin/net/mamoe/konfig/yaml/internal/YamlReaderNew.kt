@@ -106,18 +106,12 @@ internal class YamlDecoder(
         }
     }
 
-    /**
-     * Example:
-     * ```yaml
-     * test: value
-     * ```
-     */
-    inner class YamlLikeMapDecoder(
-        var baseIndent: Int
+    abstract inner class IndentedDecoder(
+        @JvmField protected var baseIndent: Int
     ) : AbstractDecoder() {
         @JvmField
-        var firstIndent = -1
-        private fun checkIndent(newIndent: Int, descriptor: SerialDescriptor) {
+        protected var firstIndent = -1
+        protected fun checkIndent(newIndent: Int, descriptor: SerialDescriptor) {
             if (firstIndent == -1) {
                 if (newIndent >= baseIndent) {
                     firstIndent = newIndent
@@ -132,6 +126,17 @@ internal class YamlDecoder(
             fail("failed checking indent, baseIndent=$baseIndent, firstIndent=$firstIndent, newIndent=$newIndent", descriptor, null)
         }
 
+    }
+
+    /**
+     * Example:
+     * ```yaml
+     * test: value
+     * ```
+     */
+    inner class YamlLikeMapDecoder(
+        baseIndent: Int
+    ) : IndentedDecoder(baseIndent) {
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             loop@ while (true) {
@@ -207,30 +212,38 @@ internal class YamlDecoder(
      * - b
      * ```
      */
-    inner class MultilineClassDecoder : AbstractDecoder() {
+    inner class MultilineClassDecoder(
+        baseIndent: Int
+    ) : IndentedDecoder(baseIndent) {
         override fun decodeSequentially(): Boolean = false
         var index: Int = 0
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            tokenStream.nextToken(false).let { token ->
-                check(token == Token.STRING) {
-                    throw contextualDecodingException(
-                        "illegal token $token on decoding multiline list",
-                        "",
-                        token?.value.toString() + tokenStream.readUntilNewLine(10),
-                        0
-                    )
-                }
-            }
-            return when (val token = tokenStream.nextToken(false)) {
-                Token.STRING -> {
-                    val index = descriptor.getElementIndex(tokenStream.strBuff!!)
-                    tokenStream.strBuff = null
-                    if (index != CompositeDecoder.UNKNOWN_NAME) {
-                        index
-                    } else decodeElementIndex(descriptor)
-                }
-                else -> {
-                    fail("illegal token $token on decoding element index", descriptor, null)
+            while (true) {
+                tokenStream.nextToken(false).let { token ->
+                    when (token) {
+                        is Token.LINE_SEPARATOR -> {
+                            // continue
+                        }
+                        END_OF_LINE -> {
+                            return CompositeDecoder.READ_DONE
+                        }
+                        Token.MULTILINE_LIST_FLAG -> {
+                            checkIndent(tokenStream.currentIndent, descriptor)
+                            return index++
+                        }
+                        Token.STRING -> {
+                            tokenStream.reuseToken(tokenStream.strBuff!!)
+                            return CompositeDecoder.READ_DONE
+                        }
+                        else -> {
+                            throw contextualDecodingException(
+                                "Expected ${Token.MULTILINE_LIST_FLAG.value}, but found $token on decoding multiline list for '${descriptor.serialName}'",
+                                tokenStream.source.currentLine.takeLast(16) + tokenStream.readUntilNewLine(16),
+                                0
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -247,11 +260,10 @@ internal class YamlDecoder(
                         TODO("square list decoder")
                     }
                     Token.MULTILINE_LIST_FLAG -> {
-                        TODO("multiline list decoder")
+                        tokenStream.reuseToken(token)
+                        return MultilineClassDecoder(tokenStream.currentIndent)
                     }
-                    else -> {
-                        fail("illegal beginning token $token on decoding list", descriptor, null)
-                    }
+                    else -> fail("illegal beginning token $token on decoding list", descriptor, null)
                 }
             }
             is StructureKind.CLASS,
@@ -265,14 +277,10 @@ internal class YamlDecoder(
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         YamlLikeMapDecoder(tokenStream.currentIndent)
                     }
-                    else -> {
-                        fail("illegal beginning token on decoding list", descriptor, null)
-                    }
+                    else -> fail("illegal beginning token on decoding list", descriptor, null)
                 }
             }
-            else -> {
-                fail("unsupported SerialKind ${descriptor.kind}", descriptor, null)
-            }
+            else -> fail("unsupported SerialKind ${descriptor.kind}", descriptor, null)
         }
     }
 
@@ -483,7 +491,7 @@ private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, ind
 
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
-internal fun contextualDecodingException(hint: String, error: String, text: String, cur: Int): YamlDecodingException {
+internal fun contextualDecodingException(hint: String, text: String, cur: Int): YamlDecodingException {
     return YamlDecodingException(buildString {
         append(hint)
         append('\n')
@@ -493,7 +501,5 @@ internal fun contextualDecodingException(hint: String, error: String, text: Stri
             append(' ')
         }
         append('^')
-        append(' ')
-        append(error)
     }, null)
 }

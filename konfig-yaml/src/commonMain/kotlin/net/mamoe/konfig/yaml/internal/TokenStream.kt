@@ -78,6 +78,7 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 }
 
 internal inline val NOT_A_TOKEN: Nothing? get() = null
+internal inline val END_OF_LINE: Nothing? get() = null
 
 @OptIn(ExperimentalContracts::class)
 internal inline fun <R> Char.switchToken(block: (token: Token?) -> R): R {
@@ -207,7 +208,6 @@ internal class TokenStream(
                                 //         ^ not allowed here
                                 throw contextualDecodingException(
                                     "Illegal COLON when reading unquoted String",
-                                    "illegal COLON, try with quotation",
                                     this@buildString.toString() + char + readUntilNewLine(10),
                                     this@buildString.length
                                 )
