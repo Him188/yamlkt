@@ -156,32 +156,14 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-
-            val skippedLine = reader.currentToken.token is TokenClass.MULTILINE_LIST_FLAG
             val token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
-
-            when (token) {
-                is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
-                is Char
-                -> {
-                    return index++
-                }
-                is TokenClass.QUOTATION -> { // TODO: 2020/4/7 问题在这里: 无法正确地读 [  ] 的 list
-                    reader.currentToken.isOverRead = true
-                    return index++
-                }
+            return when (token) {
+                is Char -> CompositeDecoder.READ_DONE
                 is TokenClass.MULTILINE_LIST_FLAG -> {
-                    // TODO: 2020/3/21 check here
-                    if (!skippedLine) {
-                        return CompositeDecoder.READ_DONE // single value
-                    }
-                    return index++
+                    index++.also { reader.nextTokenOrNull() }
                 }
-                is TokenClass.SQUARE_BRACKET_LEFT -> {
-                    return index++
-                }
+                else -> error("unexpected token: ${token::class} $token")
             }
-            error("unexpected token: ${token::class} $token")
         }
     }
 

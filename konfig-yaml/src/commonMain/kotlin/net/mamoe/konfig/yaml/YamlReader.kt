@@ -78,7 +78,7 @@ internal class YamlReader(
      */
     fun skipLineSeparators(): IndentedToken? {
         var token: IndentedToken? = null
-        while (token?.token is TokenClass.LINE_SEPARATOR) {
+        while (token == null || token.token is TokenClass.LINE_SEPARATOR) {
             token = nextTokenOrNull() ?: return null
         }
         return token
@@ -353,8 +353,7 @@ internal class YamlReader(
                     return readUnquotedString(currentTokenToken, TokenClass.COLON)
                 }.exceptionOrNull()?.let { e ->
                     throw YamlSerializationException(
-                        "when nextValue(): currentToken=$currentTokenToken, nextToken=${nextTokenOrNull()}",
-                        e
+                        "when nextValue(): currentToken=$currentTokenToken, nextToken=${nextTokenOrNull()}", e
                     )
                 }
             }
@@ -365,7 +364,7 @@ internal class YamlReader(
             TokenClass.CURLY_BRACKET_LEFT, // [1, 2, 3] // array
             TokenClass.SQUARE_BRACKET_LEFT
             -> {
-                val indentedToken = nextTokenOrNull()
+                val indentedToken = skipLineSeparators()
                 when (val next = indentedToken?.token) {
                     is TokenClass.QUOTATION -> {
                         // quoted string doesn't need to trim
@@ -393,11 +392,7 @@ internal class YamlReader(
             }
             is TokenClass.MULTILINE_LIST_FLAG -> {
                 // negative number
-                indentedValueTemp.apply {
-                    this.isFromOverRead = theBeginningTokenOverRead
-                    _indentSpaceCount = currentToken.indentSpaceCount
-                    _value = "-" + readUnquotedString(null, TokenClass.LINE_SEPARATOR.N) // stub
-                }
+                readUnquotedString(null, TokenClass.LINE_SEPARATOR.N)
             }
             is TokenClass.QUOTATION -> { // " " or ' '
                 indentedValueTemp.apply {

@@ -130,11 +130,11 @@ internal fun YamlReader.readUnquotedString(start: Char? = null, endToken: TokenC
         var trimStart = true
         val tail = readStringUntil(
             escape = UNQUOTED_STRING_ESCAPE,
-            filterNot = {
+            filterNot = filterNot@{
                 if (trimStart) {
                     if (it != ' ') {
                         trimStart = false
-                    }
+                    } else return@filterNot true
                 }
                 TokenClass.findByValue(it)?.let { token ->
                     if (token != endToken && token !is TokenClass.LINE_SEPARATOR) {
