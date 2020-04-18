@@ -15,6 +15,9 @@ private inline fun CharSequence.foldFromRightOffsetIndexed(offset: Int, initial:
     return accumulator
 }
 
+/**
+ * The converter that converts hexadecimal [String]s from or to numbers
+ */
 internal object HexConverter {
     private val HEX_POW_TABLE: Array<Long> = Array(Long.SIZE_BYTES * 2) { 16.0.pow(it).toLong() }
 
@@ -32,6 +35,9 @@ internal object HexConverter {
     }
 }
 
+/**
+ * The converter that converts binary [String]s from or to numbers
+ */
 internal object BinaryConverter {
     @OptIn(ExperimentalUnsignedTypes::class)
     private val BINARY_POW_TABLE: Array<Long> = Array(Long.SIZE_BITS) { 2.0.pow(it).toULong().toLong() }

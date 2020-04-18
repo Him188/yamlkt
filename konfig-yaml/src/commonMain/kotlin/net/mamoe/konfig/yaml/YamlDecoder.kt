@@ -2,9 +2,8 @@
 
 package net.mamoe.konfig.yaml
 
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
-import net.mamoe.konfig.readRemaining
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.SerializationException
 
 open class YamlSerializationException : SerializationException {
     constructor(message: String) : super(message)
@@ -33,6 +32,7 @@ class YamlIllegalNumberFormatException internal constructor(
         "for ${descriptor?.serialName ?: "<unknown descriptor>"}", cause
 )
 
+/*
 @OptIn(InternalSerializationApi::class)
 internal class YamlDecoder(
     private val configuration: YamlConfiguration,
@@ -95,10 +95,10 @@ internal class YamlDecoder(
                 lastElementName = null // ensure used one-time
                 it
             } ?: when (indentedToken.token) {
-                is TokenClass.SQUARE_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
-                is TokenClass.CURLY_BRACKET_RIGHT -> return CompositeDecoder.READ_DONE
-                is TokenClass.QUOTATION,
-                is TokenClass.LINE_SEPARATOR,
+                is Token.LIST_END -> return CompositeDecoder.READ_DONE
+                is Token.MAP_END -> return CompositeDecoder.READ_DONE
+                is Token.QUOTATION,
+                is Token.LINE_SEPARATOR,
                 is Char
                 -> {
                     val indentedValue = reader.nextValue() ?: return CompositeDecoder.READ_DONE
@@ -159,7 +159,7 @@ internal class YamlDecoder(
             val token: Any = reader.skipLineSeparators()?.token ?: return CompositeDecoder.READ_DONE
             return when (token) {
                 is Char -> CompositeDecoder.READ_DONE
-                is TokenClass.MULTILINE_LIST_FLAG -> {
+                is Token.MULTILINE_LIST_FLAG -> {
                     index++.also { reader.nextTokenOrNull() }
                 }
                 else -> error("unexpected token: ${token::class} $token")
@@ -176,7 +176,7 @@ internal class YamlDecoder(
 
             val current = reader.currentToken
             return when {
-                current.token == TokenClass.SQUARE_BRACKET_RIGHT -> CompositeDecoder.READ_DONE
+                current.token == Token.LIST_END -> CompositeDecoder.READ_DONE
                 index == 0 -> {
                     // we've just started.
                     reader.nextTokenOrNull()
@@ -187,7 +187,7 @@ internal class YamlDecoder(
                     index++
                 }
                 else -> {
-                    check(current.token is TokenClass.COMMA) {
+                    check(current.token is Token.COMMA) {
                         "the token next to ending double quotation must be comma, but found $current. remaining=${reader.readRemaining().asSequence().joinToString("", limit = 10)}"
                     }
                     reader.nextTokenOrNull()
@@ -236,7 +236,7 @@ internal class YamlDecoder(
 
         return when (descriptor.kind) {
             StructureKind.LIST -> {
-                if (reader.currentToken.token is TokenClass.SQUARE_BRACKET_LEFT) {
+                if (reader.currentToken.token is Token.LIST_BEGIN) {
                     SquareBlockListReader()
                 } else {
                     MultilineListReader()
@@ -491,4 +491,4 @@ internal class YamlDecoder(
     override fun <T> updateSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T>, old: T): T {
         throw UnsupportedOperationException()
     }
-}
+}*/

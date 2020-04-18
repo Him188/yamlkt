@@ -2,87 +2,7 @@
 
 package net.mamoe.konfig.yaml
 
-import net.mamoe.konfig.CharInputStream
-import net.mamoe.konfig.readAhead
-import net.mamoe.konfig.yaml.TokenClass.COMMA
-import net.mamoe.konfig.yaml.TokenClass.QUOTATION.DOUBLE_QUOTATION
-import net.mamoe.konfig.yaml.TokenClass.QUOTATION.SINGLE_QUOTATION
-
-@Suppress("ClassName", "PropertyName")
-internal sealed class TokenClass(val value: Char) {
-    override fun toString(): String {
-        return this::class.simpleName + "('$value')"
-    }
-
-    object COMMA : TokenClass(',')
-
-    //object PERIOD : TokenClass('.')
-
-    object COLON : TokenClass(':')
-
-    sealed class QUOTATION(value: Char) : TokenClass(value) {
-        abstract val ESCAPE_PATTERN: CharArray
-
-        object SINGLE_QUOTATION : QUOTATION('\'') {
-            override val ESCAPE_PATTERN = charArrayOf('\"', '\'')
-        }
-
-        object DOUBLE_QUOTATION : QUOTATION('"') {
-            override val ESCAPE_PATTERN = charArrayOf('\"', '\'')
-        }
-    }
-
-    object MULTILINE_LIST_FLAG : TokenClass('-')
-
-    object PARENTHESES_LEFT : TokenClass('(')
-    object PARENTHESES_RIGHT : TokenClass('(')
-
-    object SQUARE_BRACKET_LEFT : TokenClass('[')
-    object SQUARE_BRACKET_RIGHT : TokenClass(']')
-
-    object CURLY_BRACKET_LEFT : TokenClass('{')
-    object CURLY_BRACKET_RIGHT : TokenClass('}')
-
-    sealed class LINE_SEPARATOR(value: Char) : TokenClass(value) {
-        object N : LINE_SEPARATOR('\n') {
-            override fun toString(): String {
-                return "LINE_SEPARATOR.N(\\n)"
-            }
-        }
-
-        object R : LINE_SEPARATOR('\r') {
-            override fun toString(): String {
-                return "LINE_SEPARATOR.R(\\r)"
-            }
-        }
-
-        companion object {
-            val values: CharArray by lazy {
-                charArrayOf(N.value, R.value)
-            }
-        }
-    }
-
-    object MULTILINE : TokenClass('|')
-
-    companion object {
-        private val values: Array<TokenClass> = arrayOf(
-            COMMA,
-            /*PERIOD,*/ COLON, SINGLE_QUOTATION, DOUBLE_QUOTATION,
-            PARENTHESES_LEFT, PARENTHESES_RIGHT,
-            SQUARE_BRACKET_RIGHT, SQUARE_BRACKET_LEFT,
-            CURLY_BRACKET_RIGHT,
-            CURLY_BRACKET_LEFT,
-            LINE_SEPARATOR.N,
-            LINE_SEPARATOR.R,
-            MULTILINE,
-            MULTILINE_LIST_FLAG
-        )
-
-        fun findByValue(value: Char): TokenClass? = values.firstOrNull { it.value == value }
-    }
-}
-
+/*
 private val QUOTED_STRING_ESCAPE = arrayOf(
     '\'' to '\'',
     '\"' to '\"',
@@ -193,4 +113,4 @@ internal inline fun CharInputStream.readStringUntil(
             }
         }
     }
-}
+}*/

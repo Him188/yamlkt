@@ -1,9 +1,6 @@
 package net.mamoe.konfig.yaml
 
-import kotlinx.serialization.InternalSerializationApi
-import net.mamoe.konfig.CharInputStream
-import net.mamoe.konfig.readAhead
-
+/*
 @OptIn(InternalSerializationApi::class)
 internal class YamlReader(
     input: CharInputStream
@@ -407,4 +404,4 @@ internal class YamlReader(
             }
         }
     }
-}
+}*/

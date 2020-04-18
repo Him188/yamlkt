@@ -6,7 +6,7 @@ import kotlinx.io.core.readTextExactCharacters
 import kotlinx.io.core.writeText
 
 /**
- * A stream for output [Char]s
+ * A stream for outputting [Char]s
  */
 interface CharOutputStream {
     /**
@@ -21,7 +21,7 @@ interface CharOutputStream {
 }
 
 /**
- * A stream for input [Char]s
+ * A stream for inputting [Char]s
  */
 interface CharInputStream {
     /**
@@ -34,6 +34,7 @@ interface CharInputStream {
      */
     fun read(): Char
 
+    // TODO for debug only!! should remove in release
     fun peakRemaining(): String
 }
 

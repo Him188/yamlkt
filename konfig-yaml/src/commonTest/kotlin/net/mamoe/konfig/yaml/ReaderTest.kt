@@ -1,6 +1,7 @@
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.Serializable
+import net.mamoe.konfig.yaml.internal.asTokenStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -120,6 +121,62 @@ internal class ReaderTest {
         nonStrictNullability.testBoolean(false, "~", "null", "nUll")
     }
 
+    @Test
+    fun testSimpleClass() {
+        @Serializable
+        data class TestData(
+            val key: String
+        )
+
+        println(
+            """
+                    key: value
+                """.trimIndent().asTokenStream().joinTokenToString()
+        )
+
+        assertEquals(
+            TestData("value"),
+            default.parse(
+                TestData.serializer(), """
+                    key: value
+                """.trimIndent()
+            )
+        )
+    }
+
+    // primitive types and casting
+    @Test
+    fun testSimpleMultilineList() {
+        @Serializable
+        data class TestData(
+            val list: List<Int>
+        )
+
+        assertEquals(
+            TestData(listOf(1, 2, 3)),
+            default.parse(
+                TestData.serializer(), """
+                    list:
+                    - 1
+                    - 2
+                    - 3
+                """.trimIndent()
+            )
+        )
+
+        assertEquals(
+            TestData(listOf(1, 2, 3)),
+            default.parse(
+                TestData.serializer(), """
+                    list:
+                      - 1
+                      - 2
+                      - 3
+                """.trimIndent()
+            )
+        )
+    }
+
     // primitive types and casting
     @Test
     fun testSimpleStructure() {
@@ -149,7 +206,7 @@ internal class ReaderTest {
                 true,
                 123f,
                 123.0,
-                123.toChar(),
+                's',
                 "string",
                 "123"
             ),
@@ -163,10 +220,13 @@ internal class ReaderTest {
             boolean: true
             float: 123
             double: 123
-            char: 123
+            char: s
             string: string
-            quotedString: "123"
+            quotedString: 123
         """.trimIndent()
+                //
+                //          negative: -1
+
             )
         )
     }

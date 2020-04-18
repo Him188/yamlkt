@@ -5,10 +5,13 @@ import kotlinx.io.core.Output
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
+import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.modules.EmptyModule
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.IOFormat
 import net.mamoe.konfig.asCharStream
+import net.mamoe.konfig.yaml.internal.TokenStream
+import net.mamoe.konfig.yaml.internal.YamlDecoder
 
 
 /**
@@ -26,11 +29,21 @@ class Yaml(
     }
 
     override fun <T> load(deserializer: DeserializationStrategy<T>, input: Input): T {
-        return deserializer.deserialize(YamlDecoder(configuration, YamlReader(input.asCharStream()), context))
+        return deserializer.deserialize(
+            YamlDecoder(
+                configuration,
+                TokenStream(input.asCharStream()), context, UpdateMode.OVERWRITE
+            )
+        )
     }
 
     override fun <T> parse(deserializer: DeserializationStrategy<T>, string: String): T {
-        return deserializer.deserialize(YamlDecoder(configuration, YamlReader(string.asCharStream()), context))
+        return deserializer.deserialize(
+            YamlDecoder(
+                configuration,
+                TokenStream(string.asCharStream()), context, UpdateMode.BANNED
+            )
+        )
     }
 
     override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
