@@ -8,10 +8,12 @@ import kotlinx.serialization.StringFormat
 import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.modules.EmptyModule
 import kotlinx.serialization.modules.SerialModule
+import net.mamoe.konfig.ExperimentalKonfigApi
 import net.mamoe.konfig.IOFormat
 import net.mamoe.konfig.asCharStream
 import net.mamoe.konfig.yaml.internal.TokenStream
 import net.mamoe.konfig.yaml.internal.YamlDecoder
+import kotlin.jvm.JvmOverloads
 
 
 /**
@@ -20,19 +22,22 @@ import net.mamoe.konfig.yaml.internal.YamlDecoder
  * @see Yaml.default The instance using default configurations.
  * @see Yaml.nonStrict The instance using all non-strict configurations.
  */
-class Yaml(
-    private val configuration: YamlConfiguration = YamlConfiguration(),
+@OptIn(ExperimentalKonfigApi::class)
+class Yaml @JvmOverloads constructor(
+    val configuration: YamlConfiguration = YamlConfiguration(),
     override val context: SerialModule = EmptyModule
 ) : IOFormat, StringFormat {
+    @ExperimentalKonfigApi("Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0")
     override fun <T> dumpTo(serializer: SerializationStrategy<T>, value: T, output: Output) {
         TODO("not implemented")
     }
 
+    @ExperimentalKonfigApi("Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0")
     override fun <T> load(deserializer: DeserializationStrategy<T>, input: Input): T {
         return deserializer.deserialize(
             YamlDecoder(
                 configuration,
-                TokenStream(input.asCharStream()), context, UpdateMode.OVERWRITE
+                TokenStream(input.asCharStream()), context, UpdateMode.OVERWRITE // TODO: 2020/4/18 check UpdateMode
             )
         )
     }
@@ -41,7 +46,7 @@ class Yaml(
         return deserializer.deserialize(
             YamlDecoder(
                 configuration,
-                TokenStream(string.asCharStream()), context, UpdateMode.BANNED
+                TokenStream(string.asCharStream()), context, UpdateMode.OVERWRITE// TODO: 2020/4/18 check UpdateMode
             )
         )
     }
@@ -67,4 +72,9 @@ class Yaml(
             )
         )
     }
+}
+
+@JvmOverloads
+fun <T> String.parseAsYaml(deserializer: DeserializationStrategy<T>, yaml: Yaml = Yaml.default): T {
+    return yaml.parse(deserializer, this)
 }

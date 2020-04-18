@@ -79,8 +79,6 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 
 internal inline val NOT_A_TOKEN: Nothing? get() = null
 
-internal fun Char.toTokenOrNull(): Token? = Token[this]
-
 @OptIn(ExperimentalContracts::class)
 internal inline fun <R> Char.switchToken(block: (token: Token?) -> R): R {
     contract {
@@ -202,7 +200,7 @@ internal class TokenStream(
                             // no reuse.
                             return@buildString
                         }
-                        null -> append(char)
+                        NOT_A_TOKEN -> append(char)
                         else -> {
                             if (forValue && token is Token.COLON) {
                                 // `key: my:value`

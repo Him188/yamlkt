@@ -48,6 +48,9 @@ interface CharInputStream {
 
 fun Char.isLineSeparator() = this == '\n' || this == '\r'
 
+/**
+ * Delegate a [String] to [CharInputStream]
+ */
 fun String.asCharStream(): CharInputStream = object : CharInputStream {
     private var cur = 0
 
@@ -74,6 +77,12 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
 }
 
 
+/**
+ * Delegate an [Input] to a [CharInputStream]
+ *
+ * @suppress Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0
+ */
+@ExperimentalKonfigApi("Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0")
 fun Input.asCharStream(): CharInputStream = object : CharInputStream {
     override val endOfInput: Boolean get() = this@asCharStream.endOfInput
     override val currentLine: String get() = line.toString()
