@@ -1,5 +1,6 @@
 package net.mamoe.konfig.yaml
 
+import net.mamoe.konfig.yaml.internal.EndingTokens
 import net.mamoe.konfig.yaml.internal.Token
 import net.mamoe.konfig.yaml.internal.TokenStream
 
@@ -12,7 +13,7 @@ internal fun TokenStream.joinTokenToString(): String =
     sequence<String> {
         while (true) {
             yield(
-                when (val token = this@joinTokenToString.nextToken(false)) {
+                when (val token = this@joinTokenToString.nextToken(EndingTokens.EMPTY_ENDING_TOKEN)) {
                     Token.STRING -> "String(${this@joinTokenToString.strBuff!!})"
                     null -> return@sequence
                     else -> token.toString()

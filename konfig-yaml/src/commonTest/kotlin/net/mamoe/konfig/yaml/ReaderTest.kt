@@ -177,6 +177,69 @@ internal class ReaderTest {
         )
     }
 
+    @Test
+    fun testJsonMap() {
+        @Serializable
+        data class TestData(
+            val map: Map<String, String>
+        )
+
+        assertEquals(
+            TestData(
+                mapOf(
+                    "foo" to "bar",
+                    "test" to "ok"
+                )
+            ),
+            default.parse(
+                TestData.serializer(), """
+            map: {foo: bar, test: ok}
+        """.trimIndent()
+            )
+        )
+    }
+
+    @Test
+    fun testYamlMap() {
+        @Serializable
+        data class TestData(
+            val map: Map<String, String>
+        )
+
+        assertEquals(
+            TestData(
+                mapOf(
+                    "foo" to "bar",
+                    "test" to "ok"
+                )
+            ),
+            default.parse(
+                TestData.serializer(), """
+            map: 
+              foo: bar
+              test: ok
+        """.trimIndent()
+            )
+        )
+    }
+
+    @Test
+    fun testSquareList() {
+        @Serializable
+        data class TestData(
+            val list: List<String>
+        )
+
+        assertEquals(
+            TestData(listOf("foo", "bar")),
+            default.parse(
+                TestData.serializer(), """
+            list: [foo, bar]
+        """.trimIndent()
+            )
+        )
+    }
+
     // primitive types and casting
     @Test
     fun testSimpleStructure() {

@@ -45,7 +45,11 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
     object ESCAPE : Token('\\', false)
 
 
-    object STRING : Token(' ', false) // STUB
+    object STRING : Token(' ', false) {
+        override fun toString(): String {
+            return "STRING"
+        }
+    } // STUB
 
     companion object {
         // char-TokenClass mapping
@@ -65,7 +69,24 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
                 ESCAPE
             )
 
-            values = arrayOfNulls<Token>(all.map { it.value.toInt() }.max()!! + 1).apply {
+            println(all)
+            println(all
+                .map {
+                    it // here!
+                        .value
+                        .toInt()
+                })
+            println("hi")
+            values = arrayOfNulls<Token>(
+                all
+                    .map {
+                        it
+                            .value
+                            .toInt()
+                    }
+                    .max()
+                !!
+                    + 1).apply {
                 for (tokenClass in all) {
                     set(tokenClass.value.toInt(), tokenClass)
                 }
@@ -138,7 +159,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(forValue: Boolean): Token? {
+    fun nextToken(endingTokens: Array<out Token>): Token? {
         if (reuseTokenStack.isNotEmpty()) {
             val reuse = reuseTokenStack.removeAt(reuseTokenStack.lastIndex)
             if (reuse is String) {
@@ -154,7 +175,7 @@ internal class TokenStream(
         whileNotEOF { char ->
             when (val token = Token[char]) {
                 null -> {
-                    prepareStringAndNextToken(char, forValue)
+                    prepareStringAndNextToken(char, endingTokens)
                     currentToken = Token.STRING
                     return Token.STRING
                 }
@@ -179,7 +200,7 @@ internal class TokenStream(
      *
      * Always read a next token after the string being read, and adds to [reuseTokenStack]
      */
-    private fun prepareStringAndNextToken(begin: Char, forValue: Boolean) = when (begin) {
+    private fun prepareStringAndNextToken(begin: Char, endingTokens: Array<out Token>) = when (begin) {
         SINGLE_QUOTATION -> {
             strQuoted = true
             TODO("SINGLE_QUOTATION isn't yet supported")
@@ -203,16 +224,16 @@ internal class TokenStream(
                         }
                         NOT_A_TOKEN -> append(char)
                         else -> {
-                            if (forValue && token is Token.COLON) {
-                                // `key: my:value`
-                                //         ^ not allowed here
-                                throw contextualDecodingException(
-                                    "Illegal COLON when reading unquoted String",
-                                    this@buildString.toString() + char + readUntilNewLine(10),
-                                    this@buildString.length
-                                )
-                            }
                             if (token.canStopUnquotedString) {
+                                if (endingTokens.none { it == token }) {
+                                    // `key: my:value`
+                                    //         ^ not allowed here
+                                    throw contextualDecodingException(
+                                        "Illegal token $token when reading unquoted String",
+                                        this@buildString.toString() + char + readUntilNewLine(10),
+                                        this@buildString.length
+                                    )
+                                }
                                 reuseToken(token)
                                 return@buildString // don't `return`
                             } else append(char)
