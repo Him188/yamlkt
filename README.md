@@ -7,9 +7,9 @@ This project is under development.
 
 Dependency requirements:
 
-| konfig | Required Kotlin | Required kotlinx.serialization |
-|:-------|:----------------|:-------------------------------|
-| 0.1.0  | 1.3.70          | 0.20.0                         |
+| konfig | Required Kotlin | Required kotlinx.serialization | Required kotlinx.io |
+|:-------|:----------------|:-------------------------------|:-------------------------------|
+| 0.1.0  | 1.3.71          | 0.20.0                         | 0.1.16                         |
 
 #### Gradle
 Replace `<version>` with the newest version here: \<not yet published\>
