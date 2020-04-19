@@ -61,3 +61,19 @@ nest:
 list: [str, "str2"]
 """))
 ```
+
+
+## To-Do
+
+|    | Done   |
+|:---|:---|
+| Nullable values |  √  |
+| Multiline lists|  √  |
+| Square block lists|  √  |
+| Json-like maps|  √  |
+| Yaml maps|  √  |
+| Nesting |    |
+| Quotations |    |
+| Multiline String   |    |
+| Anchors   |    |
+| Byte Order Mark| |
