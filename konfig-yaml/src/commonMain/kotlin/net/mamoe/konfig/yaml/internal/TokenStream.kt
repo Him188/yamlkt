@@ -129,6 +129,12 @@ internal class TokenStream(
     @JvmField
     val reuseTokenStack: MutableList<Any> = ArrayList(8)
 
+    /**
+     * Used only in [readUnquotedString]
+     */
+    @JvmField
+    var escapeBuff = ByteArray(16)
+
     fun reuseToken(token: Token) {
         reuseTokenStack.add(token)
     }
@@ -194,36 +200,7 @@ internal class TokenStream(
         }
         else -> { // unquoted
             strQuoted = false
-            this@TokenStream.strBuff = buildString {
-                append(begin)
-                whileNotEOF { char ->
-                    when (val token = Token[char]) {
-                        Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-                        Token.ESCAPE -> TODO("unquoted escape")
-
-                        is Token.LINE_SEPARATOR -> {
-                            // no reuse.
-                            return@buildString
-                        }
-                        NOT_A_TOKEN -> append(char)
-                        else -> {
-                            if (token.canStopUnquotedString) {
-                                if (endingTokens.none { it == token }) {
-                                    // `key: my:value`
-                                    //         ^ not allowed here
-                                    throw contextualDecodingException(
-                                        "Illegal token $token when reading unquoted String"//,
-                                        //   this@buildString.toString() + char + readUntilNewLine(10),
-                                        //   this@buildString.length
-                                    )
-                                }
-                                reuseToken(token)
-                                return@buildString // don't `return`
-                            } else append(char)
-                        }
-                    }
-                }
-            }.trimEnd()
+            readUnquotedString(begin, endingTokens)
         }
     }
 }
@@ -234,7 +211,7 @@ internal const val SINGLE_QUOTATION = '\''
 internal const val DOUBLE_QUOTATION = '"'
 
 @OptIn(ExperimentalContracts::class)
-private inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothing? {
+internal inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothing? {
     contract {
         callsInPlace(block, InvocationKind.UNKNOWN)
     }

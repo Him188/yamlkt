@@ -75,5 +75,8 @@ list: [str, "str2"]
 | Nesting |    |
 | Quotations |    |
 | Multiline String   |    |
+| Parsing without descriptor | |
 | Anchors   |    |
 | Byte Order Mark| |
+| Explicit types | |
+
