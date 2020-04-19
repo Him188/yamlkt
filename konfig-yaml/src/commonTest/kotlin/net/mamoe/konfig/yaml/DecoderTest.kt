@@ -6,11 +6,49 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
 
-internal class ReaderTest {
+internal class DecoderTest {
     private val default = Yaml()
     private val nonStrictNullability = Yaml(configuration = YamlConfiguration(nonStrictNullability = true))
     private val nonStrictNumber = Yaml(configuration = YamlConfiguration(nonStrictNumber = true))
 
+
+    @Serializable
+    data class NestedTestData(
+        val outer: Outer
+    ) {
+        @Serializable
+        data class Outer(
+            val inner: Inner
+        ) {
+            @Serializable
+            data class Inner(
+                val map: Map<String, String>
+            )
+        }
+    }
+
+    @Test
+    fun testNested() {
+        assertEquals(
+            NestedTestData(
+                NestedTestData.Outer(
+                    NestedTestData.Outer.Inner(
+                        mapOf(
+                            "foo" to "bar"
+                        )
+                    )
+                )
+            ),
+            default.parse(
+                NestedTestData.serializer(), """
+                outer: 
+                  inner:
+                    map: 
+                      foo: bar
+            """.trimIndent()
+            )
+        )
+    }
 
     @Test
     fun testNonStrictNumberCasting() {

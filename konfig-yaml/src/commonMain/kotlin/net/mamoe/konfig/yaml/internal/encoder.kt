@@ -1,8 +1,9 @@
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.CharOutputStream
+import net.mamoe.konfig.yaml.YamlConfiguration
 
 internal class YamlWriter(
     output: CharOutputStream

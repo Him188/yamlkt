@@ -1,5 +1,7 @@
 package net.mamoe.konfig.yaml
 
+import net.mamoe.konfig.yaml.internal.BinaryConverter
+import net.mamoe.konfig.yaml.internal.HexConverter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

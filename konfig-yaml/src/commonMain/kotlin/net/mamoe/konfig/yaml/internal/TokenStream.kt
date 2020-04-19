@@ -61,6 +61,7 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 }
 
 // https://youtrack.jetbrains.com/issue/KT-38383
+@Suppress("ObjectPropertyName")
 internal val __init = run {
     val all = arrayOf(
         Token.COMMA,

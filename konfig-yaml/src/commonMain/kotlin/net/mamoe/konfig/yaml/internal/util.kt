@@ -1,4 +1,4 @@
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.internal
 
 import kotlin.math.pow
 
