@@ -215,10 +215,10 @@ internal class ReaderTest {
             ),
             default.parse(
                 TestData.serializer(), """
-            map: 
-              foo: bar
-              test: ok
-        """.trimIndent()
+            |map: 
+            |  foo: bar
+            |  test: ok
+        """.trimMargin()
             )
         )
     }

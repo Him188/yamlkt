@@ -53,61 +53,39 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 
     companion object {
         // char-TokenClass mapping
-        private val values: Array<Token?>
-
-        init {
-            val all = arrayOf(
-                COMMA,
-                COLON,
-                LIST_END, LIST_BEGIN,
-                MAP_END, MAP_BEGIN,
-                LINE_SEPARATOR.N,
-                LINE_SEPARATOR.R,
-                SPACE,
-                MULTILINE_STRING_FLAG,
-                MULTILINE_LIST_FLAG,
-                ESCAPE
-            )
-
-            println(all)
-            println(all
-                .map {
-                    it // here!
-                        .value
-                        .toInt()
-                })
-            println("hi")
-            values = arrayOfNulls<Token>(
-                all
-                    .map {
-                        it
-                            .value
-                            .toInt()
-                    }
-                    .max()
-                !!
-                    + 1).apply {
-                for (tokenClass in all) {
-                    set(tokenClass.value.toInt(), tokenClass)
-                }
-            }
-        }
+        lateinit var values: Array<Token?>
 
         operator fun get(char: Char): Token? =
             if (char.toInt() > values.lastIndex) null else values[char.toInt()]
     }
 }
 
+// https://youtrack.jetbrains.com/issue/KT-38383
+internal val __init = run {
+    val all = arrayOf(
+        Token.COMMA,
+        Token.COLON,
+        Token.LIST_END, Token.LIST_BEGIN,
+        Token.MAP_END, Token.MAP_BEGIN,
+        Token.LINE_SEPARATOR.N,
+        Token.LINE_SEPARATOR.R,
+        Token.SPACE,
+        Token.MULTILINE_STRING_FLAG,
+        Token.MULTILINE_LIST_FLAG,
+        Token.ESCAPE
+    )
+
+    Token.values = arrayOfNulls<Token>(
+        all.map { it.value.toInt() }.max()!! + 1
+    ).apply {
+        for (tokenClass in all) {
+            set(tokenClass.value.toInt(), tokenClass)
+        }
+    }
+}
+
 internal inline val NOT_A_TOKEN: Nothing? get() = null
 internal inline val END_OF_LINE: Nothing? get() = null
-
-@OptIn(ExperimentalContracts::class)
-internal inline fun <R> Char.switchToken(block: (token: Token?) -> R): R {
-    contract {
-        callsInPlace(block, InvocationKind.EXACTLY_ONCE)
-    }
-    return block(Token[this])
-}
 
 /**
  * The stream of [Token]s and [String]s
@@ -125,6 +103,10 @@ internal inline fun <R> Char.switchToken(block: (token: Token?) -> R): R {
 internal class TokenStream(
     @JvmField val source: CharInputStream
 ) {
+    init {
+        __init
+    }
+
     @JvmField
     var currentToken: Token? = null
 
@@ -229,9 +211,9 @@ internal class TokenStream(
                                     // `key: my:value`
                                     //         ^ not allowed here
                                     throw contextualDecodingException(
-                                        "Illegal token $token when reading unquoted String",
-                                        this@buildString.toString() + char + readUntilNewLine(10),
-                                        this@buildString.length
+                                        "Illegal token $token when reading unquoted String"//,
+                                        //   this@buildString.toString() + char + readUntilNewLine(10),
+                                        //   this@buildString.length
                                     )
                                 }
                                 reuseToken(token)

@@ -14,14 +14,17 @@ internal class CharStreamTest {
             assertEquals("f", currentLine)
 
             assertEquals("oo", readLine())
-            assertEquals("", currentLine)
+            assertEquals("foo", currentLine)
+
             assertEquals("bar", readLine())
-            assertEquals("", currentLine)
+            assertEquals("bar", currentLine)
+
             assertEquals("test", readLine())
-            assertEquals("test", currentLine) // no new line reached
+            assertEquals("test", currentLine)
         }
     }
 
+    @OptIn(ExperimentalKonfigApi::class)
     @Test
     fun testInputAsCharStream() {
         with(buildPacket { writeStringUtf8("foo\nbar\ntest") }.asCharStream()) {
@@ -29,11 +32,13 @@ internal class CharStreamTest {
             assertEquals("f", currentLine)
 
             assertEquals("oo", readLine())
-            assertEquals("", currentLine)
+            assertEquals("foo", currentLine)
+
             assertEquals("bar", readLine())
-            assertEquals("", currentLine)
+            assertEquals("bar", currentLine)
+
             assertEquals("test", readLine())
-            assertEquals("test", currentLine) // no new line reached
+            assertEquals("test", currentLine)
         }
     }
 }
