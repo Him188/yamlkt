@@ -133,7 +133,7 @@ internal class TokenStream(
      * Used only in [readUnquotedString]
      */
     @JvmField
-    var escapeBuff = ByteArray(16)
+    var escapeBuff = CharArray(16)
 
     fun reuseToken(token: Token) {
         reuseTokenStack.add(token)
@@ -192,11 +192,11 @@ internal class TokenStream(
     private fun prepareStringAndNextToken(begin: Char, endingTokens: Array<out Token>) = when (begin) {
         SINGLE_QUOTATION -> {
             strQuoted = true
-            TODO("SINGLE_QUOTATION isn't yet supported")
+            readSingleQuotedString()
         }
         DOUBLE_QUOTATION -> {
             strQuoted = true
-            TODO("DOUBLE_QUOTATION isn't yet supported")
+            readDoubleQuotedString()
         }
         else -> { // unquoted
             strQuoted = false

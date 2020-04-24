@@ -1,85 +1,83 @@
 package net.mamoe.konfig.yaml.internal
 
 import net.mamoe.konfig.CharOutputStream
+import kotlin.jvm.JvmField
 
 
-internal const val ESCAPE_SINGLE = 1
-internal const val ESCAPE_ILLEGAL = 2
-internal const val ESCAPE_8 = 3
-internal const val ESCAPE_16 = 4
-internal const val ESCAPE_32 = 5
+///////////////////
+// sourcecode from kotlinx.serialization. Copyright 2017-2019 JetBrains s.r.o.
 
-@Suppress("ClassName")
-internal object EscapeChar {
-    private inline val NULL get() = '0'
-    private inline val BELL get() = 'a'
-    private inline val BACKSPACE get() = 'b'
-    private inline val HORIZONTAL_TAB get() = 't'
-    private inline val LINE_FEED get() = 'n'
-    private inline val VERTICAL_TAB get() = 'v'
-    private inline val FORM_FEED get() = 'f'
-    private inline val CARRIAGE_RETURN get() = 'r'
-    private inline val ESCAPE get() = 'e'
-    private inline val SPACE get() = ' '
-    private inline val DOUBLE_QUOTE get() = '"'
-    private inline val SLASH get() = '/'
-    private inline val BACK_SLASH get() = '\\'
-    private inline val NEXT_LINE get() = 'N'
-    private inline val NON_BREAKING_SPACE get() = '_'
-    private inline val LINE_SEPARATOR get() = 'L'
-    private inline val PARAGRAPH_SEPARATOR get() = 'P'
+// mapping from chars to token classes
+private const val CTC_MAX = 0x7e
 
-    private inline val UNICODE_8 get() = 'x'
-    private inline val UNICODE_16 get() = 'u'
-    private inline val UNICODE_32 get() = 'U'
+// mapping from escape chars real chars
+private const val ESC2C_MAX = 0x75
 
-    private val map = arrayOfNulls<Char>(120)
+internal const val STRING = '"'
+internal const val STRING_ESC = '\\'
 
-    /**
-     * @see ESCAPE_SINGLE
-     * @see ESCAPE_ILLEGAL
-     * @see ESCAPE_8
-     * @see ESCAPE_16
-     * @see ESCAPE_32
-     */
-    internal operator fun get(char: Char): Int {
-        return when {
-            map[char.toInt()] != null -> {
-                return ESCAPE_SINGLE
-            }
-            char == UNICODE_8 -> ESCAPE_8
-            char == UNICODE_16 -> ESCAPE_16
-            char == UNICODE_32 -> ESCAPE_32
-            else -> ESCAPE_ILLEGAL
-        }
-    }
+internal const val INVALID = 0.toChar()
+internal const val UNICODE_ESC = 'u'
+
+private object EscapeCharMappings {
+    @JvmField
+    val ESCAPE_2_CHAR = CharArray(ESC2C_MAX)
 
     init {
-        NULL.let { map[it.toInt()] = it }
-        BELL.let { map[it.toInt()] = it }
-        BACKSPACE.let { map[it.toInt()] = it }
-        HORIZONTAL_TAB.let { map[it.toInt()] = it }
-        LINE_FEED.let { map[it.toInt()] = it }
-        VERTICAL_TAB.let { map[it.toInt()] = it }
-        FORM_FEED.let { map[it.toInt()] = it }
-        CARRIAGE_RETURN.let { map[it.toInt()] = it }
-        ESCAPE.let { map[it.toInt()] = it }
-        SPACE.let { map[it.toInt()] = it }
-        DOUBLE_QUOTE.let { map[it.toInt()] = it }
-        SLASH.let { map[it.toInt()] = it }
-        BACK_SLASH.let { map[it.toInt()] = it }
-        NEXT_LINE.let { map[it.toInt()] = it }
-        NON_BREAKING_SPACE.let { map[it.toInt()] = it }
-        LINE_SEPARATOR.let { map[it.toInt()] = it }
-        PARAGRAPH_SEPARATOR.let { map[it.toInt()] = it }
-        // UNICODE_8.let { map[it.toInt()] = it }
-        // UNICODE_16.let { map[it.toInt()] = it }
-        // UNICODE_32.let { map[it.toInt()] = it }
+        for (i in 0x00..0x1f) {
+            initC2ESC(i, UNICODE_ESC)
+        }
+
+        initC2ESC(0x08, 'b')
+        initC2ESC(0x09, 't')
+        initC2ESC(0x0a, 'n')
+        initC2ESC(0x0c, 'f')
+        initC2ESC(0x0d, 'r')
+        initC2ESC('/', '/')
+        initC2ESC(STRING, STRING)
+        initC2ESC(STRING_ESC, STRING_ESC)
     }
+
+    private fun initC2ESC(c: Int, esc: Char) {
+        if (esc != UNICODE_ESC) ESCAPE_2_CHAR[esc.toInt()] = c.toChar()
+    }
+
+    private fun initC2ESC(c: Char, esc: Char) = initC2ESC(c.toInt(), esc)
 }
+
+internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) EscapeCharMappings.ESCAPE_2_CHAR[c] else INVALID
+
+internal const val ESCAPE_16: Int = 0b1000000000000000000000000000000
+internal const val ESCAPE_32: Int = 0b0100000000000000000000000000000
+internal const val ESCAPE_8: Int = 0b0010000000000000000000000000000
 
 private const val STATE_NONE = -1
 private const val STATE_DETECT = -2
+
+/**
+ * Stores to [TokenStream.strBuff]
+ */
+internal fun TokenStream.readSingleQuotedString() {
+    this.strBuff = buildString {
+        var escape = false
+        whileNotEOF { char ->
+            when {
+                escape -> {
+                    check(char == SINGLE_QUOTATION || char == STRING_ESC) {
+                        throw contextualDecodingException("Illegal escape '$char' when reading single quoted String")
+                    }
+                    append(char)
+                    escape = false
+                }
+                char == STRING_ESC -> escape = true
+                char == SINGLE_QUOTATION -> return@buildString
+                else -> append(char)
+            }
+        }
+    }
+}
+
+internal fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' || this in 'A'..'Z'
 
 /**
  * Stores to [TokenStream.strBuff]
@@ -89,37 +87,94 @@ internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out
         append(begin)
         var escape = 0
         whileNotEOF { char ->
-            if (escape == STATE_DETECT) {
-                when (EscapeChar[char]) {
-                    ESCAPE_SINGLE -> {
-                        // append()
+            when {
+                escape and ESCAPE_8 != 0 -> {
+                    val count = escape and 0xff
+                    check(char.isValidHex()) {
+                        throw contextualDecodingException("Illegal escape hex digit '$char'")
+                    }
+                    // TODO: 2020/4/24
+                    escapeBuff[count] = char
+                    escape++
+                }
+                escape == STATE_DETECT -> {
+                    val es = escapeToChar(char.toInt())
+
+                    escape = if (es != INVALID) {
+                        append(es)
+                        0
+                    } else when (char) {
+                        'x' -> ESCAPE_8
+                        'u' -> ESCAPE_16
+                        'U' -> ESCAPE_32
+                        else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
                     }
                 }
-            } else when (val token = Token[char]) {
-                Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-                Token.ESCAPE -> {
-                    escape = STATE_DETECT
-                }
+                else -> when (val token = Token[char]) {
+                    Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
+                    Token.ESCAPE -> {
+                        escape = STATE_DETECT
+                    }
 
-                is Token.LINE_SEPARATOR -> {
-                    // no reuse.
-                    return@buildString
+                    is Token.LINE_SEPARATOR -> {
+                        // no reuse.
+                        return@buildString
+                    }
+                    NOT_A_TOKEN -> append(char)
+                    else -> {
+                        if (token.canStopUnquotedString) {
+                            if (endingTokens.none { it == token }) {
+                                // `key: my:value`
+                                //         ^ not allowed here
+                                throw contextualDecodingException(
+                                    "Illegal token $token when reading unquoted String"//,
+                                    //   this@buildString.toString() + char + readUntilNewLine(10),
+                                    //   this@buildString.length
+                                )
+                            }
+                            reuseToken(token)
+                            return@buildString // don't `return`
+                        } else append(char)
+                    }
                 }
-                NOT_A_TOKEN -> append(char)
+            }
+        }
+    }.trimEnd()
+}
+
+/**
+ * Stores to [TokenStream.strBuff]
+ */
+internal fun TokenStream.readDoubleQuotedString() {
+    this.strBuff = buildString {
+        var escape = 0
+        whileNotEOF { char ->
+            when {
+                escape and ESCAPE_8 != 0 -> {
+                    val count = escape and 0xff
+                    check(char.isValidHex()) {
+                        throw contextualDecodingException("Illegal escape hex digit '$char'")
+                    }
+                    // TODO: 2020/4/24
+                    escapeBuff[count] = char
+                    escape++
+                }
+                escape == STATE_DETECT -> {
+                    val es = escapeToChar(char.toInt())
+
+                    escape = if (es != INVALID) {
+                        append(es)
+                        0
+                    } else when (char) {
+                        'x' -> ESCAPE_8
+                        'u' -> ESCAPE_16
+                        'U' -> ESCAPE_32
+                        else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
+                    }
+                }
+                char == DOUBLE_QUOTATION -> return@buildString
                 else -> {
-                    if (token.canStopUnquotedString) {
-                        if (endingTokens.none { it == token }) {
-                            // `key: my:value`
-                            //         ^ not allowed here
-                            throw contextualDecodingException(
-                                "Illegal token $token when reading unquoted String"//,
-                                //   this@buildString.toString() + char + readUntilNewLine(10),
-                                //   this@buildString.length
-                            )
-                        }
-                        reuseToken(token)
-                        return@buildString // don't `return`
-                    } else append(char)
+                    append(char)
                 }
             }
         }

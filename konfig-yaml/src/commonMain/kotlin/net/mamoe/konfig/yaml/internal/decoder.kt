@@ -390,7 +390,7 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         var index: Int = 0
         override val endingTokens: Array<out Token>
-            get() = EMPTY_ENDING_TOKEN
+            get() = EndingTokens.COLON
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
