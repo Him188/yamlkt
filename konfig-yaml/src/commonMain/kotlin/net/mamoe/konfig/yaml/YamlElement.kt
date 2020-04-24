@@ -59,7 +59,7 @@ data class YamlLiteral(
  * "~" and "null" literals are read as [YamlNull].
  */
 object YamlNull : YamlPrimitive() {
-    override val content: String? get() = null
+    override val content: Nothing? get() = null
 }
 
 //////////////
@@ -78,7 +78,7 @@ class YamlMap(
 }
 
 /**
- * Converts this [YamlMapContent] to valid YAML [String] value.
+ * Joins this [YamlMapContent] to valid YAML [String] value.
  * Returns `"{age:12,name:huang}"` for example.
  */
 fun Map<String, YamlElement>.toYamlString(): String {
@@ -104,6 +104,10 @@ class YamlList(
     override fun toString(): String = this.toYamlString()
 }
 
+/**
+ * Joins this [List] to valid YAML [String] value.
+ * Returns `"[foo, bar, test]"` for example.
+ */
 fun List<YamlElement>.toYamlString(): String {
     return this.joinToString(
         separator = ",",
