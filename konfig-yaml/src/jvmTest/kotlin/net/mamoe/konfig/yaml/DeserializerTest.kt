@@ -66,6 +66,7 @@ list2:
 
         val data = TestData(listOf(listOf(1, 1, 1, 1, 1), listOf(1, 1, 1, 1, 1)))
         val string = Kaml.default.stringify(TestData.serializer(), data)
+        println(string)
         assertEquals(data, Yaml.default.parse(TestData.serializer(), string))
     }
 }
