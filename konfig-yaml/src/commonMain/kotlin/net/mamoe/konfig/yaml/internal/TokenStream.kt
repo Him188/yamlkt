@@ -86,7 +86,7 @@ internal val __init = run {
 }
 
 internal inline val NOT_A_TOKEN: Nothing? get() = null
-internal inline val END_OF_LINE: Nothing? get() = null
+internal inline val END_OF_FILE: Nothing? get() = null
 
 /**
  * The stream of [Token]s and [String]s
@@ -143,8 +143,28 @@ internal class TokenStream(
         reuseTokenStack.add(string)
     }
 
+
+    /**
+     * Calls [nextToken] and returns its result which isn't a [Token.LINE_SEPARATOR]
+     *
+     * Returns [END_OF_FILE] if end of file is reached
+     *
+     * If [Token.STRING] is returned, [strBuff] will also be updated
+     */
+    fun nextTokenSkippingEmptyLine(endingTokens: Array<out Token>): Token? {
+        loop@ while (true) {
+            return when (val token = nextToken(endingTokens)) {
+                END_OF_FILE -> null
+                is Token.LINE_SEPARATOR -> continue@loop
+                else -> token
+            }
+        }
+    }
+
     /**
      * Pop the last element of [reuseTokenStack] if possible, or read a token or a string from [source]
+     *
+     * Returns [END_OF_FILE] if end of file is reached
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
