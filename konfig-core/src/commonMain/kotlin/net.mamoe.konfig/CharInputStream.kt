@@ -70,7 +70,7 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
     private var isLastLineSeparator = 0
 
     override val lineNumber: Int get() = _lineNumber - isLastLineSeparator
-    private var _lineNumber: Int = 0
+    private var _lineNumber: Int = 1
 
     override fun read(): Char {
         return this@asCharStream[cur].also { char ->
@@ -106,7 +106,7 @@ fun Input.asCharStream(charset: Charset = Charsets.UTF_8): CharInputStream = obj
     override val currentLine: String get() = line.toString()
     override val lineNumber: Int get() = _lineNumber
 
-    private var _lineNumber = 0
+    private var _lineNumber = 1
 
     private var line: StringBuilder = StringBuilder()
 
