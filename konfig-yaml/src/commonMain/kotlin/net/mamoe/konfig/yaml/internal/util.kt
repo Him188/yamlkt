@@ -22,7 +22,9 @@ internal object HexConverter {
     private val HEX_POW_TABLE: Array<Long> = Array(Long.SIZE_BYTES * 2) { 16.0.pow(it).toLong() }
 
     fun hexToLong(value: String, offset: Int): Long {
-        check(value.length - offset <= Long.SIZE_BYTES * 2) // support unsigned value
+        check(value.length - offset <= Long.SIZE_BYTES * 2) {
+            "max ${Long.SIZE_BYTES * 2} bits, but found ${value.length - offset}"
+        } // support unsigned value
 
         return value.foldFromRightOffsetIndexed(offset, 0L) { index, acc, char ->
             acc + when (char) {

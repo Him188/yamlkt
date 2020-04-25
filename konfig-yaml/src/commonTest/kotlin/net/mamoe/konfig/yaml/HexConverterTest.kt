@@ -23,16 +23,16 @@ internal class HexConverterTest {
     @OptIn(ExperimentalUnsignedTypes::class)
     @Test
     fun binToLong() {
-        assertEquals(0b0, HexConverter.hexToLong("0b0", 2))
-        assertEquals(0b1, HexConverter.hexToLong("0b1", 2))
+        assertEquals(0b0, BinaryConverter.binToLong("0b0", 2))
+        assertEquals(0b1, BinaryConverter.binToLong("0b1", 2))
         assertEquals(0b11111, BinaryConverter.binToLong("0b11111", 2))
         assertEquals(
             0b1111111111111111111111111111111111111111111111111111111111111111u.toLong(),
-            HexConverter.hexToLong("0b1111111111111111111111111111111111111111111111111111111111111111", 2)
+            BinaryConverter.binToLong("0b1111111111111111111111111111111111111111111111111111111111111111", 2)
         )
 
-        assertFailsWith<IllegalArgumentException> { HexConverter.hexToLong("0b", 2) }
-        assertFailsWith<IllegalArgumentException> { HexConverter.hexToLong("0b", 3) }
-        assertFailsWith<IllegalStateException> { HexConverter.hexToLong("0b12", 2) }
+        assertFailsWith<IllegalArgumentException> { BinaryConverter.binToLong("0b", 2) }
+        assertFailsWith<IllegalArgumentException> { BinaryConverter.binToLong("0b", 3) }
+        assertFailsWith<IllegalStateException> { BinaryConverter.binToLong("0b12", 2) }
     }
 }
