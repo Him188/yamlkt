@@ -72,11 +72,12 @@ list: [str, "str2"]
 | Square block lists|  √  |
 | Json-like maps|  √  |
 | Yaml maps|  √  |
-| Nesting |    |
-| Quotations |    |
+| Nesting | √   |
+| Quotations |  √  |
 | Multiline String   |    |
 | Parsing without descriptor | |
 | Anchors   |    |
+| Compound key |    |
 | Byte Order Mark| |
 | Explicit types | |
 
