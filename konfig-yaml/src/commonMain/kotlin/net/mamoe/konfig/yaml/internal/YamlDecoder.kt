@@ -62,9 +62,6 @@ internal class YamlDecoder(
             Token.MULTILINE_LIST_FLAG -> {
                 "-" + nextString(descriptor, index, endingTokens)
             }
-            Token.ESCAPE -> { // unquoted string
-                tokenStream.strBuff!!
-            }
             Token.STRING
             -> {
                 tokenStream.strBuff!!
@@ -205,7 +202,7 @@ internal class YamlDecoder(
                     }
                     val index = descriptor.getElementIndex(tokenStream.strBuff!!)
                     if (tokenStream.nextToken(endingTokensForValue) != Token.COLON) {
-                        throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found ${tokenStream.currentToken} for '${descriptor.serialName}'")
+                        throw tokenStream.contextualDecodingException("There must be a COLON between class key and value but found ${tokenStream.currentToken} for '${descriptor.serialName}'")
                     }
 
                     return if (index != CompositeDecoder.UNKNOWN_NAME) {

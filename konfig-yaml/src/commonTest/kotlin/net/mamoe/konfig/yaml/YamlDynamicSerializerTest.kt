@@ -3,10 +3,14 @@ package net.mamoe.konfig.yaml
 import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.Yaml.Companion.default
+import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
+/**
+ * @see YamlDynamicSerializer
+ */
 internal class YamlDynamicSerializerTest {
     @Test
     fun testDynamicAsMultilineList() {

@@ -42,7 +42,7 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
     object SPACE : Token(' ', false)
 
     object MULTILINE_STRING_FLAG : Token('|', false)
-    object ESCAPE : Token('\\', false)
+   // object ESCAPE : Token('\\', false)
 
 
     object STRING : Token(' ', false) {
@@ -72,8 +72,7 @@ internal val __init = run {
         Token.LINE_SEPARATOR.R,
         Token.SPACE,
         Token.MULTILINE_STRING_FLAG,
-        Token.MULTILINE_LIST_FLAG,
-        Token.ESCAPE
+        Token.MULTILINE_LIST_FLAG
     )
 
     Token.values = arrayOfNulls<Token>(
@@ -235,6 +234,18 @@ internal inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothin
     contract {
         callsInPlace(block, InvocationKind.UNKNOWN)
     }
+    while (!source.endOfInput) {
+        block(source.read())
+    }
+    return null
+}
+
+@OptIn(ExperimentalContracts::class)
+internal inline fun TokenStream.whileNotEOFWithBegin(begin: Char, block: (char: Char) -> Unit): Nothing? {
+    contract {
+        callsInPlace(block, InvocationKind.AT_LEAST_ONCE)
+    }
+    block(begin)
     while (!source.endOfInput) {
         block(source.read())
     }

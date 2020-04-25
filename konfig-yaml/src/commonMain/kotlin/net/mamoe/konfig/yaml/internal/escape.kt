@@ -63,10 +63,13 @@ internal fun TokenStream.readSingleQuotedString() {
         whileNotEOF { char ->
             when {
                 escape -> {
-                    check(char == SINGLE_QUOTATION || char == STRING_ESC) {
-                        throw contextualDecodingException("Illegal escape '$char' when reading single quoted String")
+                    if (char == SINGLE_QUOTATION || char == STRING_ESC) {
+                        append(char)
+                    } else {
+                        // throw contextualDecodingException("Illegal escape '$char' when reading single quoted String")
+                        append(STRING_ESC)
+                        append(char)
                     }
-                    append(char)
                     escape = false
                 }
                 char == STRING_ESC -> escape = true
@@ -82,13 +85,13 @@ internal fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' |
 /**
  * Stores to [TokenStream.strBuff]
  */
+@OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out Token>) {
     this.strBuff = buildString {
-        append(begin)
         var escape = 0
-        whileNotEOF { char ->
+        whileNotEOFWithBegin(begin) { char ->
             when {
-                escape and ESCAPE_8 != 0 -> {
+                escape.takeHighestOneBit() == 0 && escape and ESCAPE_8 != 0 -> {
                     val count = escape and 0xff
                     check(char.isValidHex()) {
                         throw contextualDecodingException("Illegal escape hex digit '$char'")
@@ -110,36 +113,36 @@ internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out
                         else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
                     }
                 }
-                else -> when (val token = Token[char]) {
-                    Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-                    Token.ESCAPE -> {
+                else -> {
+                    if (char == STRING_ESC) {
                         escape = STATE_DETECT
-                    }
-
-                    is Token.LINE_SEPARATOR -> {
-                        // no reuse.
-                        return@buildString
-                    }
-                    NOT_A_TOKEN -> append(char)
-                    else -> {
-                        if (token.canStopUnquotedString) {
-                            if (endingTokens.none { it == token }) {
-                                // `key: my:value`
-                                //         ^ not allowed here
-                                throw contextualDecodingException(
-                                    "Illegal token $token when reading unquoted String"//,
-                                    //   this@buildString.toString() + char + readUntilNewLine(10),
-                                    //   this@buildString.length
-                                )
-                            }
-                            reuseToken(token)
-                            return@buildString // don't `return`
-                        } else append(char)
+                    } else when (val token = Token[char]) {
+                        Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
+                        is Token.LINE_SEPARATOR -> {
+                            // no reuse.
+                            return@buildString
+                        }
+                        NOT_A_TOKEN -> append(char)
+                        else -> {
+                            if (token.canStopUnquotedString) {
+                                if (endingTokens.none { it == token }) {
+                                    // `key: my:value`
+                                    //         ^ not allowed here
+                                    throw contextualDecodingException(
+                                        "Illegal token $token when reading unquoted String"//,
+                                        //   this@buildString.toString() + char + readUntilNewLine(10),
+                                        //   this@buildString.length
+                                    )
+                                }
+                                reuseToken(token)
+                                return@buildString // don't `return`
+                            } else append(char)
+                        }
                     }
                 }
             }
         }
-    }.trimEnd()
+    }.trimEnd { it == ' ' }
 }
 
 /**
