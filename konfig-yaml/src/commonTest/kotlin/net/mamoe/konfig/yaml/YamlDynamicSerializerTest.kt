@@ -77,4 +77,23 @@ internal class YamlDynamicSerializerTest {
             )
         )
     }
+
+    @Test
+    fun testDynamicAsTopLevel() {
+        assertEquals(
+            mapOf(
+                "v" to mapOf(
+                    "foo" to "v1",
+                    "fooBar" to "v2"
+                )
+            ),
+            default.parse(
+                YamlDynamicSerializer, """
+            v:
+              foo: v1
+              fooBar: v2
+        """.trimIndent()
+            )
+        )
+    }
 }

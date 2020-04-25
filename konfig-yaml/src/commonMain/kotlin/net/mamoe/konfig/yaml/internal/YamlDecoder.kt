@@ -496,7 +496,7 @@ internal class YamlDecoder(
                 }
             }
             UnionKind.CONTEXTUAL -> {
-                return when (val token = tokenStream.nextToken(originDecoder?.endingTokensForKey ?: EMPTY_ENDING_TOKEN)) {
+                return when (val token = tokenStream.nextToken(originDecoder?.endingTokensForKey ?: EndingTokens.COLON)) {
                     null -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> JsonLikeMapDecoder()
                     Token.STRING -> {
