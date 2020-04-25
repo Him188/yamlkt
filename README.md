@@ -74,6 +74,7 @@ list: [str, "str2"]
 | Yaml maps|  √  |
 | Nesting | √   |
 | Quotations |  √  |
+| ContextualSerialization | √ |
 | Multiline String   |    |
 | Parsing without descriptor | |
 | Anchors   |    |

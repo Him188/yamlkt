@@ -512,19 +512,19 @@ internal class YamlDecoder(
                     null -> throw YamlDecodingException("Early EOF")
                     Token.MAP_BEGIN -> JsonLikeMapDecoder()
                     Token.STRING -> {
-                        if (originDecoder is YamlDecoder.IndentedDecoder) {
-                            if (!originDecoder.checkIndent(tokenStream.currentIndent)) {
-                                throw contextualDecodingException("Expecting a value")
-                            }
-                        }
+                        // if (originDecoder is YamlDecoder.IndentedDecoder) {
+                        //     if (!originDecoder.checkIndent(tokenStream.currentIndent)) {
+                        //         throw contextualDecodingException("Expecting a value")
+                        //     }
+                        // }
 
-                        // the value is at least a String, and can also be List or Map.
+                        // the value is at least a String, and can also be Map (so there is a ':' following by).
 
                         val beforeIndent = tokenStream.currentIndent
                         val stringValue = tokenStream.strBuff!!
 
                         inner@ while (true) {
-                            return when (val next = tokenStream.nextToken(originDecoder?.endingTokensForValue ?: EMPTY_ENDING_TOKEN)) {
+                            return when (val next = tokenStream.nextToken(EndingTokens.COLON)) { // coz we are detecting whether it is a yaml-like map
                                 END_OF_LINE -> {
                                     tokenStream.strBuff = stringValue
                                     yamlStringDecoder
