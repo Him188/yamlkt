@@ -6,13 +6,14 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.UpdateMode
-import kotlinx.serialization.modules.EmptyModule
 import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.konfig.ExperimentalKonfigApi
 import net.mamoe.konfig.IOFormat
 import net.mamoe.konfig.asCharStream
 import net.mamoe.konfig.yaml.internal.TokenStream
 import net.mamoe.konfig.yaml.internal.YamlDecoder
+import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
 import kotlin.jvm.JvmOverloads
 
 
@@ -25,7 +26,9 @@ import kotlin.jvm.JvmOverloads
 @OptIn(ExperimentalKonfigApi::class)
 class Yaml @JvmOverloads constructor(
     val configuration: YamlConfiguration = YamlConfiguration(),
-    override val context: SerialModule = EmptyModule
+    override val context: SerialModule = SerializersModule {
+        contextual(Any::class, YamlDynamicSerializer)
+    }
 ) : IOFormat, StringFormat {
     @ExperimentalKonfigApi("Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0")
     override fun <T> dumpTo(serializer: SerializationStrategy<T>, value: T, output: Output) {
