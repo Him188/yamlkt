@@ -178,7 +178,7 @@ internal fun TokenStream.readDoubleQuotedString() {
                 }
             }
         }
-    }.trimEnd()
+    }
 }
 
 internal fun CharOutputStream.writeUnquotedString(origin: String) {
