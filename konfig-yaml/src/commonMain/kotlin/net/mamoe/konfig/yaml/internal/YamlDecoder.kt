@@ -149,7 +149,7 @@ internal class YamlDecoder(
      */
     inner class YamlLikeClassDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent, "Class") {
+    ) : IndentedDecoder(baseIndent, "Yaml Class") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON
         override val endingTokensForValue: Array<out Token>
@@ -196,7 +196,7 @@ internal class YamlDecoder(
      */
     inner class BlockMapDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent, "Map") {
+    ) : IndentedDecoder(baseIndent, "Yaml Map") {
         private var index = 0
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON
@@ -237,7 +237,7 @@ internal class YamlDecoder(
     /**
      * Example: `{test: value}`
      */
-    inner class FlowMapDecoder : AbstractDecoder("Flow Map") {
+    inner class FlowMapDecoder : AbstractDecoder("Yaml Flow Map") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON_AND_MAP_END
         override val endingTokensForValue: Array<out Token>
@@ -283,7 +283,7 @@ internal class YamlDecoder(
     /**
      * Example: `{test: value}`
      */
-    inner class FlowClassDecoder : AbstractDecoder("Flow Class") {
+    inner class FlowClassDecoder : AbstractDecoder("Yaml Flow Class") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON_AND_MAP_END
         override val endingTokensForValue: Array<out Token>
@@ -317,7 +317,7 @@ internal class YamlDecoder(
     /**
      * Example: `[foo, bar]`
      */
-    inner class FlowSequenceDecoder : AbstractDecoder("Flow sequence") {
+    inner class FlowSequenceDecoder : AbstractDecoder("Yaml Flow Sequence") {
         override val endingTokensForKey: Array<out Token>
             get() = endingTokensForValue
         override val endingTokensForValue: Array<out Token>
@@ -367,7 +367,7 @@ internal class YamlDecoder(
      */
     inner class BlockSequenceDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent, "Block Sequence") {
+    ) : IndentedDecoder(baseIndent, "Yaml Block Sequence") {
         override fun decodeSequentially(): Boolean = false
         private var index: Int = 0
         override val endingTokensForKey: Array<out Token>
@@ -416,7 +416,7 @@ internal class YamlDecoder(
      */
     private val yamlStringDecoder = YamlStringDecoder()
 
-    inner class YamlStringDecoder : AbstractDecoder("Literal") {
+    inner class YamlStringDecoder : AbstractDecoder("Yaml Literal") {
         override val endingTokensForKey: Array<out Token> get() = error("shouldn't be called")
         override val endingTokensForValue: Array<out Token> get() = error("shouldn't be called")
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = error("shouldn't be called")
@@ -773,7 +773,7 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
     } else 1 // char
 
     val lineNumber = this.source.lineNumber
-    val columnNumber = this.source.columnNumber
+    val columnNumber = this.source.columnNumber - 1
 
     val before = source.currentLine.limitLast(16)
 
