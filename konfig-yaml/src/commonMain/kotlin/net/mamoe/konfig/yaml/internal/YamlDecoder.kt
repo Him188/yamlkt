@@ -479,7 +479,7 @@ internal class YamlDecoder(
                         val stringValue = tokenStream.strBuff!!
 
                         inner@ while (true) {
-                            return when (val next = tokenStream.nextToken(EndingTokens.COLON)) { // coz we are detecting whether it is a yaml-like map
+                            return when (val next = tokenStream.nextToken(EndingTokens.COLON_AND_COMMA)) { // coz we are detecting whether it is a yaml-like map
                                 END_OF_FILE -> {
                                     tokenStream.strBuff = stringValue
                                     yamlStringDecoder
@@ -788,7 +788,7 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
     return contextualDecodingException(
         message,
         text,
-        (before.length - currentTokenLength).coerceAtLeast(0),
+        (before.length - 1/* currentTokenLength */).coerceAtLeast(0),
         position
     )
 }
@@ -828,6 +828,9 @@ internal object EndingTokens {
 
     @JvmStatic
     val COLON: Array<out Token> = arrayOf(Token.COLON)
+
+    @JvmStatic
+    val COLON_AND_COMMA: Array<out Token> = arrayOf(Token.COLON, Token.COMMA)
 
     @JvmStatic
     val LINE_SEPARATOR: Array<out Token> = arrayOf(Token.LINE_SEPARATOR.N, Token.LINE_SEPARATOR.R)
