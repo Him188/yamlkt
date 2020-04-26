@@ -86,7 +86,7 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
                     ?: throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlNull, but found YamlLiteral(\"$str\")")
             }
             is YamlDecoder.AbstractDecoder -> {
-                throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
+                throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlNull from a ${this.name}")
             }
             else -> error("Yaml Internal error: bad decoder: $this")
         }
@@ -108,7 +108,7 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
             is YamlDecoder.BlockMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
             is YamlDecoder.FlowMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
             is YamlDecoder.AbstractDecoder -> {
-                throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
+                throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
             }
             else -> error("Yaml Internal error: bad decoder: $this")
         }
