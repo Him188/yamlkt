@@ -6,6 +6,7 @@ import kotlin.jvm.JvmField
 
 ///////////////////
 // sourcecode from kotlinx.serialization. Copyright 2017-2019 JetBrains s.r.o.
+///////////////////
 
 // mapping from chars to token classes
 private const val CTC_MAX = 0x7e
