@@ -1,7 +1,7 @@
 package net.mamoe.konfig.yaml.internal
 
 import net.mamoe.konfig.CharInputStream
-import net.mamoe.konfig.asCharStream
+import net.mamoe.konfig.charInputStream
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -224,7 +224,7 @@ internal class TokenStream(
     }
 }
 
-internal fun String.asTokenStream(): TokenStream = TokenStream(this.asCharStream())
+internal fun String.asTokenStream(): TokenStream = TokenStream(this.charInputStream())
 
 internal const val SINGLE_QUOTATION = '\''
 internal const val DOUBLE_QUOTATION = '"'

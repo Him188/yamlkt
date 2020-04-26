@@ -9,7 +9,7 @@ internal class CharStreamTest {
 
     @Test
     fun testStringAsCharStream() {
-        with("foo\nbar\ntest".asCharStream()) {
+        with("foo\nbar\ntest".charInputStream()) {
             assertEquals('f', read())
             assertEquals("f", currentLine)
 

@@ -1,11 +1,5 @@
 package net.mamoe.konfig
 
-import kotlinx.io.charsets.Charset
-import kotlinx.io.charsets.Charsets
-import kotlinx.io.charsets.decode
-import kotlinx.io.core.*
-import kotlin.jvm.JvmField
-
 /**
  * A stream for outputting [Char]s
  */
@@ -44,7 +38,7 @@ interface CharInputStream {
     fun read(): Char
 
     // TODO for debug only!! should remove in release
-    fun peakRemaining(): String
+    fun peekRemaining(): String
 }
 
 /**
@@ -57,11 +51,11 @@ fun Char.isLineSeparator() = this == '\n' || this == '\r'
 /**
  * Delegate a [String] to [CharInputStream]
  */
-fun String.asCharStream(): CharInputStream = object : CharInputStream {
+fun String.charInputStream(): CharInputStream = object : CharInputStream {
     private var cur = 0
 
     override val endOfInput: Boolean
-        get() = cur == this@asCharStream.length
+        get() = cur == this@charInputStream.length
     override val currentLine: String
         get() = substring(startIndex = lineStartingCur, endIndex = cur - isLastLineSeparator)
 
@@ -73,7 +67,7 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
     private var _lineNumber: Int = 1
 
     override fun read(): Char {
-        return this@asCharStream[cur].also { char ->
+        return this@charInputStream[cur].also { char ->
             cur++
             if (isLastLineSeparator != 0) {
                 lineStartingCur = cur - isLastLineSeparator
@@ -87,31 +81,70 @@ fun String.asCharStream(): CharInputStream = object : CharInputStream {
         } // don't move cur++ into []
     }
 
-    override fun peakRemaining(): String {
+    override fun peekRemaining(): String {
         val cur = this.cur
         return readRemaining().also { this.cur = cur }
     }
 }
 
 
+fun StringBuilder.charOutputStream(): CharOutputStream = object : CharOutputStream {
+    override fun write(string: CharSequence) {
+        this@charOutputStream.append(string)
+    }
+
+    override fun write(char: Char) {
+        this@charOutputStream.append(char)
+    }
+}
+
+/*
+@ExperimentalStdlibApi
+fun OutputStream.asCharStream(): CharOutputStream = object : CharOutputStream {
+    override fun write(string: CharSequence) {
+        this@asCharStream.write(string.toString().encodeToByteArray())
+    }
+
+    override fun write(char: Char) {
+        this@asCharStream.write(char.toString().encodeToByteArray())
+    }
+}*/
+
+/**
+ * Read all the remaining available chars and call [block]
+ */
+inline fun CharInputStream.readAhead(block: (char: Char) -> Unit) {
+    while (!endOfInput) block(read())
+}
+
+fun CharInputStream.readRemaining(): String {
+    return buildString { readAhead { append(it) } }
+}
+
+fun CharInputStream.readLine(): String = buildString {
+    readAhead { char ->
+        if (char.isLineSeparator()) {
+            return@buildString
+        } else append(char)
+    }
+}
+
+
+/*
 /**
  * Delegate an [Input] to a [CharInputStream]
  *
  * @suppress Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0
  */
 @OptIn(ExperimentalStdlibApi::class)
-@ExperimentalKonfigApi("Input from kotlinx-io is not stable, there is a huge API-incompatible change in kotlinx-io:0.2.0")
-fun Input.asCharStream(charset: Charset = Charsets.UTF_8): CharInputStream = object : CharInputStream {
-    override val endOfInput: Boolean get() = this@asCharStream.endOfInput
+fun InputStream.asCharStream(): CharInputStream = object : CharInputStream {
+    override val endOfInput: Boolean get() = this@asCharStream.available() == 0
     override val currentLine: String get() = line.toString()
     override val lineNumber: Int get() = _lineNumber
 
     private var _lineNumber = 1
 
     private var line: StringBuilder = StringBuilder()
-
-    @OptIn(ExperimentalIoApi::class)
-    private val decoder = charset.newDecoder()
 
     private var isLastLineSeparator = false
 
@@ -143,7 +176,7 @@ fun Input.asCharStream(charset: Charset = Charsets.UTF_8): CharInputStream = obj
 
 
     override fun read(): Char {
-        @OptIn(ExperimentalIoApi::class)
+        this@asCharStream.read()
         if (decoder.decode(this@asCharStream, cache, 1) == 0) {
             throw EOFException("no enough data available to read one char")
         }
@@ -165,42 +198,4 @@ fun Input.asCharStream(charset: Charset = Charsets.UTF_8): CharInputStream = obj
         TODO("not implemented")
     }
 }
-
-fun StringBuilder.asCharStream(): CharOutputStream = object : CharOutputStream {
-    override fun write(string: CharSequence) {
-        this@asCharStream.append(string)
-    }
-
-    override fun write(char: Char) {
-        this@asCharStream.append(char)
-    }
-}
-
-fun Output.asCharStream(): CharOutputStream = object : CharOutputStream {
-    override fun write(string: CharSequence) {
-        this@asCharStream.writeText(string)
-    }
-
-    override fun write(char: Char) {
-        this@asCharStream.writeText(char.toString())
-    }
-}
-
-/**
- * Read all the remaining available chars and call [block]
- */
-inline fun CharInputStream.readAhead(block: (char: Char) -> Unit) {
-    while (!endOfInput) block(read())
-}
-
-fun CharInputStream.readRemaining(): String {
-    return buildString { readAhead { append(it) } }
-}
-
-fun CharInputStream.readLine(): String = buildString {
-    readAhead { char ->
-        if (char.isLineSeparator()) {
-            return@buildString
-        } else append(char)
-    }
-}
+*/

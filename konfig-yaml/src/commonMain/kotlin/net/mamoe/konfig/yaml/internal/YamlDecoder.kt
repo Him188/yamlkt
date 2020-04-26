@@ -726,7 +726,7 @@ private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, ind
     throw YamlSerializationException(
         "$message " +
             "when reading element '${index?.let { descriptor?.getElementName(it) ?: "<decoding index or beginning>" } ?: "<top-level element>"}' " +
-            "in '${descriptor?.serialName ?: "<unknown descriptor>"}'" + " remaining=${tokenStream.source.peakRemaining()}", cause
+            "in '${descriptor?.serialName ?: "<unknown descriptor>"}'" + " remaining=${tokenStream.source.peekRemaining()}", cause
     )
 }
 
