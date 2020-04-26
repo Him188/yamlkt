@@ -4,7 +4,10 @@ import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.columnNumber
 import net.mamoe.konfig.readLine
-import net.mamoe.konfig.yaml.*
+import net.mamoe.konfig.yaml.YamlConfiguration
+import net.mamoe.konfig.yaml.YamlElement
+import net.mamoe.konfig.yaml.YamlLiteral
+import net.mamoe.konfig.yaml.YamlPrimitive
 import net.mamoe.konfig.yaml.internal.EndingTokens.EMPTY_ENDING_TOKEN
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
@@ -17,34 +20,9 @@ internal fun YamlDecoder.nextPrimitive(): YamlPrimitive? {
     val buff = nextString(null, null, EMPTY_ENDING_TOKEN)
 
     return buff?.asYamlNullOrNull()
-        ?: buff?.let { YamlLiteral(buff, tokenStream.strQuoted) }
+        ?: buff?.let { YamlLiteral(buff) }
         ?: throw YamlDecodingException("type mismatch. Expected a String")
     // TODO: 2020/4/18 contextual exception
-}
-
-/**
- * @return `null` if EOF
- */
-internal fun YamlDecoder.nextMap(): YamlMapContent? {
-    TODO()
-}
-
-/**
- * @return `null` if EOF
- */
-internal fun YamlDecoder.nextList(): YamlList? {
-    TODO()
-}
-
-/**
- * @return `null` if EOF
- */
-internal fun YamlDecoder.nextElement(): YamlElement? {
-    TODO()
-}
-
-internal fun YamlDecoder.skipElement(): YamlElement? {
-    TODO()
 }
 
 /**
@@ -70,7 +48,12 @@ internal class YamlDecoder(
         }
     }
 
-    abstract inner class AbstractDecoder : CompositeDecoder, Decoder {
+    abstract inner class AbstractDecoder(
+        /**
+         * The name for its output to help create a pretty exception
+         */
+        @JvmField val name: String
+    ) : CompositeDecoder, Decoder {
         internal val parentYamlDecoder: YamlDecoder get() = this@YamlDecoder
 
 
@@ -150,8 +133,8 @@ internal class YamlDecoder(
     }
 
     abstract inner class IndentedDecoder(
-        @JvmField protected var baseIndent: Int
-    ) : AbstractDecoder() {
+        @JvmField protected var baseIndent: Int, name: String
+    ) : AbstractDecoder(name) {
         @JvmField
         protected var firstIndent = -1
 
@@ -181,7 +164,7 @@ internal class YamlDecoder(
      */
     inner class YamlLikeClassDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent) {
+    ) : IndentedDecoder(baseIndent, "Class") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON
         override val endingTokensForValue: Array<out Token>
@@ -226,9 +209,9 @@ internal class YamlDecoder(
      * test: value
      * ```
      */
-    inner class YamlLikeMapDecoder(
+    inner class BlockMapDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent) {
+    ) : IndentedDecoder(baseIndent, "Map") {
         private var index = 0
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON
@@ -269,7 +252,7 @@ internal class YamlDecoder(
     /**
      * Example: `{test: value}`
      */
-    inner class JsonLikeMapDecoder : AbstractDecoder() {
+    inner class FlowMapDecoder : AbstractDecoder("Flow Map") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON_AND_MAP_END
         override val endingTokensForValue: Array<out Token>
@@ -289,7 +272,7 @@ internal class YamlDecoder(
                     Token.COMMA -> {
                         // that's what we need
                     }
-                    else -> throw contextualDecodingException("There must be a COMMA between json-like map entries but found $token for '${descriptor.serialName}'")
+                    else -> throw contextualDecodingException("There must be a COMMA between flow map entries but found $token for '${descriptor.serialName}'")
                 }
             }
 
@@ -299,7 +282,7 @@ internal class YamlDecoder(
                 Token.MAP_END -> CompositeDecoder.READ_DONE
                 Token.STRING -> {
                     if (tokenStream.nextToken(endingTokensForKey) != Token.COLON) {
-                        throw contextualDecodingException("Expected a COLON between json-like map entries but found $token for '${descriptor.serialName}'")
+                        throw contextualDecodingException("Expected a COLON between flow map entries but found $token for '${descriptor.serialName}'")
                     }
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return index++
@@ -315,7 +298,7 @@ internal class YamlDecoder(
     /**
      * Example: `{test: value}`
      */
-    inner class JsonLikeClassDecoder : AbstractDecoder() {
+    inner class FlowClassDecoder : AbstractDecoder("Flow Class") {
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON_AND_MAP_END
         override val endingTokensForValue: Array<out Token>
@@ -349,7 +332,7 @@ internal class YamlDecoder(
     /**
      * Example: `[foo, bar]`
      */
-    inner class SquareListDecoder : AbstractDecoder() {
+    inner class FlowSequenceDecoder : AbstractDecoder("Flow sequence") {
         override val endingTokensForKey: Array<out Token>
             get() = endingTokensForValue
         override val endingTokensForValue: Array<out Token>
@@ -397,9 +380,9 @@ internal class YamlDecoder(
      * - b
      * ```
      */
-    inner class MultilineListDecoder(
+    inner class BlockSequenceDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent) {
+    ) : IndentedDecoder(baseIndent, "Block Sequence") {
         override fun decodeSequentially(): Boolean = false
         var index: Int = 0
         override val endingTokensForKey: Array<out Token>
@@ -448,7 +431,7 @@ internal class YamlDecoder(
      */
     private val yamlStringDecoder = YamlStringDecoder()
 
-    inner class YamlStringDecoder : AbstractDecoder() {
+    inner class YamlStringDecoder : AbstractDecoder("Literal") {
         override val endingTokensForKey: Array<out Token> get() = error("shouldn't be called")
         override val endingTokensForValue: Array<out Token> get() = error("shouldn't be called")
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = error("shouldn't be called")
@@ -468,15 +451,15 @@ internal class YamlDecoder(
             StructureKind.LIST -> {
                 return when (val token = tokenStream.nextToken(EndingTokens.COMMA)) {
                     null -> throw contextualDecodingException("Early EOF")
-                    Token.LIST_BEGIN -> SquareListDecoder()
-                    Token.MULTILINE_LIST_FLAG -> MultilineListDecoder(tokenStream.currentIndent)
+                    Token.LIST_BEGIN -> FlowSequenceDecoder()
+                    Token.MULTILINE_LIST_FLAG -> BlockSequenceDecoder(tokenStream.currentIndent)
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding list")
                 }
             }
             StructureKind.CLASS -> {
                 return when (val token = tokenStream.nextToken(EndingTokens.COLON)) {
                     null -> throw contextualDecodingException("Early EOF")
-                    Token.MAP_BEGIN -> JsonLikeClassDecoder()
+                    Token.MAP_BEGIN -> FlowClassDecoder()
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         YamlLikeClassDecoder(tokenStream.currentIndent)
@@ -487,10 +470,10 @@ internal class YamlDecoder(
             StructureKind.MAP -> {
                 return when (val token = tokenStream.nextToken(EndingTokens.COLON)) {
                     null -> throw contextualDecodingException("Early EOF")
-                    Token.MAP_BEGIN -> JsonLikeMapDecoder()
+                    Token.MAP_BEGIN -> FlowMapDecoder()
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        YamlLikeMapDecoder(tokenStream.currentIndent)
+                        BlockMapDecoder(tokenStream.currentIndent)
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")
                 }
@@ -498,7 +481,7 @@ internal class YamlDecoder(
             UnionKind.CONTEXTUAL -> {
                 return when (val token = tokenStream.nextToken(originDecoder?.endingTokensForKey ?: EndingTokens.COLON)) {
                     null -> throw contextualDecodingException("Early EOF")
-                    Token.MAP_BEGIN -> JsonLikeMapDecoder()
+                    Token.MAP_BEGIN -> FlowMapDecoder()
                     Token.STRING -> {
                         // if (originDecoder is YamlDecoder.IndentedDecoder) {
                         //     if (!originDecoder.checkIndent(tokenStream.currentIndent)) {
@@ -525,7 +508,7 @@ internal class YamlDecoder(
                                     tokenStream.reuseToken(next)
                                     tokenStream.reuseToken(stringValue)
 
-                                    YamlLikeMapDecoder(beforeIndent)
+                                    BlockMapDecoder(beforeIndent)
                                 }
 
                                 Token.STRING -> {
@@ -549,11 +532,11 @@ internal class YamlDecoder(
                     }
                     Token.LIST_BEGIN -> {
                         tokenStream.reuseToken(token)
-                        SquareListDecoder()
+                        FlowSequenceDecoder()
                     }
                     Token.MULTILINE_LIST_FLAG -> {
                         tokenStream.reuseToken(token)
-                        MultilineListDecoder(tokenStream.currentIndent)
+                        BlockSequenceDecoder(tokenStream.currentIndent)
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding class")
                 }
