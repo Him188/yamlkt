@@ -285,7 +285,7 @@ internal class YamlDecoder(
                 // skip a comma
                 when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForKey)) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                    Token.MAP_END -> CompositeDecoder.READ_DONE
+                    Token.MAP_END -> return CompositeDecoder.READ_DONE
                     Token.COMMA -> {
                         // that's what we need
                     }
