@@ -6,24 +6,9 @@ import net.mamoe.konfig.columnNumber
 import net.mamoe.konfig.readLine
 import net.mamoe.konfig.yaml.YamlConfiguration
 import net.mamoe.konfig.yaml.YamlElement
-import net.mamoe.konfig.yaml.YamlLiteral
-import net.mamoe.konfig.yaml.YamlPrimitive
 import net.mamoe.konfig.yaml.internal.EndingTokens.EMPTY_ENDING_TOKEN
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
-
-
-/**
- * @return `null` if EOF
- */
-internal fun YamlDecoder.nextPrimitive(): YamlPrimitive? {
-    val buff = nextString(null, null, EMPTY_ENDING_TOKEN)
-
-    return buff?.asYamlNullOrNull()
-        ?: buff?.let { YamlLiteral(buff) }
-        ?: throw YamlDecodingException("type mismatch. Expected a String")
-    // TODO: 2020/4/18 contextual exception
-}
 
 /**
  * The parser that provides [YamlElement]s from [TokenStream]
@@ -34,17 +19,17 @@ internal class YamlDecoder(
     override val context: SerialModule,
     override val updateMode: UpdateMode
 ) : Decoder {
-    fun nextString(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): String? {
+    private fun nextString(endingTokens: Array<out Token>): String? {
         val token = tokenStream.nextToken(endingTokens) ?: return null
         return when (token) {
             Token.MULTILINE_LIST_FLAG -> {
-                "-" + nextString(descriptor, index, endingTokens)
+                "-" + nextString(endingTokens)
             }
             Token.STRING
             -> {
                 tokenStream.strBuff!!
             }
-            else -> fail("expected string, found token $token instead", descriptor, index)
+            else -> throw tokenStream.contextualDecodingException("expected string, found token $token instead")
         }
     }
 
@@ -103,7 +88,7 @@ internal class YamlDecoder(
         // endregion
 
         final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
-            return this@YamlDecoder.beginStructureImpl(descriptor, *typeParams, originDecoder = this)
+            return this@YamlDecoder.beginStructureImpl(descriptor, originDecoder = this)
         }
 
         final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
@@ -259,7 +244,7 @@ internal class YamlDecoder(
             get() = EndingTokens.COMMA_AND_MAP_END
 
         override fun decodeSequentially(): Boolean = false
-        var index = 0
+        private var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index.isOdd()) {
                 return index++
@@ -339,7 +324,7 @@ internal class YamlDecoder(
             get() = EndingTokens.COMMA_AND_LIST_END
 
         override fun decodeSequentially(): Boolean = false
-        var index = 0
+        private var index = 0
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
                 return when (tokenStream.nextTokenSkippingEmptyLine(endingTokensForValue)) {
@@ -384,7 +369,7 @@ internal class YamlDecoder(
         baseIndent: Int
     ) : IndentedDecoder(baseIndent, "Block Sequence") {
         override fun decodeSequentially(): Boolean = false
-        var index: Int = 0
+        private var index: Int = 0
         override val endingTokensForKey: Array<out Token>
             get() = endingTokensForValue
         override val endingTokensForValue: Array<out Token>
@@ -440,12 +425,11 @@ internal class YamlDecoder(
     }
 
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
-        return beginStructureImpl(descriptor, *typeParams, originDecoder = null)
+        return beginStructureImpl(descriptor, originDecoder = null)
     }
 
     internal fun beginStructureImpl(
-        descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>,
-        originDecoder: YamlDecoder.AbstractDecoder?
+        descriptor: SerialDescriptor, originDecoder: AbstractDecoder?
     ): CompositeDecoder {
         when (descriptor.kind) {
             StructureKind.LIST -> {
@@ -546,7 +530,7 @@ internal class YamlDecoder(
     }
 
     private fun decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Boolean {
-        return nextString(descriptor, index, endingTokens)?.let { value ->
+        return nextString(endingTokens)?.let { value ->
             when (value) {
                 "~" -> null
                 "0" -> false
@@ -590,8 +574,8 @@ internal class YamlDecoder(
     override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
     // endregion
 
-    private fun nextStringOrNull(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): String? {
-        return nextString(descriptor, index, endingTokens)?.let { value ->
+    private fun nextStringOrNull(endingTokens: Array<out Token>): String? {
+        return nextString(endingTokens)?.let { value ->
             when {
                 value == "~" -> null
                 value.equals("null", ignoreCase = true) -> null
@@ -601,43 +585,43 @@ internal class YamlDecoder(
     }
 
     private fun decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Byte =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withIntegerValue("byte", descriptor, index).limitToByte()
 
     private fun decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Char =
-        nextStringOrNull(descriptor, index, endingTokens)?.let {
+        nextStringOrNull(endingTokens)?.let {
             check(it.length == 1) { "too many chars for a char: $it" }
             it.first()
         } ?: checkNonStrictNullability(descriptor, index)
         ?: 0.toChar()
 
     private fun decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Double =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withDoubleValue("double", descriptor, index)
 
     private fun decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Float =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withFloatValue("float", descriptor, index)
 
     private fun decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Int =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withIntegerValue("int", descriptor, index).limitToInt()
 
     private fun decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Long =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withIntegerValue("long", descriptor, index)
 
     private fun decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): Short =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             .withIntegerValue("short", descriptor, index).limitToShort()
 
     private fun decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>): String =
-        nextStringOrNull(descriptor, index, endingTokens)
+        nextStringOrNull(endingTokens)
             ?: checkNonStrictNullability(descriptor, index)
             ?: ""
 
     private fun decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int?, endingTokens: Array<out Token>) {
-        val value = (nextStringOrNull(descriptor, index, endingTokens)
+        val value = (nextStringOrNull(endingTokens)
             ?: checkNonStrictNullability(descriptor, index))
             ?: return
 
@@ -824,11 +808,6 @@ internal fun String.limitFirst(length: Int): String {
 @OptIn(ExperimentalStdlibApi::class)
 private fun Int.isOdd(): Boolean {
     return this.takeLowestOneBit() == 1
-}
-
-@OptIn(ExperimentalStdlibApi::class)
-private fun Int.isEvenOrZero(): Boolean {
-    return this.shl(31).ushr(31) == 0
 }
 
 internal object EndingTokens {
