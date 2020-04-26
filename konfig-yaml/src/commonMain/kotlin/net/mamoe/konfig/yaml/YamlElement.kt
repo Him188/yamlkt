@@ -35,13 +35,12 @@ sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' ove
      * May return `null` if this is a [YamlNull]
      */
     abstract override val content: String?
-    final override fun toString(): String = contentNotNull
-}
 
-/**
- * @returns [YamlPrimitive.content] if not null, `"null"` otherwise.
- */
-inline val YamlPrimitive.contentNotNull: String get() = content ?: "null"
+    /**
+     * @return `"null"` if this is a [YamlNull], otherwise [content]
+     */
+    final override fun toString(): String = content ?: "null"
+}
 
 /**
  * Class representing YAML literal value. Can be numbers, booleans and strings.
