@@ -46,11 +46,7 @@ sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' ove
  * Class representing YAML literal value. Can be numbers, booleans and strings.
  */
 data class YamlLiteral(
-    override val content: String,
-    /**
-     * Determine whether this value is quoted.
-     */
-    val quoted: Boolean
+    override val content: String
 ) : YamlPrimitive()
 
 /**
