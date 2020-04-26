@@ -10,6 +10,7 @@ import net.mamoe.konfig.charInputStream
 import net.mamoe.konfig.yaml.internal.TokenStream
 import net.mamoe.konfig.yaml.internal.YamlDecoder
 import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
+import net.mamoe.konfig.yaml.internal.YamlMapSerializer
 import kotlin.jvm.JvmOverloads
 
 
@@ -23,8 +24,10 @@ class Yaml @JvmOverloads constructor(
     val configuration: YamlConfiguration = YamlConfiguration(),
     override val context: SerialModule = SerializersModule {
         contextual(Any::class, YamlDynamicSerializer)
-    }
-) : IOFormat, StringFormat {
+    },
+    private val updateMode: UpdateMode = UpdateMode.BANNED
+) : StringFormat {
+    /*
     override fun <T> dumpTo(serializer: SerializationStrategy<T>, value: T, output: OutputStream) {
         TODO("not implemented")
     }
@@ -33,16 +36,18 @@ class Yaml @JvmOverloads constructor(
         return deserializer.deserialize(
             YamlDecoder(
                 configuration,
-                TokenStream(input.asCharStream()), context, UpdateMode.OVERWRITE // TODO: 2020/4/18 check UpdateMode
+                TokenStream(input.asCharStream()), context, UpdateMode.OVERWRITE
             )
         )
-    }
+    }*/
 
     override fun <T> parse(deserializer: DeserializationStrategy<T>, string: String): T {
         return deserializer.deserialize(
             YamlDecoder(
                 configuration,
-                TokenStream(string.charInputStream()), context, UpdateMode.OVERWRITE// TODO: 2020/4/18 check UpdateMode
+                TokenStream(string.charInputStream()),
+                context,
+                updateMode
             )
         )
     }
@@ -67,6 +72,23 @@ class Yaml @JvmOverloads constructor(
                 nonStrictNullability = true
             )
         )
+    }
+}
+
+fun Yaml.parseYamlMap(yamlContent: String): YamlMap {
+    return parse(YamlMap.serializer(), yamlContent)
+}
+
+fun Yaml.parseYamlList(yamlContent: String): YamlList {
+    return parse(YamlList.serializer(), yamlContent)
+}
+
+fun Yaml.parseMap(yamlContent: String): Map<String, Any?> {
+    return when (val v = parse(YamlMapSerializer, yamlContent)) {
+        is Map<*, *> -> {
+            v.mapKeys { it.toString() }
+        }
+        else -> throw IllegalArgumentException("Cannot ")
     }
 }
 

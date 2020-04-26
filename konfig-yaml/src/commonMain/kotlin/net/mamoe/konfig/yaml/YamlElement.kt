@@ -153,6 +153,8 @@ object YamlNull : YamlPrimitive() {
 
 /**
  * Class representing YAML map.
+ *
+ * Yaml can have compound keys. [YamlMap.constrainLiteralKey] can be used to constrain with literal keys.
  */
 @Serializable(with = YamlMapSerializer::class)
 data class YamlMap(
@@ -207,9 +209,50 @@ data class YamlMap(
     }
 }
 
-//////////////
-//// MAPS ////
-//////////////
+/**
+ * @return `true` if all keys are instances of [YamlLiteral]
+ */
+fun YamlMap.allKeysLiteral(): Boolean {
+    return this.all { it.key is YamlLiteral }
+}
+
+/**
+ * Map keys to [String] using [YamlElement.toString], then map values using [YamlElement.content]
+ *
+ * @param constrainLiteralKey If `true`, [IllegalArgumentException] will be thrown if any key is not [YamlLiteral],
+ * If `false`, all keys are mapped using [YamlElement.toString]
+ *
+ * @throws IllegalArgumentException Thrown if any key is not [YamlLiteral] **and** [constrainLiteralKey] is `true`
+ */
+fun YamlMap.toContentMap(constrainLiteralKey: Boolean = true): Map<String, Any?> {
+    return HashMap<String, Any?>(this.size).apply {
+        this@toContentMap.forEach { (key, value) ->
+            if (constrainLiteralKey) {
+                require(key is YamlLiteral) {
+                    "The YamlMap has compound keys and cannot be constrained with literal keys"
+                }
+            }
+            put(key.toString(), value.content)
+        }
+    }
+}
+
+/**
+ * Map keys to [String] using [YamlElement.toString].
+ * @throws IllegalArgumentException if any key is not a [YamlLiteral]
+ */
+fun YamlMap.constrainLiteralKey(): Map<String, YamlElement> {
+    return this.mapKeys { (key, _) ->
+        when (key) {
+            is YamlLiteral -> key.content
+            else -> throw IllegalArgumentException("The YamlMap has compound keys and cannot be constrained with literal keys")
+        }
+    }
+}
+
+///////////////
+//// LISTS ////
+///////////////
 
 /**
  * Class representing YAML sequences.
