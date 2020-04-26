@@ -50,7 +50,7 @@ interface CharInputStream {
 /**
  * Staring from 1
  */
-val CharInputStream.columnNumber: Int get() = currentLine.length
+val CharInputStream.columnNumber: Int get() = currentLine.length + 1
 
 fun Char.isLineSeparator() = this == '\n' || this == '\r'
 
