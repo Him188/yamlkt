@@ -6,6 +6,8 @@ import net.mamoe.konfig.yaml.internal.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
@@ -30,14 +32,17 @@ sealed class YamlElement {
 /**
  * Cast to [YamlElement].
  *
- * Supported types:
- * - [String] and primitives: [YamlLiteral]
- * - `null`: [YamlNull]
- * - [Map] with supported generic types: [YamlMap]
- * - [List] with supported generic type: [YamlList]
- * - [Array] with supported generic type: [YamlList]
+ * Mappings:
+ * - [String] and primitives => [YamlLiteral]
+ * - `null` => [YamlNull]
+ * - [Map] with supported generic types => [YamlMap]
+ * - [List] with supported generic type => [YamlList]
+ * - [Array] with supported generic type => [YamlList]
  *
  * Returns [this] itself if it is a [YamlElement]
+ *
+ * Note that `"null"` and `"~"` are casted to [YamlLiteral] but not [YamlNull].
+ * Only `null` is casted to [YamlNull]
  *
  * @throws IllegalArgumentException if the type isn't supported
  */
@@ -47,12 +52,12 @@ fun Any?.asYamlElement(): YamlElement =
 /**
  * Cast to [YamlElement].
  *
- * Supported types:
- * - [String] and primitives: [YamlLiteral]
- * - `null`: [YamlNull]
- * - [Map] with supported generic types: [YamlMap]
- * - [List] with supported generic type: [YamlList]
- * - [Array] with supported generic type: [YamlList]
+ * Mappings:
+ * - [String] and primitives => [YamlLiteral]
+ * - `null` => [YamlNull]
+ * - [Map] with supported generic types => [YamlMap]
+ * - [List] with supported generic type => [YamlList]
+ * - [Array] with supported generic type => [YamlList]
  *
  * Returns [this] itself if it is a [YamlElement]
  *
@@ -121,6 +126,42 @@ sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' ove
 }
 
 /**
+ * @return `true` if [this] is [YamlNull], `false` otherwise.
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlPrimitive.isNull(): Boolean {
+    contract {
+        returns(false) implies (this@isNull is YamlLiteral)
+        returns(true) implies (this@isNull is YamlNull)
+    }
+    return this == YamlNull
+}
+
+/**
+ * @return `true` if [this] is [YamlNull], `false` otherwise.
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlPrimitive.isNotNull(): Boolean {
+    contract {
+        returns(true) implies (this@isNotNull is YamlLiteral)
+        returns(false) implies (this@isNotNull is YamlNull)
+    }
+    return this == YamlNull
+}
+
+/**
+ * @return [this] as a [YamlLiteral] or `null`
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlPrimitive.asLiteralOrNull(): YamlLiteral? {
+    contract {
+        returns(null) implies (this@asLiteralOrNull is YamlNull)
+        returnsNotNull() implies (this@asLiteralOrNull is YamlLiteral)
+    }
+    return this as? YamlLiteral
+}
+
+/**
  * Class representing YAML literal value. Can be numbers, booleans and strings.
  */
 @Serializable(with = YamlLiteralSerializer::class)
@@ -135,16 +176,9 @@ data class YamlLiteral(
 @Serializable(with = YamlNullSerializer::class)
 object YamlNull : YamlPrimitive() {
     override val content: Nothing? get() = null
-
     fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
-
-    override fun equals(other: Any?): Boolean {
-        return other === this
-    }
-
-    override fun hashCode(): Int {
-        return 1
-    }
+    override fun equals(other: Any?): Boolean = other === this
+    override fun hashCode(): Int = 1
 }
 
 //////////////
@@ -271,6 +305,11 @@ data class YamlList(
         }
     }
 }
+
+/**
+ * Converts [this] to a list containing [YamlElement.content]s
+ */
+fun YamlList.toContentList(): List<Any?> = this.map { it.content }
 
 /**
  * Joins this [List] to valid YAML [String] value.
