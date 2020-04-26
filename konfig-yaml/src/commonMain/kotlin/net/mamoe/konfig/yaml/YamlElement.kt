@@ -1,5 +1,6 @@
 package net.mamoe.konfig.yaml
 
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.internal.BinaryConverter
 import net.mamoe.konfig.yaml.internal.HexConverter
@@ -54,6 +55,9 @@ fun Any?.asYamlElement(): YamlElement =
  *
  * Returns [this] itself if it is a [YamlElement]
  *
+ * Note that `"null"` and `"~"` are casted to [YamlLiteral] but not [YamlNull].
+ * Only `null` is casted to [YamlNull]
+ *
  * @return `null` if the type isn't supported, otherwise casted element.
  */
 fun Any?.asYamlElementOrNull(): YamlElement? = when (this) {
@@ -96,6 +100,7 @@ fun Any?.asYamlElementOrNull(): YamlElement? = when (this) {
  * Class representing YAML scalar (primitive) value.
  * Can be [YamlNull] or [YamlLiteral]
  */
+@Serializable(with = YamlPrimitiveSerializer::class)
 sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' over 'scalar' in Kotlin.
     /**
      * The content of this primitive value.
@@ -117,6 +122,7 @@ sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' ove
 /**
  * Class representing YAML literal value. Can be numbers, booleans and strings.
  */
+@Serializable(with = YamlLiteralSerializer::class)
 data class YamlLiteral(
     override val content: String
 ) : YamlPrimitive()
@@ -125,8 +131,11 @@ data class YamlLiteral(
  * Class representing YAML `null` value.
  * "~" and "null" literals are read as [YamlNull].
  */
+@Serializable(with = YamlNullSerializer::class)
 object YamlNull : YamlPrimitive() {
     override val content: Nothing? get() = null
+
+    fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
 }
 
 //////////////
@@ -136,10 +145,11 @@ object YamlNull : YamlPrimitive() {
 /**
  * Class representing YAML map.
  */
+@Serializable(with = YamlMapSerializer::class)
 open class YamlMap(
     final override val content: Map<YamlElement, YamlElement>
 ) : YamlElement(), Map<YamlElement, YamlElement> by content {
-    override fun toString(): String = content.toYamlString()
+    override fun toString(): String = content.joinToYamlString()
 
     /**
      * Gets a value whose corresponding key's [YamlElement.content] is [key]
@@ -167,19 +177,20 @@ open class YamlMap(
 //////////////
 
 /**
- * Class representing YAML lists.
+ * Class representing YAML sequences.
  */
+@Serializable(with = YamlListSerializer::class)
 class YamlList(
     override val content: List<YamlElement>
 ) : YamlElement(), List<YamlElement> by content {
-    override fun toString(): String = this.toYamlString()
+    override fun toString(): String = this.joinToYamlString()
 }
 
 /**
  * Joins this [List] to valid YAML [String] value.
  * Returns `"[foo, bar, test]"` for example.
  */
-fun List<YamlElement>.toYamlString(): String {
+fun List<YamlElement>.joinToYamlString(): String {
     return this.joinToString(
         separator = ",",
         prefix = "[",
@@ -194,7 +205,7 @@ fun List<YamlElement>.toYamlString(): String {
  * Joins this map to valid YAML [String] value.
  * Returns `"{age:12,name:huang}"` for example.
  */
-internal fun Map<*, *>.toYamlString(): String {
+internal fun Map<*, *>.joinToYamlString(): String {
     return this.entries.joinToString(
         separator = ",",
         prefix = "{",

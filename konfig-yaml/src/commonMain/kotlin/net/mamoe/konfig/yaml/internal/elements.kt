@@ -1,9 +1,11 @@
 package net.mamoe.konfig.yaml.internal
 
+import net.mamoe.konfig.yaml.YamlLiteral
 import net.mamoe.konfig.yaml.YamlNull
+import net.mamoe.konfig.yaml.YamlPrimitive
 
 
-internal fun String.asYamlNullOrNull(): YamlNull? = when {
+private fun String.asYamlNullOrNull(): YamlNull? = when {
     this == "~" -> YamlNull
     this.trimMatching(4) { cur ->
         (this[cur] == 'n' || this[cur] == 'N') &&
@@ -13,6 +15,12 @@ internal fun String.asYamlNullOrNull(): YamlNull? = when {
     } -> YamlNull
 
     else -> null
+}
+
+internal fun String.toYamlLiteralOrYamlNull(isQuoted: Boolean): YamlPrimitive {
+    return if (isQuoted) {
+        YamlLiteral(this)
+    } else this.asYamlNullOrNull() ?: YamlLiteral(this)
 }
 
 internal inline fun String.trimMatching(useLength: Int, block: String.(offset: Int) -> Boolean): Boolean {

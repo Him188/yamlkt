@@ -64,15 +64,18 @@ kotlin {
         val jvmTest by getting {
             dependencies {
                 dependsOn(commonTest)
+                implementation(kotlin("stdlib"))
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
                 implementation("com.charleskorn.kaml:kaml:0.17.0")
+                implementation("org.yaml:snakeyaml:1.26")
             }
         }
 
         val jsTest by getting {
             dependencies {
                 dependsOn(commonTest)
+                implementation(kotlin("stdlib-js"))
                 implementation(kotlin("test-js"))
             }
         }
