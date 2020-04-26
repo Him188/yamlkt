@@ -148,12 +148,13 @@ internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out
 /**
  * Stores to [TokenStream.strBuff]
  */
+@OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readDoubleQuotedString() {
     this.strBuff = buildString {
         var escape = 0
         whileNotEOF { char ->
             when {
-                escape and ESCAPE_8 != 0 -> {
+                escape.takeHighestOneBit() == 0 && escape and ESCAPE_8 != 0 -> {
                     val count = escape and 0xff
                     check(char.isValidHex()) {
                         throw contextualDecodingException("Illegal escape hex digit '$char'")
@@ -177,7 +178,9 @@ internal fun TokenStream.readDoubleQuotedString() {
                 }
                 char == DOUBLE_QUOTATION -> return@buildString
                 else -> {
-                    append(char)
+                    if (char == STRING_ESC) {
+                        escape = STATE_DETECT
+                    } else append(char)
                 }
             }
         }
