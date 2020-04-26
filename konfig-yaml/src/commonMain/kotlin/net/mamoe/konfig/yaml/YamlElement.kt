@@ -10,10 +10,13 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
+import kotlin.reflect.KClass
 
 /**
  * Class representing single YAML element.
  * Can be [YamlPrimitive], [YamlMap] or [YamlList]
+ *
+ * The [YamlElement.toString] function from all [YamlElement] prints texts in YAML format, making it easier to cast to Strings.
  */
 @Serializable(with = YamlElementSerializer::class)
 sealed class YamlElement {
@@ -66,37 +69,38 @@ fun Any?.asYamlElement(): YamlElement =
  *
  * @return `null` if the type isn't supported, otherwise casted element.
  */
-fun Any?.asYamlElementOrNull(): YamlElement? = when (this) {
-    null -> YamlNull
-    is YamlElement -> this
-    is String -> YamlLiteral(this)
-    is Double -> YamlLiteral(this.toString())
-    is Float -> YamlLiteral(this.toString())
-    is Int -> YamlLiteral(this.toString())
-    is Long -> YamlLiteral(this.toString())
-    is Byte -> YamlLiteral(this.toString())
-    is Short -> YamlLiteral(this.toString())
-    is Char -> YamlLiteral(this.toString())
-    is Boolean -> YamlLiteral(this.toString())
-    is Array<*> -> YamlList(this.map { it.asYamlElement() })
-    is ByteArray -> YamlList(this.map { it.asYamlElement() })
-    is IntArray -> YamlList(this.map { it.asYamlElement() })
-    is ShortArray -> YamlList(this.map { it.asYamlElement() })
-    is LongArray -> YamlList(this.map { it.asYamlElement() })
-    is FloatArray -> YamlList(this.map { it.asYamlElement() })
-    is DoubleArray -> YamlList(this.map { it.asYamlElement() })
-    is CharArray -> YamlList(this.map { it.asYamlElement() })
-    is BooleanArray -> YamlList(this.map { it.asYamlElement() })
-    is Map<*, *> -> {
-        val map = HashMap<YamlElement, YamlElement>(this.size)
-        for ((key, value) in this) {
-            map[key.asYamlElement()] = value.asYamlElement()
-        }
-        YamlMap(map)
+fun Any?.asYamlElementOrNull(): YamlElement? = asYamlElementOrNullImpl()
+
+/**
+ * @return `true` if [this] is [YamlNull], `false` otherwise.
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlElement.isNotNull(): Boolean {
+    contract {
+        returns(true) implies (this@isNotNull !is YamlNull)
+        returns(false) implies (this@isNotNull is YamlNull)
     }
-    is List<*> -> YamlList(this.map { it.asYamlElement() })
-    else -> null
+    return this == YamlNull
 }
+
+/**
+ * @return [this] as a [YamlLiteral], `null` otherwise
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlElement.asLiteralOrNull(): YamlLiteral? {
+    contract {
+        returns(null) implies (this@asLiteralOrNull !is YamlLiteral)
+        returnsNotNull() implies (this@asLiteralOrNull is YamlLiteral)
+    }
+    return this as? YamlLiteral
+}
+
+/**
+ * @return [YamlLiteral.content] if this is a [YamlLiteral], `null` otherwise
+ */
+@OptIn(ExperimentalContracts::class)
+val YamlElement.literalContentOrNull: String?
+    get() = (this as? YamlLiteral)?.content
 
 ////////////////////
 //// PRIMITIVES ////
@@ -244,6 +248,27 @@ data class YamlMap(
 }
 
 /**
+ * Get a value then converts it to a primitive type or a [String]
+ *
+ * @throws NoSuchElementException if not found
+ * @throws IllegalArgumentException if [R] is not a primitive type or [String]
+ */
+inline fun <reified R : Any> YamlMap.getPrimitive(key: String): R {
+    return getOrNull(key)?.smartCastPrimitive(R::class) ?: throw NoSuchElementException(key)
+}
+
+/**
+ * Get a value then converts it to a primitive type or a [String]
+ *
+ * @throws IllegalArgumentException if [R] is not a primitive type or [String]
+ *
+ * @return `null` if not found
+ */
+inline fun <reified R : Any> YamlMap.getPrimitiveOrNull(key: String): R? {
+    return getOrNull(key)?.smartCastPrimitive(R::class)
+}
+
+/**
  * @return `true` if all keys are instances of [YamlLiteral]
  */
 fun YamlMap.allKeysLiteral(): Boolean {
@@ -312,6 +337,27 @@ data class YamlList(
 fun YamlList.toContentList(): List<Any?> = this.map { it.content }
 
 /**
+ * Gets a value at index [index] then converts it to a primitive type or a [String]
+ *
+ * @throws IndexOutOfBoundsException if not found
+ * @throws IllegalArgumentException if [R] is not a primitive type or [String]
+ */
+inline fun <reified R : Any> YamlList.getPrimitive(index: Int): R {
+    return getOrNull(index)?.smartCastPrimitive(R::class) ?: throw IndexOutOfBoundsException("$index")
+}
+
+/**
+ * Gets a value at index [index] then converts it to a primitive type or a [String]
+ *
+ * @throws IllegalArgumentException if [R] is not a primitive type or [String]
+ *
+ * @return `null` if not found
+ */
+inline fun <reified R : Any> YamlList.getPrimitiveOrNull(index: Int): R? {
+    return getOrNull(index)?.smartCastPrimitive(R::class)
+}
+
+/**
  * Joins this [List] to valid YAML [String] value.
  * Returns `"[foo, bar, test]"` for example.
  */
@@ -337,4 +383,54 @@ internal fun Map<*, *>.joinToYamlString(): String {
         postfix = "}",
         transform = { (key, value) -> "$key:$value" }
     )
+}
+
+internal fun Any?.asYamlElementOrNullImpl(): YamlElement? = when (this) {
+    null -> YamlNull
+    is YamlElement -> this
+    is String -> YamlLiteral(this)
+    is Double -> YamlLiteral(this.toString())
+    is Float -> YamlLiteral(this.toString())
+    is Int -> YamlLiteral(this.toString())
+    is Long -> YamlLiteral(this.toString())
+    is Byte -> YamlLiteral(this.toString())
+    is Short -> YamlLiteral(this.toString())
+    is Char -> YamlLiteral(this.toString())
+    is Boolean -> YamlLiteral(this.toString())
+    is Array<*> -> YamlList(this.map { it.asYamlElement() })
+    is ByteArray -> YamlList(this.map { it.asYamlElement() })
+    is IntArray -> YamlList(this.map { it.asYamlElement() })
+    is ShortArray -> YamlList(this.map { it.asYamlElement() })
+    is LongArray -> YamlList(this.map { it.asYamlElement() })
+    is FloatArray -> YamlList(this.map { it.asYamlElement() })
+    is DoubleArray -> YamlList(this.map { it.asYamlElement() })
+    is CharArray -> YamlList(this.map { it.asYamlElement() })
+    is BooleanArray -> YamlList(this.map { it.asYamlElement() })
+    is Map<*, *> -> {
+        val map = HashMap<YamlElement, YamlElement>(this.size)
+        for ((key, value) in this) {
+            map[key.asYamlElement()] = value.asYamlElement()
+        }
+        YamlMap(map)
+    }
+    is List<*> -> YamlList(this.map { it.asYamlElement() })
+    else -> null
+}
+
+@Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
+@PublishedApi
+internal fun <R : Any> YamlElement.smartCastPrimitive(clazz: KClass<R>): R { // reduce inlined bytecode size
+    require(this is YamlPrimitive) { "the element is not YamlPrimitive" }
+    return when (clazz) {
+        Byte::class -> this.literalContentOrNull?.toByte()
+        Short::class -> this.literalContentOrNull?.toShort()
+        Int::class -> this.literalContentOrNull?.toInt()
+        Long::class -> this.literalContentOrNull?.toLong()
+        Float::class -> this.literalContentOrNull?.toFloat()
+        Double::class -> this.literalContentOrNull?.toDouble()
+        Char::class -> this.literalContentOrNull?.singleOrNull() ?: error("too many chars")
+        Boolean::class -> this.literalContentOrNull?.toBoolean()
+        String::class -> this.literalContentOrNull
+        else -> null
+    } as? R ?: throw IllegalStateException("$clazz is not a primitive type.")
 }

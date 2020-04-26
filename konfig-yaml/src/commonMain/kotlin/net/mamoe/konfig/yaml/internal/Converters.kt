@@ -87,7 +87,7 @@ internal fun Long.limitToDouble(): Double {
 }
 
 
-private fun String.asYamlNullOrNull(): YamlNull? = when {
+internal fun String.asYamlNullOrNull(): YamlNull? = when {
     this == "~" -> YamlNull
     this.trimMatching(4) { cur ->
         (this[cur] == 'n' || this[cur] == 'N') &&
@@ -129,4 +129,10 @@ internal inline fun String.trimMatching(useLength: Int, block: String.(offset: I
     }
 
     return false
+}
+
+
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun Any.classSimpleName(): String? {
+    return this::class.simpleName
 }

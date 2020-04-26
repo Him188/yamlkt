@@ -3,6 +3,8 @@
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.CompositeEncoder
+import kotlin.jvm.JvmStatic
+import kotlin.jvm.JvmSynthetic
 
 /**
  * Configurations to [Yaml]
@@ -103,6 +105,18 @@ data class YamlConfiguration(
          * Serialize `null` as "null"
          */
         object NULL : NullSerialization("null")
+    }
+
+    companion object {
+
+        /**
+         * Create a [YamlConfiguration] with default values and modify it using [block]
+         */
+        @JvmSynthetic
+        @JvmStatic
+        inline operator fun invoke(block: YamlConfiguration.() -> Unit): YamlConfiguration {
+            return YamlConfiguration().apply(block)
+        }
     }
 }
 

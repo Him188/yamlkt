@@ -31,7 +31,12 @@ object YamlDynamicSerializer : KSerializer<Any> {
             is YamlDecoder.BlockMapDecoder -> mapSerializer.deserialize(this)
             is YamlDecoder.FlowSequenceDecoder -> listSerializer.deserialize(this)
             is YamlDecoder.BlockSequenceDecoder -> listSerializer.deserialize(this)
-            is YamlDecoder.YamlStringDecoder -> this.parentYamlDecoder.tokenStream.strBuff!!
+            is YamlDecoder.YamlStringDecoder -> {
+                val str = this.parentYamlDecoder.tokenStream.strBuff!!
+                if (str.asYamlNullOrNull() != null) {
+                    this.parentYamlDecoder.contextualDecodingException("Unexpected null")
+                } else return@decodeStructure str
+            }
             else -> error("bad decoder returned: $this")
         }
     }
