@@ -1,15 +1,17 @@
 package net.mamoe.konfig.yaml
 
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.internal.BinaryConverter
 import net.mamoe.konfig.yaml.internal.HexConverter
-import net.mamoe.konfig.yaml.internal.YamlDecoder
-import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 /**
  * Class representing single YAML element.
  * Can be [YamlPrimitive], [YamlMap] or [YamlList]
  */
+@Serializable(with = YamlElementSerializer::class)
 sealed class YamlElement {
     /**
      * The content of this primitive value.
@@ -20,25 +22,6 @@ sealed class YamlElement {
      * Prints this element to YAML text
      */
     abstract override fun toString(): String
-
-    companion object : KSerializer<YamlElement> {
-        override val descriptor: SerialDescriptor = SerialDescriptor(YamlElement::class.simpleName!!, UnionKind.CONTEXTUAL)
-
-        override fun deserialize(decoder: Decoder): YamlElement = decoder.decodeStructure(descriptor) {
-            return@decodeStructure when (this) {
-                is YamlDecoder.JsonLikeMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
-                is YamlDecoder.YamlLikeMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
-                is YamlDecoder.SquareListDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
-                is YamlDecoder.MultilineListDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
-                else -> error("bad decoder returned: $this")
-            }
-        }
-
-        override fun serialize(encoder: Encoder, value: YamlElement) {
-            TODO("not implemented")
-        }
-
-    }
 }
 
 
