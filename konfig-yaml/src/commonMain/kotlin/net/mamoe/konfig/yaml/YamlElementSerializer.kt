@@ -132,6 +132,9 @@ internal object YamlListSerializer : KSerializer<YamlList> {
         return@decodeStructure when (this) {
             is YamlDecoder.FlowSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
             is YamlDecoder.BlockSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
+            is YamlDecoder.AbstractDecoder -> {
+                throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlList from a ${this::class.simpleName!!}")
+            }
             else -> error("Yaml Internal error: bad decoder: $this")
         }
     } as? YamlList ?: error("Yaml Internal error: bad YamlElement casted for a list")

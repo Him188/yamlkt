@@ -7,6 +7,8 @@ import net.mamoe.konfig.yaml.internal.HexConverter
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 /**
  * Class representing single YAML element.
@@ -136,6 +138,14 @@ object YamlNull : YamlPrimitive() {
     override val content: Nothing? get() = null
 
     fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
+
+    override fun equals(other: Any?): Boolean {
+        return other === this
+    }
+
+    override fun hashCode(): Int {
+        return 1
+    }
 }
 
 //////////////
@@ -146,8 +156,8 @@ object YamlNull : YamlPrimitive() {
  * Class representing YAML map.
  */
 @Serializable(with = YamlMapSerializer::class)
-open class YamlMap(
-    final override val content: Map<YamlElement, YamlElement>
+data class YamlMap(
+    override val content: Map<YamlElement, YamlElement>
 ) : YamlElement(), Map<YamlElement, YamlElement> by content {
     override fun toString(): String = content.joinToYamlString()
 
@@ -170,6 +180,32 @@ open class YamlMap(
         }
         return null
     }
+
+    companion object {
+        @JvmStatic
+        @JvmName("fromStringToElementMap")
+        operator fun invoke(map: Map<String, YamlElement>): YamlMap {
+            return YamlMap(map.mapKeys { it.asYamlElement() })
+        }
+
+        @JvmStatic
+        @JvmName("fromStringToAnyMap")
+        operator fun invoke(map: Map<String, Any?>): YamlMap {
+            return YamlMap(
+                HashMap<YamlElement, YamlElement>(map.size).apply {
+                    map.forEach { (key, value) ->
+                        put(YamlLiteral(key), value.asYamlElement())
+                    }
+                }
+            )
+        }
+
+        @JvmStatic
+        @JvmName("fromElementToAnyMap")
+        operator fun invoke(map: Map<out YamlElement, Any?>): YamlMap {
+            return YamlMap(map.mapValues { it.asYamlElement() })
+        }
+    }
 }
 
 //////////////
@@ -180,10 +216,18 @@ open class YamlMap(
  * Class representing YAML sequences.
  */
 @Serializable(with = YamlListSerializer::class)
-class YamlList(
+data class YamlList(
     override val content: List<YamlElement>
 ) : YamlElement(), List<YamlElement> by content {
     override fun toString(): String = this.joinToYamlString()
+
+    companion object {
+        @JvmStatic
+        @JvmName("from")
+        operator fun invoke(vararg values: Any?): YamlList {
+            return YamlList(values.map { it.asYamlElement() })
+        }
+    }
 }
 
 /**
