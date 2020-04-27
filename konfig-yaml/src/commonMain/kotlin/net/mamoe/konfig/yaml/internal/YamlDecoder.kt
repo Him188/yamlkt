@@ -29,7 +29,7 @@ internal class YamlDecoder(
             -> {
                 tokenStream.strBuff!!
             }
-            else -> throw tokenStream.contextualDecodingException("expected string, found token $token instead")
+            else -> throw contextualDecodingException("expected string, found token $token instead")
         }
     }
 
@@ -196,7 +196,7 @@ internal class YamlDecoder(
      */
     inner class BlockMapDecoder(
         baseIndent: Int
-    ) : IndentedDecoder(baseIndent, "Yaml Map") {
+    ) : IndentedDecoder(baseIndent, "Yaml Block Map") {
         private var index = 0
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON
@@ -209,7 +209,7 @@ internal class YamlDecoder(
             }
 
             when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForKey)) {
-                END_OF_FILE -> return CompositeDecoder.READ_DONE
+                END_OF_FILE -> return CompositeDecoder.READ_DONE // in block map it's ok
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
@@ -235,7 +235,24 @@ internal class YamlDecoder(
 
 
     /**
-     * Example: `{test: value}`
+     * The block map reading begins after `{`.
+     * Because `{` is used to infer the type.
+     *
+     *
+     * Yaml: `{name: Bob }`
+     * Result: `{ name: 'Bob' }`
+     *
+     * Yaml: `{name: Bob , }`
+     * Result: `{ name: 'Bob' }`
+     *
+     * Yaml: `{name: Bob , , }`
+     * Result: `{ name: 'Bob', null: null }`
+     *
+     * Yaml: `{name: Bob ,age }`
+     * Result: `{ name: 'Bob', age: null }`
+     *
+     * Yaml: `{name: Bob ,age , }`
+     * Result: `{ name: 'Bob', age: null }`
      */
     inner class FlowMapDecoder : AbstractDecoder("Yaml Flow Map") {
         override val endingTokensForKey: Array<out Token>
@@ -251,7 +268,7 @@ internal class YamlDecoder(
             }
             if (index > 1) {
                 // skip a comma
-                when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForKey)) {
+                when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForValue)) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
                     Token.MAP_END -> return CompositeDecoder.READ_DONE
                     Token.COMMA -> {
@@ -270,7 +287,7 @@ internal class YamlDecoder(
                         throw contextualDecodingException("Expected a COLON between flow map entries but found $token for '${descriptor.serialName}'")
                     }
                     tokenStream.reuseToken(tokenStream.strBuff!!)
-                    return index++
+                    index++
                 }
                 else -> throw contextualDecodingException("Illegal token $token for '${descriptor.serialName}'")
             }
@@ -287,26 +304,49 @@ internal class YamlDecoder(
         override val endingTokensForKey: Array<out Token>
             get() = EndingTokens.COLON_AND_MAP_END
         override val endingTokensForValue: Array<out Token>
-            get() = EndingTokens.COMMA
+            get() = EndingTokens.COMMA_AND_MAP_END
+
+        private var index = 0
+        private var firstValueDecoded = false
 
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
+            if (index == 1) {
+                firstValueDecoded = true
+                return 1
+            }
+            if (firstValueDecoded) {
+                // skip a comma
+                when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForValue)) {
+                    END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
+                    Token.MAP_END -> return CompositeDecoder.READ_DONE
+                    Token.COMMA -> {
+                        // that's what we need
+                    }
+                    else -> throw contextualDecodingException("There must be a COMMA between flow map entries but found $token for '${descriptor.serialName}'")
+                }
+            }
+
+            // read key/value
             return when (val token = tokenStream.nextTokenSkippingEmptyLine(endingTokensForKey)) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
                 Token.MAP_END -> CompositeDecoder.READ_DONE
                 Token.STRING -> {
+                    val next = tokenStream.nextToken(endingTokensForKey)
+                    if (next != Token.COLON) {
+                        throw contextualDecodingException("Expected a COLON between flow map entries but found $next for '${descriptor.serialName}'")
+                    }
+                    //   tokenStream.reuseToken(tokenStream.strBuff!!)
                     val index = descriptor.getElementIndex(tokenStream.strBuff!!)
-                    tokenStream.strBuff = null
                     if (index != CompositeDecoder.UNKNOWN_NAME) {
+                        this.index = index
                         index
                     } else {
                         YamlDynamicSerializer.deserialize(this)
                         return decodeElementIndex(descriptor)
                     }
                 }
-                else -> {
-                    throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
-                }
+                else -> throw contextualDecodingException("Illegal token $token for '${descriptor.serialName}'")
             }
         }
 
@@ -753,6 +793,11 @@ internal fun contextualDecodingException(hint: String, text: String, cur: Int, p
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
 internal fun YamlDecoder.contextualDecodingException(hint: String): YamlDecodingException {
     return tokenStream.contextualDecodingException(hint, null, null)
+}
+
+@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
+internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
+    return this.parentYamlDecoder.contextualDecodingException(this.name + ": " + hint)
 }
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
