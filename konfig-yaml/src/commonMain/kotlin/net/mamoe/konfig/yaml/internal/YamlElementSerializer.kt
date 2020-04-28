@@ -105,8 +105,13 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
 
     override fun deserialize(decoder: Decoder): YamlMap = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
-            is YamlDecoder.BlockMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.FlowMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
+            is YamlDecoder.BlockMapDecoder -> {
+                YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.FlowMapDecoder -> {
+                this.parentYamlDecoder.tokenStream.reuseToken(Token.MAP_BEGIN)
+                YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
+            }
             is YamlDecoder.AbstractDecoder -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
             }
