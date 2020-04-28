@@ -562,7 +562,7 @@ internal class YamlDecoder(
                         tokenStream.reuseToken(token)
                         BlockSequenceDecoder(tokenStream.currentIndent)
                     }
-                    else -> throw contextualDecodingException("illegal beginning token $token on decoding class")
+                    else -> throw contextualDecodingException("illegal beginning token $token on decoding contextual")
                 }
             }
             else -> throw contextualDecodingException("unsupported SerialKind ${descriptor.kind}")
@@ -618,7 +618,7 @@ internal class YamlDecoder(
         return nextString(endingTokens)?.let { value ->
             when {
                 value == "~" -> null
-                value.equals("null", ignoreCase = true) -> null
+                value.length == 4 && value.equals("null", ignoreCase = true) -> null
                 else -> value
             }
         }
@@ -820,9 +820,9 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
     val lineNumber = this.source.lineNumber
     val columnNumber = this.source.columnNumber - 1
 
-    val before = source.currentLine.limitLast(16)
+    val before = source.currentLine.limitLast(32)
 
-    val last = source.readLine().limitFirst(16)
+    val last = source.readLine().limitFirst(32)
     val text = if (source.lineNumber != lineNumber) {
         before
     } else {
