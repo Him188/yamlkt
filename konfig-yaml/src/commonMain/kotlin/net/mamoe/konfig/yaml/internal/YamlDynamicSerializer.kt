@@ -34,7 +34,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
             is YamlDecoder.YamlStringDecoder -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
                 if (str.asYamlNullOrNull() != null) {
-                    this.parentYamlDecoder.contextualDecodingException("Unexpected null")
+                    throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
                 } else return@decodeStructure str
             }
             else -> error("bad decoder returned: $this")
