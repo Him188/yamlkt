@@ -861,7 +861,7 @@ private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, ind
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stacktrace
-internal fun contextualDecodingException(hint: String, text: String, cur: Int, position: String): YamlDecodingException {
+internal fun contextualDecodingException(hint: String, text: String, cur: Int, position: String, throwable: Throwable? = null): YamlDecodingException {
     return YamlDecodingException(buildString {
         append(hint)
         append('\n')
@@ -874,13 +874,13 @@ internal fun contextualDecodingException(hint: String, text: String, cur: Int, p
         append(' ')
         append(position)
         append('\n')
-    }, null)
+    }, throwable)
 }
 
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
 internal fun YamlDecoder.contextualDecodingException(hint: String, descriptor: SerialDescriptor? = null, index: Int? = null, throwable: Throwable? = null): YamlDecodingException {
-    return tokenStream.contextualDecodingException(hint, descriptor, index, throwable)
+    return tokenStream.contextualDecodingException("Top-level decoder: $hint", descriptor, index, throwable)
 }
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
@@ -933,7 +933,8 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
         message,
         text,
         (before.length - 1/* currentTokenLength */).coerceAtLeast(0),
-        position
+        position,
+        throwable
     )
 }
 
