@@ -27,7 +27,7 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
             YamlDecoder.Kind.NULL_STRING -> YamlNull
             YamlDecoder.Kind.STRING
             -> {
-                this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+                YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
             else -> error("Yaml Internal error: bad decoder: $this")
         }
@@ -49,7 +49,7 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
             YamlDecoder.Kind.NULL_STRING -> YamlNull
             YamlDecoder.Kind.STRING
             -> {
-                this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+                YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
@@ -74,9 +74,7 @@ internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
                 throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlLiteral, but found YamlNull")
             }
             YamlDecoder.Kind.STRING -> {
-                this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
-                    as? YamlLiteral
-                    ?: throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlLiteral, but found YamlNull")
+                YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlLiteral from a ${this.name}")
@@ -99,9 +97,7 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.NULL_STRING -> YamlNull
             YamlDecoder.Kind.STRING -> {
-                val str = this.parentYamlDecoder.tokenStream.strBuff!!
-                str.toYamlLiteralOrYamlNull(this.parentYamlDecoder.tokenStream.strQuoted) as? YamlNull
-                    ?: throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlNull, but found YamlLiteral(\"$str\")")
+                throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlNull, but found YamlLiteral(\"${parentYamlDecoder.tokenStream.strBuff}\")")
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlNull from a ${this.name}")

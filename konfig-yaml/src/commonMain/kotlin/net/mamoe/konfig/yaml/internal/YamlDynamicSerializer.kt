@@ -47,10 +47,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
                 throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
             }
             YamlDecoder.Kind.STRING -> {
-                val str = this.parentYamlDecoder.tokenStream.strBuff!!
-                if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
-                    throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
-                } else return@decodeStructure str
+                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Unexpected YamlNull")
@@ -107,10 +104,7 @@ object YamlDynamicNullableSerializer : KSerializer<Any?> {
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.STRING -> {
-                val str = this.parentYamlDecoder.tokenStream.strBuff!!
-                if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
-                    return@decodeStructure null
-                } else return@decodeStructure str
+                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!
             }
             YamlDecoder.Kind.NULL_STRING -> {
                 return@decodeStructure null

@@ -1,8 +1,5 @@
 package net.mamoe.konfig.yaml.internal
 
-import net.mamoe.konfig.yaml.YamlLiteral
-import net.mamoe.konfig.yaml.YamlNull
-import net.mamoe.konfig.yaml.YamlPrimitive
 import kotlin.math.pow
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance
@@ -86,23 +83,9 @@ internal fun Long.limitToDouble(): Double {
     error("value is too large for double: $this")
 }
 
-
-internal fun String.asYamlNullOrNull(): YamlNull? = when {
-    this == "~" -> YamlNull
-    this.trimMatching(4) { cur ->
-        (this[cur] == 'n' || this[cur] == 'N') &&
-            (this[cur + 1] == 'u' || this[cur + 1] == 'U') &&
-            (this[cur + 2] == 'l' || this[cur + 2] == 'L') &&
-            (this[cur + 3] == 'l' || this[cur + 3] == 'L')
-    } -> YamlNull
-
-    else -> null
-}
-
-internal fun String.toYamlLiteralOrYamlNull(isQuoted: Boolean): YamlPrimitive {
-    return if (isQuoted) {
-        YamlLiteral(this)
-    } else this.asYamlNullOrNull() ?: YamlLiteral(this)
+internal fun String.optimizeNull(): String? = when (this) {
+    "~", "null", "NULL" -> null
+    else -> this
 }
 
 internal inline fun String.trimMatching(useLength: Int, block: String.(offset: Int) -> Boolean): Boolean {

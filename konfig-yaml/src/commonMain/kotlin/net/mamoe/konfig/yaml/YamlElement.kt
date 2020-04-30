@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.KSerializer

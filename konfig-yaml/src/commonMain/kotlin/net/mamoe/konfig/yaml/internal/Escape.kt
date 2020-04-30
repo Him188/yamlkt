@@ -58,8 +58,8 @@ private const val STATE_DETECT = -2
 /**
  * Stores to [TokenStream.strBuff]
  */
-internal fun TokenStream.readSingleQuotedString() {
-    this.strBuff = buildString {
+internal fun TokenStream.readSingleQuotedString(): String {
+    return buildString {
         var escape = false
         whileNotEOF { char ->
             when {
@@ -91,8 +91,8 @@ private inline fun TokenStream.buildString(builderAction: StringBuilder.() -> Un
  * Stores to [TokenStream.strBuff]
  */
 @OptIn(ExperimentalStdlibApi::class)
-internal fun TokenStream.readUnquotedString(begin: Char) {
-    this.strBuff = buildString {
+internal fun TokenStream.readUnquotedString(begin: Char): String? {
+    return buildString {
         var escape = 0
         whileNotEOFWithBegin(begin) { char ->
             when {
@@ -147,15 +147,15 @@ internal fun TokenStream.readUnquotedString(begin: Char) {
                 }
             }
         }
-    }.trimEnd { it == ' ' }.toString()
+    }.trimEnd { it == ' ' }.toString().optimizeNull()
 }
 
 /**
  * Stores to [TokenStream.strBuff]
  */
 @OptIn(ExperimentalStdlibApi::class)
-internal fun TokenStream.readDoubleQuotedString() {
-    this.strBuff = buildString {
+internal fun TokenStream.readDoubleQuotedString(): String {
+    return buildString {
         var escape = 0
         whileNotEOF { char ->
             when {

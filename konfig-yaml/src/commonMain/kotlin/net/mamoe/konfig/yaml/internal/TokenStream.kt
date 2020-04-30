@@ -129,9 +129,6 @@ internal class TokenStream(
     var strBuff: String? = null
 
     @JvmField
-    var strQuoted: Boolean = false
-
-    @JvmField
     var stringBuilder: StringBuilder = StringBuilder()
 
     /**
@@ -177,7 +174,8 @@ internal class TokenStream(
         whileNotEOF { char ->
             when (val token = Token[char]) {
                 NOT_A_TOKEN -> {
-                    prepareStringAndNextToken(char)
+                    val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
+                    this.strBuff = str
                     //  currentToken = Token.STRING
                     return Token.STRING
                 }
@@ -204,15 +202,12 @@ internal class TokenStream(
      */
     private fun prepareStringAndNextToken(begin: Char) = when (begin) {
         SINGLE_QUOTATION -> {
-            strQuoted = true
             readSingleQuotedString()
         }
         DOUBLE_QUOTATION -> {
-            strQuoted = true
             readDoubleQuotedString()
         }
         else -> { // unquoted
-            strQuoted = false
             readUnquotedString(begin)
         }
     }

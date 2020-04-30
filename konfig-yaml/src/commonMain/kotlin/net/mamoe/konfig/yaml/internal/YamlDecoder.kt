@@ -499,6 +499,7 @@ internal class YamlDecoder(
                     Token.MAP_BEGIN
                     -> tokenStream.reuseToken(next)
 
+                    Token.STRING_NULL,
                     Token.STRING -> tokenStream.reuseToken(next)
                     else -> throw contextualDecodingException("Illegal token $next")
                 }
