@@ -81,8 +81,8 @@ internal class YamlDecoder(
         final override fun decodeInt(): Int = decodeIntElementImpl(null, null)
         final override fun decodeLong(): Long = decodeLongElementImpl(null, null)
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
-        open override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
-        open override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
+        override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
+        override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
         // endregion
 
         final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
@@ -418,8 +418,27 @@ internal class YamlDecoder(
      * Example: `[foo, bar]`
      */
     inner class FlowSequenceDecoder : AbstractDecoder("Yaml Flow Sequence") {
-        override fun decodeSequentially(): Boolean = false
+        override fun decodeNull(): Nothing? = null
+        override fun decodeNotNullMark(): Boolean {
+            return when (val token = tokenStream.nextToken()) {
+                Token.LIST_END -> {
+                    tokenStream.reuseToken(token)
+                    false
+                }
+                Token.STRING -> {
+                    tokenStream.reuseToken(tokenStream.strBuff!!)
+                    true
+                }
+                Token.COMMA -> {
+                    //tokenStream.reuseToken(token)
+                    false
+                }
+                else -> throw contextualDecodingException("Illegal token $token")
+            }
+        }
+
         private var index = 0
+        override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
                 tokenStream.nextToken().let { begin ->
@@ -432,7 +451,43 @@ internal class YamlDecoder(
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected ']'")
                     Token.LIST_END -> CompositeDecoder.READ_DONE // empty list
                     is Token.STRING -> {
-                        tokenStream.reuseToken(tokenStream.strBuff!!)
+                        val originString = tokenStream.strBuff!!
+
+                        when (val next = tokenStream.nextToken()) {
+                            Token.LIST_END -> {
+                                tokenStream.reuseToken(next)
+                                tokenStream.reuseToken(originString)
+                                return index++
+                            }
+                            Token.COMMA -> when (val nextNext = tokenStream.nextToken()) {
+                                Token.LIST_END -> {
+                                    // meet with `, ]`
+                                    // don't retain comma
+                                    tokenStream.reuseToken(nextNext)
+                                    tokenStream.reuseToken(originString)
+                                    return index++
+                                }
+                                else -> {
+                                    if (nextNext != null) {
+                                        tokenStream.reuseToken(nextNext)
+                                    }
+                                    tokenStream.reuseToken(next)
+                                    tokenStream.reuseToken(originString)
+                                }
+                            }
+                            is Token.STRING -> {
+                                // this will be a error. But we should handle them later
+                                tokenStream.reuseToken(tokenStream.strBuff!!)
+                                tokenStream.reuseToken(originString)
+                            }
+                            END_OF_FILE -> {
+                                tokenStream.reuseToken(originString)
+                            }
+                            else -> {
+                                tokenStream.reuseToken(next)
+                                tokenStream.reuseToken(originString)
+                            }
+                        }
                         return index++
                     }
                     Token.LIST_BEGIN,
