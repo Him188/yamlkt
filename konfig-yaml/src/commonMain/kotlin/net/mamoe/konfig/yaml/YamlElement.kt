@@ -238,7 +238,7 @@ data class YamlMap(
         @JvmName("fromStringToAnyMap")
         operator fun invoke(map: Map<String, Any?>): YamlMap {
             return YamlMap(
-                HashMap<YamlElement, YamlElement>(map.size).apply {
+                LinkedHashMap<YamlElement, YamlElement>(map.size).apply {
                     map.forEach { (key, value) ->
                         put(YamlLiteral(key), value.asYamlElement())
                     }
@@ -291,7 +291,7 @@ fun YamlMap.allKeysLiteral(): Boolean {
  * @throws IllegalArgumentException Thrown if any key is not [YamlLiteral] **and** [constrainLiteralKey] is `true`
  */
 fun YamlMap.toContentMap(constrainLiteralKey: Boolean = true): Map<String, Any?> {
-    return HashMap<String, Any?>(this.size).apply {
+    return LinkedHashMap<String, Any?>(this.size).apply {
         this@toContentMap.forEach { (key, value) ->
             if (constrainLiteralKey) {
                 require(key is YamlLiteral) {
@@ -414,7 +414,7 @@ internal fun Any?.asYamlElementOrNullImpl(): YamlElement? = when (this) {
     is CharArray -> YamlList(this.map { it.asYamlElement() })
     is BooleanArray -> YamlList(this.map { it.asYamlElement() })
     is Map<*, *> -> {
-        val map = HashMap<YamlElement, YamlElement>(this.size)
+        val map = LinkedHashMap<YamlElement, YamlElement>(this.size)
         for ((key, value) in this) {
             map[key.asYamlElement()] = value.asYamlElement()
         }
