@@ -28,9 +28,7 @@ internal class YamlElementDeserializingTest {
     @Test
     fun testYamlListSerializer() {
         assertEquals(
-            YamlList(
-                "banana", "apple", "raspberry"
-            ),
+            yamlListOf("banana", "apple", "raspberry"),
             default.parse(
                 YamlList.serializer(), """
                 [banana, apple, raspberry]
