@@ -1,8 +1,12 @@
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
 import net.mamoe.konfig.yaml.*
 
+internal object YamlElementMapSerializer : KSerializer<Map<YamlElement, YamlElement>> by MapSerializer(YamlElement.serializer(), YamlElement.serializer())
+internal object YamlElementListSerializer : KSerializer<List<YamlElement>> by ListSerializer(YamlElement.serializer())
 
 /**
  * The serializer for [YamlElement]. Can be obtained by [YamlElement.serializer]
@@ -16,13 +20,13 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
             YamlDecoder.Kind.BLOCK_MAP
             -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
+                YamlMap(YamlElementMapSerializer.deserialize(this))
             }
             YamlDecoder.Kind.FLOW_SEQUENCE,
             YamlDecoder.Kind.BLOCK_SEQUENCE
             -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+                YamlList(YamlElementListSerializer.deserialize(this))
             }
             YamlDecoder.Kind.NULL_STRING -> YamlNull
             YamlDecoder.Kind.STRING
@@ -120,11 +124,11 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
+                YamlMap(YamlElementMapSerializer.deserialize(this))
             }
             YamlDecoder.Kind.FLOW_MAP -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
+                YamlMap(YamlElementMapSerializer.deserialize(this))
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
@@ -148,11 +152,11 @@ internal object YamlListSerializer : KSerializer<YamlList> {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.FLOW_SEQUENCE -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+                YamlList(YamlElementListSerializer.deserialize(this))
             }
             YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+                YamlList(YamlElementListSerializer.deserialize(this))
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlList from a ${this.name}")

@@ -334,8 +334,20 @@ data class YamlList(
     companion object {
         @JvmStatic
         @JvmName("from")
-        operator fun invoke(vararg values: Any?): YamlList {
+        operator fun invoke(values: Collection<Any?>): YamlList {
             return YamlList(values.map { it.asYamlElement() })
+        }
+
+        @JvmStatic
+        @JvmName("from")
+        operator fun invoke(values: Array<Any?>): YamlList {
+            return YamlList(values.map { it.asYamlElement() })
+        }
+
+        @JvmStatic
+        @JvmName("from")
+        operator fun invoke(values: Sequence<Any?>): YamlList {
+            return YamlList(values.map { it.asYamlElement() }.toList())
         }
     }
 }
