@@ -78,7 +78,7 @@ list: [str, "str2"]
 | Multiline String   |    |
 | Parsing without descriptor | √|
 | Anchors   |    |
-| Compound key |    |
+| Compound key |  √  |
 | Byte Order Mark| |
 | Explicit types | |
 
