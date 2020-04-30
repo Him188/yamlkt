@@ -76,7 +76,7 @@ list: [str, "str2"]
 | Quotations |  √  |
 | ContextualSerialization | √ |
 | Multiline String   |    |
-| Parsing without descriptor | |
+| Parsing without descriptor | √|
 | Anchors   |    |
 | Compound key |    |
 | Byte Order Mark| |
