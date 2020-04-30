@@ -428,12 +428,22 @@ internal class YamlDecoder(
                     }
                 }
 
-                return when (tokenStream.nextTokenSkippingEmptyLine()) {
+                return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected ']'")
                     Token.LIST_END -> CompositeDecoder.READ_DONE // empty list
-                    else -> {
+                    is Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         return index++
+                    }
+                    Token.LIST_BEGIN,
+                    Token.MAP_BEGIN
+                    -> {
+                        tokenStream.reuseToken(token)
+                        // nested structures
+                        return index++
+                    }
+                    else -> {
+                        throw contextualDecodingException("Illegal token $token")
                     }
                 }
             }
