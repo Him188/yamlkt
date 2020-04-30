@@ -258,21 +258,3 @@ internal inline fun TokenStream.whileNotEOFWithBegin(begin: Char, block: (char: 
     return null
 }
 
-/**
- * Use only when creating contextual exception message.
- */
-internal fun TokenStream.readUntilNewLine(limit: Int): String {
-    return buildString {
-        whileNotEOF { char ->
-            if (length >= limit) {
-                append("...")
-                return@buildString
-            }
-            if (char == '\n' || char == '\r') {
-                reuseToken(Token[char]!!)
-                return@buildString
-            }
-            append(char)
-        }
-    }
-}
