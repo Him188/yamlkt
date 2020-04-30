@@ -5,7 +5,6 @@ import net.mamoe.konfig.yaml.internal.YamlDecodingException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertTrue
 
 
 internal class YamlElementDeserializingTest {
@@ -76,20 +75,18 @@ internal class YamlElementDeserializingTest {
 
     @Test
     fun testYamlLiteralSerializerWhenNull() {
-        assertTrue {
-            assertFailsWith<YamlDecodingException> {
+        assertFailsWith<YamlDecodingException> {
+            println(
                 default.parse(
                     YamlLiteral.serializer(), "~"
                 )
-            }.message!!.trim().startsWith("Expected a YamlLiteral, but found YamlNull")
+            )
         }
 
-        assertTrue {
-            assertFailsWith<YamlDecodingException> {
-                default.parse(
-                    YamlLiteral.serializer(), "null"
-                )
-            }.message!!.trim().startsWith("Expected a YamlLiteral, but found YamlNull")
+        assertFailsWith<YamlDecodingException> {
+            default.parse(
+                YamlLiteral.serializer(), "null"
+            )
         }
     }
 
@@ -108,26 +105,20 @@ internal class YamlElementDeserializingTest {
             )
         )
 
-        assertTrue {
-            assertFailsWith<YamlDecodingException> {
-                default.parse(
-                    YamlNull.serializer(), """
+        assertFailsWith<YamlDecodingException> {
+            default.parse(
+                YamlNull.serializer(), """
                         foo
                     """.trimIndent()
-                )
-            }.message!!.trim()
-                .also { println(it) }.startsWith("Expected a YamlNull, but found YamlLiteral(\"foo\")")
+            )
         }
 
-        assertTrue {
-            assertFailsWith<YamlDecodingException> {
-                default.parse(
-                    YamlNull.serializer(), """
+        assertFailsWith<YamlDecodingException> {
+            default.parse(
+                YamlNull.serializer(), """
                         "~"
                     """.trimIndent()
-                )
-            }.message!!.trim()
-                .also { println(it) }.startsWith("Expected a YamlNull, but found YamlLiteral(\"~\")")
+            )
         }
     }
 }
