@@ -87,7 +87,7 @@ internal fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' |
  * Stores to [TokenStream.strBuff]
  */
 @OptIn(ExperimentalStdlibApi::class)
-internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out Token>) {
+internal fun TokenStream.readUnquotedString(begin: Char) {
     this.strBuff = buildString {
         var escape = 0
         whileNotEOFWithBegin(begin) { char ->
@@ -126,15 +126,15 @@ internal fun TokenStream.readUnquotedString(begin: Char, endingTokens: Array<out
                         NOT_A_TOKEN -> append(char)
                         else -> {
                             if (token.canStopUnquotedString) {
-                                if (endingTokens.none { it == token }) {
-                                    // `key: my:value`
-                                    //         ^ not allowed here
-                                    throw contextualDecodingException(
-                                        "Illegal token $token when reading unquoted String"//,
-                                        //   this@buildString.toString() + char + readUntilNewLine(10),
-                                        //   this@buildString.length
-                                    )
-                                }
+                                // if (endingTokens.none { it == token }) {
+                                //     // `key: my:value`
+                                //     //         ^ not allowed here
+                                //     throw contextualDecodingException(
+                                //         "Illegal token $token when reading unquoted String"//,
+                                //         //   this@buildString.toString() + char + readUntilNewLine(10),
+                                //         //   this@buildString.length
+                                //     )
+                                // }
                                 reuseToken(token)
                                 return@buildString // don't `return`
                             } else append(char)

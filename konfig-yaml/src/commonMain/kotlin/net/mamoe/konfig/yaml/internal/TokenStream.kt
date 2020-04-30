@@ -156,9 +156,9 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextTokenSkippingEmptyLine(endingTokens: Array<out Token>): Token? {
+    fun nextTokenSkippingEmptyLine(): Token? {
         loop@ while (true) {
-            return when (val token = nextToken(endingTokens)) {
+            return when (val token = nextToken()) {
                 END_OF_FILE -> null
                 is Token.LINE_SEPARATOR -> continue@loop
                 else -> token
@@ -173,7 +173,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(endingTokens: Array<out Token>): Token? {
+    fun nextToken(): Token? {
         if (reuseTokenStack.isNotEmpty()) {
             val reuse = reuseTokenStack.removeAt(reuseTokenStack.lastIndex)
             if (reuse is String) {
@@ -189,7 +189,7 @@ internal class TokenStream(
         whileNotEOF { char ->
             when (val token = Token[char]) {
                 null -> {
-                    prepareStringAndNextToken(char, endingTokens)
+                    prepareStringAndNextToken(char)
                     currentToken = Token.STRING
                     return Token.STRING
                 }
@@ -214,7 +214,7 @@ internal class TokenStream(
      *
      * Always read a next token after the string being read, and adds to [reuseTokenStack]
      */
-    private fun prepareStringAndNextToken(begin: Char, endingTokens: Array<out Token>) = when (begin) {
+    private fun prepareStringAndNextToken(begin: Char) = when (begin) {
         SINGLE_QUOTATION -> {
             strQuoted = true
             readSingleQuotedString()
@@ -225,7 +225,7 @@ internal class TokenStream(
         }
         else -> { // unquoted
             strQuoted = false
-            readUnquotedString(begin, endingTokens)
+            readUnquotedString(begin)
         }
     }
 }
