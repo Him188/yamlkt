@@ -63,8 +63,7 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
         @JvmField
         var values: Array<Token?>? = null
 
-        @JvmField
-        var valuesLastIndex: Char = 0.toChar()
+        private const val valuesLastIndex: Char = 125.toChar()
 
         operator fun get(char: Char): Token? =
             if (char > valuesLastIndex) null else values!![char.toInt()]
@@ -92,7 +91,6 @@ internal val __init = run {
             set(tokenClass.value.toInt(), tokenClass)
         }
     }
-    Token.valuesLastIndex = Token.values!!.lastIndex.toChar()
 }
 
 internal inline val NOT_A_TOKEN: Nothing? get() = null
@@ -132,6 +130,9 @@ internal class TokenStream(
 
     @JvmField
     var strQuoted: Boolean = false
+
+    @JvmField
+    var stringBuilder: StringBuilder = StringBuilder()
 
     /**
      * Tokens that should be used one more time

@@ -11,24 +11,22 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlElement::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlElement = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.FlowMapDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.FLOW_MAP,
+            YamlDecoder.Kind.BLOCK_MAP
+            -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.BlockMapDecoder -> {
-                this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
-            }
-            is YamlDecoder.FlowSequenceDecoder -> {
+            YamlDecoder.Kind.FLOW_SEQUENCE,
+            YamlDecoder.Kind.BLOCK_SEQUENCE
+            -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.BlockSequenceDecoder -> {
-                this.dontWrapNextStructure = true
-                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
-            }
-            is YamlDecoder.YamlStringDecoder -> {
+            YamlDecoder.Kind.NULL_STRING -> YamlNull
+            YamlDecoder.Kind.STRING
+            -> {
                 this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
             }
             else -> error("Yaml Internal error: bad decoder: $this")
@@ -47,14 +45,15 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlPrimitive::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlPrimitive = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.YamlStringDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.NULL_STRING -> YamlNull
+            YamlDecoder.Kind.STRING
+            -> {
                 this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
             }
-            is YamlDecoder.AbstractDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
             }
-            else -> error("Yaml Internal error: bad decoder: $this")
         }
     }
 
@@ -70,16 +69,18 @@ internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlPrimitive::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlLiteral = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.YamlStringDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.NULL_STRING -> {
+                throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlLiteral, but found YamlNull")
+            }
+            YamlDecoder.Kind.STRING -> {
                 this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
                     as? YamlLiteral
                     ?: throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlLiteral, but found YamlNull")
             }
-            is YamlDecoder.AbstractDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlLiteral from a ${this.name}")
             }
-            else -> error("Yaml Internal error: bad decoder: $this")
         }
     }
 
@@ -95,16 +96,16 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlPrimitive::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlNull = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.YamlStringDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.NULL_STRING -> YamlNull
+            YamlDecoder.Kind.STRING -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
                 str.toYamlLiteralOrYamlNull(this.parentYamlDecoder.tokenStream.strQuoted) as? YamlNull
                     ?: throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlNull, but found YamlLiteral(\"$str\")")
             }
-            is YamlDecoder.AbstractDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlNull from a ${this.name}")
             }
-            else -> error("Yaml Internal error: bad decoder: $this")
         }
     }
 
@@ -120,19 +121,18 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlMap::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlMap = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.BlockMapDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.FlowMapDecoder -> {
+            YamlDecoder.Kind.FLOW_MAP -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.AbstractDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
             }
-            else -> error("Yaml Internal error: bad decoder: $this")
         }
     } as? YamlMap ?: error("Yaml Internal error: bad YamlElement casted for a map")
 
@@ -149,19 +149,18 @@ internal object YamlListSerializer : KSerializer<YamlList> {
     override val descriptor: SerialDescriptor = SerialDescriptor(YamlElement::class.simpleName!!, UnionKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlList = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.FlowSequenceDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.FLOW_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.BlockSequenceDecoder -> {
+            YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
             }
-            is YamlDecoder.AbstractDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlList from a ${this.name}")
             }
-            else -> error("Yaml Internal error: bad decoder: $this")
         }
     } as? YamlList ?: error("Yaml Internal error: bad YamlElement casted for a list")
 

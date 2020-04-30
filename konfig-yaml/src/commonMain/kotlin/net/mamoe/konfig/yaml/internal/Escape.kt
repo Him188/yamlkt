@@ -78,10 +78,14 @@ internal fun TokenStream.readSingleQuotedString() {
                 else -> append(char)
             }
         }
-    }
+    }.toString()
 }
 
 internal fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' || this in 'A'..'Z'
+
+private inline fun TokenStream.buildString(builderAction: StringBuilder.() -> Unit): CharSequence {
+    return this.stringBuilder.clear().apply(builderAction)
+}
 
 /**
  * Stores to [TokenStream.strBuff]
@@ -92,7 +96,7 @@ internal fun TokenStream.readUnquotedString(begin: Char) {
         var escape = 0
         whileNotEOFWithBegin(begin) { char ->
             when {
-                escape.takeHighestOneBit() == 0 && escape and ESCAPE_8 != 0 -> {
+                escape and 0x8000000 == 0 && escape and ESCAPE_8 != 0 -> {
                     val count = escape and 0xff
                     check(char.isValidHex()) {
                         throw contextualDecodingException("Illegal escape hex digit '$char'")
@@ -143,7 +147,7 @@ internal fun TokenStream.readUnquotedString(begin: Char) {
                 }
             }
         }
-    }.trimEnd { it == ' ' }
+    }.trimEnd { it == ' ' }.toString()
 }
 
 /**
@@ -185,7 +189,7 @@ internal fun TokenStream.readDoubleQuotedString() {
                 }
             }
         }
-    }
+    }.toString()
 }
 
 internal fun CharOutputStream.writeUnquotedString(origin: String) {

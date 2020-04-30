@@ -31,35 +31,30 @@ object YamlDynamicSerializer : KSerializer<Any> {
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            // don't
-            //
-
-            is YamlDecoder.FlowMapDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
                 mapSerializer.deserialize(this)
             }
-            is YamlDecoder.BlockMapDecoder -> {
-                this.dontWrapNextStructure = true
-                mapSerializer.deserialize(this)
-            }
-            is YamlDecoder.FlowSequenceDecoder -> {
+            YamlDecoder.Kind.FLOW_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
-            is YamlDecoder.BlockSequenceDecoder -> {
+            YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 listSerializer.deserialize(this)
             }
-            is YamlDecoder.YamlStringDecoder -> {
+            YamlDecoder.Kind.NULL_STRING -> {
+                throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
+            }
+            YamlDecoder.Kind.STRING -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
                 if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
                     throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
                 } else return@decodeStructure str
             }
-            is YamlDecoder.YamlNullStringDecoder -> {
+            else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Unexpected YamlNull")
             }
-            else -> error("bad decoder returned: $this")
         }
     }
 
@@ -99,29 +94,25 @@ object YamlDynamicNullableSerializer : KSerializer<Any?> {
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any? = decoder.decodeStructure(descriptor) {
-        return@decodeStructure when (this) {
-            is YamlDecoder.FlowMapDecoder -> {
+        return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
+            YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
                 mapSerializer.deserialize(this)
             }
-            is YamlDecoder.BlockMapDecoder -> {
-                this.dontWrapNextStructure = true
-                mapSerializer.deserialize(this)
-            }
-            is YamlDecoder.FlowSequenceDecoder -> {
+            YamlDecoder.Kind.FLOW_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
-            is YamlDecoder.BlockSequenceDecoder -> {
+            YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 listSerializer.deserialize(this)
             }
-            is YamlDecoder.YamlStringDecoder -> {
+            YamlDecoder.Kind.STRING -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
                 if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
                     return@decodeStructure null
                 } else return@decodeStructure str
             }
-            is YamlDecoder.YamlNullStringDecoder -> {
+            YamlDecoder.Kind.NULL_STRING -> {
                 return@decodeStructure null
             }
             else -> error("bad decoder returned: $this")

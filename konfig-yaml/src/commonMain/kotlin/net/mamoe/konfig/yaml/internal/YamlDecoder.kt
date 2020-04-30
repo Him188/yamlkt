@@ -39,12 +39,26 @@ internal class YamlDecoder(
         }
     }
 
+
+    enum class Kind {
+        FLOW_CLASS,
+        FLOW_MAP,
+        FLOW_SEQUENCE,
+        STRING,
+        NULL_STRING,
+        BLOCK_CLASS,
+        BLOCK_MAP,
+        BLOCK_SEQUENCE
+    }
+
     abstract inner class AbstractDecoder(
         /**
          * The name for its output to help create a pretty exception
          */
         @JvmField val name: String
     ) : CompositeDecoder, Decoder {
+        abstract val kind: Kind
+
         internal val parentYamlDecoder: YamlDecoder get() = this@YamlDecoder
 
         /**
@@ -130,7 +144,7 @@ internal class YamlDecoder(
     }
 
     abstract inner class IndentedDecoder(
-        @JvmField protected var baseIndent: Int, name: String
+        @JvmField protected val baseIndent: Int, name: String
     ) : AbstractDecoder(name) {
         @JvmField
         protected var firstIndent = -1
@@ -164,6 +178,9 @@ internal class YamlDecoder(
     ) : IndentedDecoder(baseIndent, "Yaml Block Class") {
 
         override fun decodeSequentially(): Boolean = false
+        override val kind: Kind
+            get() = Kind.BLOCK_CLASS
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             when (val token = tokenStream.nextToken()) {
                 null -> return READ_DONE
@@ -206,6 +223,8 @@ internal class YamlDecoder(
         baseIndent: Int
     ) : IndentedDecoder(baseIndent, "Yaml Block Map") {
         private var index = 0
+        override val kind: Kind
+            get() = Kind.BLOCK_MAP
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index.isOdd()) {
@@ -261,6 +280,9 @@ internal class YamlDecoder(
     inner class FlowMapDecoder : AbstractDecoder("Yaml Flow Map") {
 
         override fun decodeNull(): Nothing? = null
+        override val kind: Kind
+            get() = Kind.FLOW_MAP
+
         override fun decodeNotNullMark(): Boolean {
             return when (val token = tokenStream.nextToken()) {
                 Token.MAP_END -> {
@@ -348,6 +370,9 @@ internal class YamlDecoder(
         private var firstValueDecoded = false
 
         override fun decodeNull(): Nothing? = null
+        override val kind: Kind
+            get() = Kind.FLOW_CLASS
+
         override fun decodeNotNullMark(): Boolean {
             return when (val token = tokenStream.nextToken()) {
                 Token.MAP_END -> {
@@ -430,6 +455,9 @@ internal class YamlDecoder(
     inner class FlowSequenceDecoder : AbstractDecoder("Yaml Flow Sequence") {
         private var index = 0
         override fun decodeSequentially(): Boolean = false
+        override val kind: Kind
+            get() = Kind.FLOW_SEQUENCE
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
                 tokenStream.nextToken().let { begin ->
@@ -510,6 +538,8 @@ internal class YamlDecoder(
     ) : IndentedDecoder(baseIndent, "Yaml Block Sequence") {
         override fun decodeSequentially(): Boolean = false
         private var index: Int = 0
+        override val kind: Kind
+            get() = Kind.BLOCK_SEQUENCE
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
@@ -554,6 +584,9 @@ internal class YamlDecoder(
     private val yamlNullStringDecoder = YamlNullStringDecoder()
 
     inner class YamlStringDecoder : AbstractDecoder("Yaml Literal") {
+        override val kind: Kind
+            get() = Kind.STRING
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = error("shouldn't be called")
         override fun endStructure(descriptor: SerialDescriptor) {
         }
@@ -565,6 +598,9 @@ internal class YamlDecoder(
         }
 
         override fun decodeNull(): Nothing? = null
+        override val kind: Kind
+            get() = Kind.NULL_STRING
+
         override fun decodeNotNullMark(): Boolean = false
     }
 
@@ -992,5 +1028,5 @@ internal fun String.limitFirst(length: Int): String {
 
 @OptIn(ExperimentalStdlibApi::class)
 private fun Int.isOdd(): Boolean {
-    return this.takeLowestOneBit() == 1
+    return this and 0b1 != 0
 }
