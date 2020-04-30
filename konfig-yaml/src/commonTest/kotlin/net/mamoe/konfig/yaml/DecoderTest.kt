@@ -149,8 +149,8 @@ internal class DecoderTest {
             }
         }
 
-        default.testBoolean(true, "true", "1", "on", "tRuE")
-        default.testBoolean(false, "false", "0", "off", "oFf")
+        default.testBoolean(true, "true", "1", "TRUE")
+        default.testBoolean(false, "false", "0", "FALSE")
 
         assertFails { default.testBoolean(true, "1.0") }
         nonStrictNumber.testBoolean(true, "1.0", "1.000000000")

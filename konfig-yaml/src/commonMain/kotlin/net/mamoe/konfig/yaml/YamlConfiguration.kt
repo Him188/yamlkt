@@ -3,6 +3,7 @@
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.CompositeEncoder
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
 
@@ -17,13 +18,13 @@ data class YamlConfiguration(
     /**
      * Recognize `null` as `0`, `0.0`, `0f`, "", '', or `false`
      */
-    val nonStrictNullability: Boolean = false,
+    @JvmField val nonStrictNullability: Boolean = false,
     /**
      * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int].
      *
      * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
      */
-    val nonStrictNumber: Boolean = false,
+    @JvmField val nonStrictNumber: Boolean = false,
 
     // encoding
 
@@ -31,21 +32,21 @@ data class YamlConfiguration(
      * Whether the format should encode values that are equal to the default values.
      * @see CompositeEncoder.shouldEncodeElementDefault for more information
      */
-    val encodeDefaultValues: Boolean = false,
+    @JvmField val encodeDefaultValues: Boolean = false,
     /**
      * Encode all strings with quotation.
      */
-    val stringSerialization: StringSerialization = StringSerialization.DOUBLE_QUOTATION,
+    @JvmField val stringSerialization: StringSerialization = StringSerialization.DOUBLE_QUOTATION,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
      */
-    val booleanSerialization: BooleanSerialization = BooleanSerialization.TRUE_FALSE,
+    @JvmField val booleanSerialization: BooleanSerialization = BooleanSerialization.TRUE_FALSE,
     /**
      * The value set for `null` serialization.
      * Default: serialize `null` as "null"
      */
-    val nullSerialization: NullSerialization = NullSerialization.NULL
+    @JvmField val nullSerialization: NullSerialization = NullSerialization.NULL
 ) {
     /**
      * The value set for [String] serialization

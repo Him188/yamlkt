@@ -4,7 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import net.mamoe.konfig.yaml.YamlElement
-import kotlin.jvm.JvmField
+import kotlin.jvm.JvmStatic
 
 
 /**
@@ -24,21 +24,35 @@ import kotlin.jvm.JvmField
 object YamlDynamicSerializer : KSerializer<Any> {
     override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicSerializer", UnionKind.CONTEXTUAL)
 
-    @JvmField
+    @JvmStatic
     internal val listSerializer = ListSerializer(this)
 
-    @JvmField
+    @JvmStatic
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
-            is YamlDecoder.FlowMapDecoder -> mapSerializer.deserialize(this)
-            is YamlDecoder.BlockMapDecoder -> mapSerializer.deserialize(this)
-            is YamlDecoder.FlowSequenceDecoder -> listSerializer.deserialize(this)
-            is YamlDecoder.BlockSequenceDecoder -> listSerializer.deserialize(this)
+            // don't
+            //
+
+            is YamlDecoder.FlowMapDecoder -> {
+                this.dontWrapNextStructure = true
+                mapSerializer.deserialize(this)
+            }
+            is YamlDecoder.BlockMapDecoder -> {
+                this.dontWrapNextStructure = true
+                mapSerializer.deserialize(this)
+            }
+            is YamlDecoder.FlowSequenceDecoder -> {
+                this.dontWrapNextStructure = true
+                listSerializer.deserialize(this)
+            }
+            is YamlDecoder.BlockSequenceDecoder -> {
+                listSerializer.deserialize(this)
+            }
             is YamlDecoder.YamlStringDecoder -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
-                if (str.asYamlNullOrNull() != null) {
+                if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
                     throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
                 } else return@decodeStructure str
             }
@@ -78,10 +92,10 @@ object YamlDynamicSerializer : KSerializer<Any> {
 object YamlDynamicNullableSerializer : KSerializer<Any?> {
     override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicNullableSerializer", UnionKind.CONTEXTUAL)
 
-    @JvmField
+    @JvmStatic
     internal val listSerializer = ListSerializer(this)
 
-    @JvmField
+    @JvmStatic
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any? = decoder.decodeStructure(descriptor) {
@@ -99,12 +113,11 @@ object YamlDynamicNullableSerializer : KSerializer<Any?> {
                 listSerializer.deserialize(this)
             }
             is YamlDecoder.BlockSequenceDecoder -> {
-                this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
             is YamlDecoder.YamlStringDecoder -> {
                 val str = this.parentYamlDecoder.tokenStream.strBuff!!
-                if (str.asYamlNullOrNull() != null) {
+                if (!this.parentYamlDecoder.tokenStream.strQuoted && str.asYamlNullOrNull() != null) {
                     return@decodeStructure null
                 } else return@decodeStructure str
             }

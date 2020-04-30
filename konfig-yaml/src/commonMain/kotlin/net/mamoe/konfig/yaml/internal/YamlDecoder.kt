@@ -758,22 +758,17 @@ internal class YamlDecoder(
     private fun String?.decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int?): Boolean {
         return this?.let { value ->
             when (value) {
-                "~" -> null
-                "0" -> false
-                "1" -> true
-                else -> when (value.toLowerCase()) {
-                    "null" -> null
-                    "true", "on" -> true
-                    "false", "off" -> false
-                    else -> {
-                        if (configuration.nonStrictNumber) {
-                            when (value.withDoubleValue("boolean", descriptor, index).toInt()) {
-                                1 -> return true
-                                0 -> return false
-                            }
+                "null", "~" -> null
+                "1", "true", "TRUE" -> true
+                "0", "false", "FALSE" -> false
+                else -> {
+                    if (configuration.nonStrictNumber) {
+                        when (value.withDoubleValue("boolean", descriptor, index).toInt()) {
+                            1 -> return true
+                            0 -> return false
                         }
-                        fail("illegal boolean value: $value", descriptor, index)
                     }
+                    throw contextualDecodingException("illegal boolean value: $value", descriptor, index)
                 }
             }
         } ?: kotlin.run {
@@ -910,7 +905,12 @@ internal fun contextualDecodingException(hint: String, text: String, cur: Int, p
 
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun YamlDecoder.contextualDecodingException(hint: String, descriptor: SerialDescriptor? = null, index: Int? = null, throwable: Throwable? = null): YamlDecodingException {
+internal fun YamlDecoder.contextualDecodingException(
+    hint: String,
+    descriptor: SerialDescriptor? = null,
+    index: Int? = null,
+    throwable: Throwable? = null
+): YamlDecodingException {
     return tokenStream.contextualDecodingException("Top-level decoder: $hint", descriptor, index, throwable)
 }
 
