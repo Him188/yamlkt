@@ -810,14 +810,17 @@ internal class YamlDecoder(
             check(this != null) // contract
             val canBeHexOrBin = this.length > 2 && this[0] == '0'
 
-            return when {
-                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2).limitToDouble()
-                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2).limitToDouble()
-                else -> kotlin.runCatching {
-                    toDouble()
-                }.getOrElse {
-                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+            if (canBeHexOrBin) {
+                when {
+                    (this[1] == 'x' || this[1] == 'X') -> return HexConverter.hexToLong(this, 2).toDouble()
+                    (this[1] == 'b' || this[1] == 'B') -> return BinaryConverter.binToLong(this, 2).toDouble()
                 }
+            }
+
+            kotlin.runCatching {
+                this.toDouble()
+            }.getOrElse {
+                throw contextualDecodingException("Invalid $typeName: $this", descriptor, index, it)
             }
         }
     }
@@ -834,14 +837,17 @@ internal class YamlDecoder(
             check(this != null) // contract
             val canBeHexOrBin = this.length > 2 && this[0] == '0'
 
-            return when {
-                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2).limitToFloat()
-                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2).limitToFloat()
-                else -> kotlin.runCatching {
-                    this.toFloat()
-                }.getOrElse {
-                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+            if (canBeHexOrBin) {
+                when {
+                    (this[1] == 'x' || this[1] == 'X') -> return HexConverter.hexToLong(this, 2).toFloat()
+                    (this[1] == 'b' || this[1] == 'B') -> return BinaryConverter.binToLong(this, 2).toFloat()
                 }
+            }
+
+            kotlin.runCatching {
+                this.toFloat()
+            }.getOrElse {
+                throw contextualDecodingException("Invalid $typeName: $this", descriptor, index, it)
             }
         }
     }
@@ -858,18 +864,21 @@ internal class YamlDecoder(
             check(this != null) // contract
             val canBeHexOrBin = this.length > 2 && this[0] == '0'
 
-            return when {
-                canBeHexOrBin && (this[1] == 'x' || this[1] == 'X') -> HexConverter.hexToLong(this, 2)
-                canBeHexOrBin && (this[1] == 'b' || this[1] == 'B') -> BinaryConverter.binToLong(this, 2)
-                else -> kotlin.runCatching {
-                    if (configuration.nonStrictNumber) {
-                        this.toDouble().toLong()
-                    } else {
-                        this.toLong()
-                    }
-                }.getOrElse {
-                    throw YamlIllegalNumberFormatException(this, typeName, descriptor, index, it)
+            if (canBeHexOrBin) {
+                when {
+                    (this[1] == 'x' || this[1] == 'X') -> return HexConverter.hexToLong(this, 2)
+                    (this[1] == 'b' || this[1] == 'B') -> return BinaryConverter.binToLong(this, 2)
                 }
+            }
+
+            return this.toLongOrNull() ?: kotlin.runCatching {
+                if (configuration.nonStrictNumber) {
+                    this.toFloat().toLong()
+                } else {
+                    throw contextualDecodingException("Number $this overflow for $typeName", descriptor, index)
+                }
+            }.getOrElse {
+                throw contextualDecodingException("Invalid $typeName: $this", descriptor, index, it)
             }
         }
     }
