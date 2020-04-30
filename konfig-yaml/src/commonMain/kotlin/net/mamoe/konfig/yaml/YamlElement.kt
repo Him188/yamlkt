@@ -334,23 +334,33 @@ data class YamlList(
     companion object {
         @JvmStatic
         @JvmName("from")
-        operator fun invoke(values: Collection<Any?>): YamlList {
+        operator fun invoke(values: Collection<*>): YamlList {
             return YamlList(values.map { it.asYamlElement() })
         }
 
         @JvmStatic
         @JvmName("from")
-        operator fun invoke(values: Array<Any?>): YamlList {
+        operator fun invoke(values: Array<*>): YamlList {
             return YamlList(values.map { it.asYamlElement() })
         }
 
         @JvmStatic
         @JvmName("from")
-        operator fun invoke(values: Sequence<Any?>): YamlList {
+        operator fun invoke(values: Sequence<*>): YamlList {
             return YamlList(values.map { it.asYamlElement() }.toList())
         }
     }
 }
+
+/**
+ * Returns a new read-only [YamlList] of given elements.
+ */
+fun yamlListOf(vararg values: YamlElement): YamlList = YamlList(values)
+
+/**
+ * Returns a new read-only [YamlList] of given elements.
+ */
+fun yamlListOf(vararg values: Any?): YamlList = YamlList(values)
 
 /**
  * Converts [this] to a list containing [YamlElement.content]s
