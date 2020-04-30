@@ -8,6 +8,8 @@ import net.mamoe.konfig.yaml.YamlConfiguration
 import net.mamoe.konfig.yaml.YamlElement
 import kotlin.jvm.JvmField
 
+private inline val READ_DONE: Int get() = CompositeDecoder.READ_DONE
+
 /**
  * The parser that provides [YamlElement]s from [TokenStream]
  */
@@ -163,15 +165,15 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
-                null -> return CompositeDecoder.READ_DONE
+                null -> return READ_DONE
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        return CompositeDecoder.READ_DONE
+                        return READ_DONE
                     }
 
                     if (!checkIndent(tokenStream.currentIndent)) {
-                        return CompositeDecoder.READ_DONE
+                        return READ_DONE
                     }
                     val index = descriptor.getElementIndex(tokenStream.strBuff!!)
                     if (tokenStream.nextToken() != Token.COLON) {
@@ -210,15 +212,15 @@ internal class YamlDecoder(
             }
 
             when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
-                END_OF_FILE -> return CompositeDecoder.READ_DONE // in block map it's ok
+                END_OF_FILE -> return READ_DONE // in block map it's ok
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        return CompositeDecoder.READ_DONE
+                        return READ_DONE
                     }
 
                     if (!checkIndent(tokenStream.currentIndent)) {
-                        return CompositeDecoder.READ_DONE
+                        return READ_DONE
                     }
                     if (tokenStream.nextToken() != Token.COLON) {
                         throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found ${tokenStream.currentToken} for '${descriptor.serialName}'")
@@ -296,7 +298,7 @@ internal class YamlDecoder(
                 // skip a comma
                 when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                    Token.MAP_END -> return CompositeDecoder.READ_DONE
+                    Token.MAP_END -> return READ_DONE
                     Token.COMMA -> {
                         // that's what we need
                     }
@@ -307,12 +309,12 @@ internal class YamlDecoder(
             // read key
             return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                Token.MAP_END -> CompositeDecoder.READ_DONE
+                Token.MAP_END -> READ_DONE
                 Token.COMMA -> { // null entry, meaning `{ name: Bob, }` // we are at ','
                     /*
                      when (val peek = tokenStream.nextTokenSkippingEmptyLine()) {
                          Token.MAP_END -> { // trailing comma is ignored.
-                             return CompositeDecoder.READ_DONE
+                             return READ_DONE
                          }
                          END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
                          else -> tokenStream.reuseToken(peek)
@@ -377,7 +379,7 @@ internal class YamlDecoder(
                 // skip a comma
                 when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                    Token.MAP_END -> return CompositeDecoder.READ_DONE
+                    Token.MAP_END -> return READ_DONE
                     Token.COMMA -> {
                         // that's what we need
                     }
@@ -390,7 +392,7 @@ internal class YamlDecoder(
             // read key/value
             return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                Token.MAP_END -> CompositeDecoder.READ_DONE
+                Token.MAP_END -> READ_DONE
 
                 Token.COMMA -> { // null entry, meaning `{ name: Bob, , }` // we are at ','
                     // multiply null entries are ignored.
@@ -425,25 +427,6 @@ internal class YamlDecoder(
      * Example: `[foo, bar]`
      */
     inner class FlowSequenceDecoder : AbstractDecoder("Yaml Flow Sequence") {
-        override fun decodeNull(): Nothing? = null
-        override fun decodeNotNullMark(): Boolean {
-            return when (val token = tokenStream.nextToken()) {
-                Token.LIST_END -> {
-                    tokenStream.reuseToken(token)
-                    false
-                }
-                Token.STRING -> {
-                    tokenStream.reuseToken(tokenStream.strBuff!!)
-                    true
-                }
-                Token.COMMA -> {
-                    //tokenStream.reuseToken(token)
-                    false
-                }
-                else -> throw contextualDecodingException("Illegal token $token")
-            }
-        }
-
         private var index = 0
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
@@ -453,68 +436,81 @@ internal class YamlDecoder(
                         throw contextualDecodingException("Beginning token must be '[', but found $begin")
                     }
                 }
+            }
 
-                return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
-                    END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected ']'")
-                    Token.LIST_END -> CompositeDecoder.READ_DONE // empty list
-                    is Token.STRING -> {
-                        val originString = tokenStream.strBuff!!
-                        tokenStream.reuseToken(originString)
-
-                        return index++
-                        when (val next = tokenStream.nextToken()) {
-                            Token.LIST_END -> {
-                                tokenStream.reuseToken(next)
-                                tokenStream.reuseToken(originString)
-                            }
-                            Token.COMMA -> when (val nextNext = tokenStream.nextToken()) {
-                                Token.LIST_END -> {
-                                    // meet with `, ]`
-                                    // don't retain comma
-                                    tokenStream.reuseToken(nextNext)
-                                    tokenStream.reuseToken(originString)
-                                }
-                                else -> {
-                                    if (nextNext != null) {
-                                        tokenStream.reuseToken(nextNext)
-                                    }
-                                    tokenStream.reuseToken(next)
-                                    tokenStream.reuseToken(originString)
-                                }
-                            }
-                            is Token.STRING -> {
-                                // this will be a error. But we should handle them later
-                                tokenStream.reuseToken(tokenStream.strBuff!!)
-                                tokenStream.reuseToken(originString)
-                            }
-                            END_OF_FILE -> {
-                                // this will be a error. But we should handle them later
-                                tokenStream.reuseToken(originString)
-                            }
-                            else -> {
-                                tokenStream.reuseToken(next)
-                                tokenStream.reuseToken(originString)
-                            }
+            when (val current = tokenStream.nextToken()) {
+                END_OF_FILE -> throw contextualDecodingException("Unexpected EOF")
+                Token.STRING -> {
+                    val originString = tokenStream.strBuff!!
+                    when (val next = tokenStream.nextToken()) {
+                        Token.COMMA -> {
+                            // ok
+                            tokenStream.reuseToken(originString)
                         }
-                        return index++
-                    }
-
-                    Token.LIST_BEGIN,
-                    Token.MAP_BEGIN
-                    -> {
-                        tokenStream.reuseToken(token)
-                        // nested structures
-                        return index++
-                    }
-                    else -> {
-                        throw contextualDecodingException("Illegal token $token")
+                        Token.LIST_END -> {
+                            // meet with `, ]`, ok
+                            // don't retain comma
+                            tokenStream.reuseToken(next)
+                            tokenStream.reuseToken(originString)
+                        }
+                        else -> {
+                            throw contextualDecodingException("Illegal token $next")
+                        }
                     }
                 }
+                Token.LIST_END -> return READ_DONE
+                Token.COMMA -> when (val next = tokenStream.nextToken()) {
+                    Token.LIST_END -> {
+                        // meet with `, ]`
+                        return READ_DONE
+                    }
+
+                    // nested structures
+                    Token.LIST_BEGIN,
+                    Token.MAP_BEGIN
+                    -> tokenStream.reuseToken(next)
+
+                    Token.STRING -> tokenStream.reuseToken(next)
+                    else -> throw contextualDecodingException("Illegal token $next")
+                }
+
+                // nested structures
+                Token.LIST_BEGIN,
+                Token.MAP_BEGIN
+                -> {
+                    tokenStream.reuseToken(current)
+                    return index++
+                }
+                else ->
+                    throw contextualDecodingException("Illegal token $current")
             }
+            return index++
+            return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
+                END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected ']'")
+                Token.LIST_END -> READ_DONE // empty list
+                is Token.STRING -> {
+                    tokenStream.reuseToken(tokenStream.strBuff!!)
+
+                    return index++
+                }
+
+                Token.LIST_BEGIN,
+                Token.MAP_BEGIN
+                -> {
+                    tokenStream.reuseToken(token)
+                    // nested structures
+                    return index++
+                }
+                else -> {
+                    throw contextualDecodingException("Illegal token $token")
+                }
+            }
+
+
             return when (val token = tokenStream.nextTokenSkippingEmptyLine()) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected ']'")
                 Token.COMMA -> index++
-                Token.LIST_END -> CompositeDecoder.READ_DONE
+                Token.LIST_END -> READ_DONE
                 else -> {
                     throw contextualDecodingException(
                         "COMMA must be used to separate values, but found $token on decoding square list for '${descriptor.serialName}"
@@ -556,18 +552,18 @@ internal class YamlDecoder(
                         is Token.LINE_SEPARATOR -> {
                             // continue
                         }
-                        END_OF_FILE -> return CompositeDecoder.READ_DONE
+                        END_OF_FILE -> return READ_DONE
                         Token.MULTILINE_LIST_FLAG -> {
                             return if (checkIndent(tokenStream.currentIndent)) {
                                 index++
                             } else {
                                 tokenStream.reuseToken(token)
-                                CompositeDecoder.READ_DONE
+                                READ_DONE
                             }
                         }
                         Token.STRING -> {
                             tokenStream.reuseToken(tokenStream.strBuff!!)
-                            return CompositeDecoder.READ_DONE
+                            return READ_DONE
                         }
                         else -> throw contextualDecodingException(
                             "Expected ${Token.MULTILINE_LIST_FLAG.value}, but found $token on decoding multiline list for '${descriptor.serialName}'"
@@ -737,6 +733,9 @@ internal class YamlDecoder(
     override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
     // endregion
 
+    /**
+     * Null represents the value is null, instead of EOF.
+     */
     private fun nextStringOrNull(): String? {
         return nextString()?.let { value ->
             if (value == Token.STRING_NULL) {
