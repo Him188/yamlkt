@@ -42,12 +42,18 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
     object SPACE : Token(' ', false)
 
     object MULTILINE_STRING_FLAG : Token('|', false)
-   // object ESCAPE : Token('\\', false)
+    // object ESCAPE : Token('\\', false)
 
 
     object STRING : Token(' ', false) {
         override fun toString(): String {
             return "STRING"
+        }
+    } // STUB
+
+    object STRING_NULL : Token(' ', false) {
+        override fun toString(): String {
+            return "STRING_NULL"
         }
     } // STUB
 

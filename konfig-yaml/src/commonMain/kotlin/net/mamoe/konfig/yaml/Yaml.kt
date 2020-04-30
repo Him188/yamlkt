@@ -5,10 +5,7 @@ import kotlinx.serialization.modules.SerialModule
 import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.konfig.Language
 import net.mamoe.konfig.charInputStream
-import net.mamoe.konfig.yaml.internal.TokenStream
-import net.mamoe.konfig.yaml.internal.YamlDecoder
-import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
-import net.mamoe.konfig.yaml.internal.classSimpleName
+import net.mamoe.konfig.yaml.internal.*
 import kotlin.jvm.JvmOverloads
 
 
@@ -150,20 +147,30 @@ fun Yaml.parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList 
  * Parse a [Map] from [yamlContent].
  * Support only literal keys.
  *
+ * @param condoneNullKey `true` if ignore entries with null key. Anyway there can only be one null key, otherwise a [YamlDecodingException] will be thrown.
+ *
  * @throws IllegalStateException if a key is not literal. E.g. is compound or `null`
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
  */
-fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String): Map<String, Any?> {
-    when (val v = parse(YamlDynamicSerializer, yamlContent)) {
+fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey: Boolean = false): Map<String, Any?> {
+    when (val v = parse(YamlDynamicNullableSerializer, yamlContent)) {
         is Map<*, *> -> {
-            return v.mapKeys { (key, _) ->
-                checkNotNull(key) { "null key is not allowed" }
+            val result = LinkedHashMap<String, Any?>(v.size)
+
+            v.forEach { (key, value) ->
+                if (!condoneNullKey) {
+                    checkNotNull(key) { "null key is not allowed" }
+                }
+                if (key == null) return@forEach
+
                 if (key is String) {
-                    key.toString()
+                    result[key.toString()] = value
                 } else error("Cannot cast compound key ${key.classSimpleName()} to a String. Consider using `Yaml.parseYamlMap`")
             }
+
+            return result
         }
-        else -> throw IllegalArgumentException("Cannot cast ${v.classSimpleName()} to Map<String, Any?>")
+        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to Map<String, Any?>")
     }
 }
 
@@ -173,8 +180,8 @@ fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String): Map<String, An
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
  */
 fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
-    when (val v = parse(YamlDynamicSerializer, yamlContent)) {
+    when (val v = parse(YamlDynamicNullableSerializer, yamlContent)) {
         is List<*> -> return v
-        else -> throw IllegalArgumentException("Cannot cast ${v.classSimpleName()} to List<Any?>")
+        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
     }
 }

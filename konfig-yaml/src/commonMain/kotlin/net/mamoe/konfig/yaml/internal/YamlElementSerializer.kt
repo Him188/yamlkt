@@ -12,11 +12,25 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
 
     override fun deserialize(decoder: Decoder): YamlElement = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
-            is YamlDecoder.FlowMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.BlockMapDecoder -> YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.FlowSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.BlockSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.YamlStringDecoder -> this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+            is YamlDecoder.FlowMapDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.BlockMapDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.FlowSequenceDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.BlockSequenceDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.YamlStringDecoder -> {
+                this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+            }
             else -> error("Yaml Internal error: bad decoder: $this")
         }
     }
@@ -34,7 +48,9 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
 
     override fun deserialize(decoder: Decoder): YamlPrimitive = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
-            is YamlDecoder.YamlStringDecoder -> this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+            is YamlDecoder.YamlStringDecoder -> {
+                this.parentYamlDecoder.tokenStream.strBuff!!.toYamlLiteralOrYamlNull(parentYamlDecoder.tokenStream.strQuoted)
+            }
             is YamlDecoder.AbstractDecoder -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
             }
@@ -106,11 +122,12 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
     override fun deserialize(decoder: Decoder): YamlMap = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
             is YamlDecoder.BlockMapDecoder -> {
-                YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
             }
             is YamlDecoder.FlowMapDecoder -> {
-                this.parentYamlDecoder.tokenStream.reuseToken(Token.MAP_BEGIN)
-                YamlDynamicSerializer.mapSerializer.deserialize(this).asYamlElement()
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.mapSerializer.deserialize(this).asYamlElement()
             }
             is YamlDecoder.AbstractDecoder -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
@@ -133,8 +150,14 @@ internal object YamlListSerializer : KSerializer<YamlList> {
 
     override fun deserialize(decoder: Decoder): YamlList = decoder.decodeStructure(descriptor) {
         return@decodeStructure when (this) {
-            is YamlDecoder.FlowSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
-            is YamlDecoder.BlockSequenceDecoder -> YamlDynamicSerializer.listSerializer.deserialize(this).asYamlElement()
+            is YamlDecoder.FlowSequenceDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+            }
+            is YamlDecoder.BlockSequenceDecoder -> {
+                this.dontWrapNextStructure = true
+                YamlDynamicNullableSerializer.listSerializer.deserialize(this).asYamlElement()
+            }
             is YamlDecoder.AbstractDecoder -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlList from a ${this.name}")
             }
