@@ -127,6 +127,13 @@ sealed class YamlPrimitive : YamlElement() { // We prefer to use 'primitive' ove
      * @return `"null"` if this is a [YamlNull], otherwise [content]
      */
     final override fun toString(): String = content ?: "null"
+
+    companion object {
+        @JvmName("of")
+        operator fun invoke(value: String?): YamlPrimitive {
+            return if (value == null) YamlNull else YamlLiteral(value)
+        }
+    }
 }
 
 /**
