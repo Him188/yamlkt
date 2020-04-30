@@ -119,7 +119,7 @@ internal fun TokenStream.readUnquotedString(begin: Char) {
                         escape = STATE_DETECT
                     } else when (val token = Token[char]) {
                         Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-                        is Token.LINE_SEPARATOR -> {
+                        Token.LINE_SEPARATOR -> {
                             // no reuse.
                             return@buildString
                         }

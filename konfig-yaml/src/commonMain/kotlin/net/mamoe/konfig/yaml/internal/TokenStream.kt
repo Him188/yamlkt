@@ -13,6 +13,14 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
         return this::class.simpleName + "('$value')"
     }
 
+    override fun equals(other: Any?): Boolean {
+        return other === this
+    }
+
+    override fun hashCode(): Int {
+        return value.hashCode()
+    }
+
     object COMMA : Token(',', true)
     object COLON : Token(':', true)
     // object ObjectCast : TokenClass('!')
@@ -25,19 +33,12 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
     object MAP_BEGIN : Token('{', true)
     object MAP_END : Token('}', true)
 
-    sealed class LINE_SEPARATOR(value: Char) : Token(value, true) {
-        object N : LINE_SEPARATOR('\n') {
-            override fun toString(): String {
-                return "LINE_SEPARATOR.N(\\n)"
-            }
-        }
-
-        object R : LINE_SEPARATOR('\r') {
-            override fun toString(): String {
-                return "LINE_SEPARATOR.R(\\r)"
-            }
+    object LINE_SEPARATOR : Token('\n', true) {
+        override fun toString(): String {
+            return "LINE_SEPARATOR(\\n)"
         }
     }
+
 
     object SPACE : Token(' ', false)
 
@@ -59,10 +60,14 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 
     companion object {
         // char-TokenClass mapping
-        lateinit var values: Array<Token?>
+        @JvmField
+        var values: Array<Token?>? = null
+
+        @JvmField
+        var valuesLastIndex: Char = 0.toChar()
 
         operator fun get(char: Char): Token? =
-            if (char.toInt() > values.lastIndex) null else values[char.toInt()]
+            if (char > valuesLastIndex) null else values!![char.toInt()]
     }
 }
 
@@ -74,8 +79,7 @@ internal val __init = run {
         Token.COLON,
         Token.LIST_END, Token.LIST_BEGIN,
         Token.MAP_END, Token.MAP_BEGIN,
-        Token.LINE_SEPARATOR.N,
-        Token.LINE_SEPARATOR.R,
+        Token.LINE_SEPARATOR,
         Token.SPACE,
         Token.MULTILINE_STRING_FLAG,
         Token.MULTILINE_LIST_FLAG
@@ -88,6 +92,7 @@ internal val __init = run {
             set(tokenClass.value.toInt(), tokenClass)
         }
     }
+    Token.valuesLastIndex = Token.values!!.lastIndex.toChar()
 }
 
 internal inline val NOT_A_TOKEN: Nothing? get() = null
@@ -131,14 +136,13 @@ internal class TokenStream(
     /**
      * Tokens that should be used one more time
      */
-    @JvmField
-    val reuseTokenStack: MutableList<Any> = ArrayList(8)
+    private val reuseTokenStack: Stack<Any> = Stack()
 
     /**
      * Used only in [readUnquotedString]
      */
     @JvmField
-    var escapeBuff = CharArray(16)
+    val escapeBuff = CharArray(16)
 
     fun reuseToken(token: Token) {
         reuseTokenStack.add(token)
@@ -150,23 +154,6 @@ internal class TokenStream(
 
 
     /**
-     * Calls [nextToken] and returns its result which isn't a [Token.LINE_SEPARATOR]
-     *
-     * Returns [END_OF_FILE] if end of file is reached
-     *
-     * If [Token.STRING] is returned, [strBuff] will also be updated
-     */
-    fun nextTokenSkippingEmptyLine(): Token? {
-        loop@ while (true) {
-            return when (val token = nextToken()) {
-                END_OF_FILE -> null
-                is Token.LINE_SEPARATOR -> continue@loop
-                else -> token
-            }
-        }
-    }
-
-    /**
      * Pop the last element of [reuseTokenStack] if possible, or read a token or a string from [source]
      *
      * Returns [END_OF_FILE] if end of file is reached
@@ -174,33 +161,33 @@ internal class TokenStream(
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
     fun nextToken(): Token? {
-        if (reuseTokenStack.isNotEmpty()) {
-            val reuse = reuseTokenStack.removeAt(reuseTokenStack.lastIndex)
-            if (reuse is String) {
-                currentToken = Token.STRING
+        val reuse = reuseTokenStack.popOrNull()
+        if (reuse != null) {
+            return if (reuse is String) {
+                // currentToken = Token.STRING
                 strBuff = reuse
+                Token.STRING
             } else {
-                currentToken = reuse as Token
+                reuse as Token
             }
-            return currentToken
         }
 
         currentIndent = 0
         whileNotEOF { char ->
             when (val token = Token[char]) {
-                null -> {
+                NOT_A_TOKEN -> {
                     prepareStringAndNextToken(char)
-                    currentToken = Token.STRING
+                    //  currentToken = Token.STRING
                     return Token.STRING
                 }
-                is Token.LINE_SEPARATOR -> {
+                Token.LINE_SEPARATOR -> {
                     currentIndent = 0
                 }
                 Token.SPACE -> {
                     currentIndent++
                 }
                 else -> {
-                    currentToken = token
+                    //     currentToken = token
                     return token
                 }
             }
@@ -258,3 +245,35 @@ internal inline fun TokenStream.whileNotEOFWithBegin(begin: Char, block: (char: 
     return null
 }
 
+
+@Suppress("UNCHECKED_CAST")
+private class Stack<T> {
+    @JvmField
+    var cur = 0
+
+    @JvmField
+    var currentSize = 64
+
+    @JvmField
+    var content: Array<Any?> = arrayOfNulls(currentSize)
+
+    fun increase() {
+        val new = content.size.let { it + it shr 1 }
+        currentSize = new
+        content = content.copyOf(currentSize)
+    }
+
+    fun add(value: T) {
+        if (cur == currentSize) {
+            increase()
+        }
+        content[cur++] = value
+    }
+
+    fun popOrNull(): T? {
+        if (cur == 0) {
+            return null
+        }
+        return content[--cur] as T
+    }
+}

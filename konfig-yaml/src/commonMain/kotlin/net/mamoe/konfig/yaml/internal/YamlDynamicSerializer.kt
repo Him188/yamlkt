@@ -4,6 +4,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import net.mamoe.konfig.yaml.YamlElement
+import kotlin.jvm.JvmField
 
 
 /**
@@ -21,9 +22,12 @@ import net.mamoe.konfig.yaml.YamlElement
  * A best usage of this serializer is to deserialize [YamlElement]
  */
 object YamlDynamicSerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor = SerialDescriptor(YamlDynamicSerializer::class.qualifiedName!!, UnionKind.CONTEXTUAL)
+    override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicSerializer", UnionKind.CONTEXTUAL)
 
+    @JvmField
     internal val listSerializer = ListSerializer(this)
+
+    @JvmField
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any = decoder.decodeStructure(descriptor) {
@@ -72,9 +76,12 @@ object YamlDynamicSerializer : KSerializer<Any> {
  * @see YamlDynamicSerializer the non-null serializer
  */
 object YamlDynamicNullableSerializer : KSerializer<Any?> {
-    override val descriptor: SerialDescriptor = SerialDescriptor(YamlDynamicNullableSerializer::class.qualifiedName!!, UnionKind.CONTEXTUAL)
+    override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicNullableSerializer", UnionKind.CONTEXTUAL)
 
+    @JvmField
     internal val listSerializer = ListSerializer(this)
+
+    @JvmField
     internal val mapSerializer = MapSerializer(this, this)
 
     override fun deserialize(decoder: Decoder): Any? = decoder.decodeStructure(descriptor) {
