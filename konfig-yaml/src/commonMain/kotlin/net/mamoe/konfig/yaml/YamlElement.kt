@@ -49,6 +49,8 @@ sealed class YamlElement {
  * Note that `"null"` and `"~"` are casted to [YamlLiteral] but not [YamlNull].
  * Only `null` is casted to [YamlNull]
  *
+ * This function is much more slower than contextual deserializing.
+ *
  * @throws IllegalArgumentException if the type isn't supported
  */
 fun Any?.asYamlElement(): YamlElement =
@@ -68,6 +70,8 @@ fun Any?.asYamlElement(): YamlElement =
  *
  * Note that `"null"` and `"~"` are casted to [YamlLiteral] but not [YamlNull].
  * Only `null` is casted to [YamlNull]
+ *
+ * This function is much more slower than contextual deserializing.
  *
  * @return `null` if the type isn't supported, otherwise casted element.
  */
