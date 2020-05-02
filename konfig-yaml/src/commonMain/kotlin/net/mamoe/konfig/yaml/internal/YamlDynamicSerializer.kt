@@ -22,7 +22,7 @@ import kotlin.jvm.JvmStatic
  * A best usage of this serializer is to deserialize [YamlElement]
  */
 object YamlDynamicSerializer : KSerializer<Any> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicSerializer", UnionKind.CONTEXTUAL)
+    override val descriptor: SerialDescriptor = SerialDescriptor("YamlDynamic", UnionKind.CONTEXTUAL)
 
     @JvmStatic
     internal val listSerializer = ListSerializer(this)
@@ -41,6 +41,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.BLOCK_SEQUENCE -> {
+                this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.NULL_STRING -> {
@@ -82,7 +83,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
  * @see YamlDynamicSerializer the non-null serializer
  */
 object YamlDynamicNullableSerializer : KSerializer<Any?> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("net.mamoe.konfig.yaml.internal.YamlDynamicNullableSerializer", UnionKind.CONTEXTUAL)
+    override val descriptor: SerialDescriptor = SerialDescriptor("YamlNullableDynamic", UnionKind.CONTEXTUAL)
 
     @JvmStatic
     internal val listSerializer = ListSerializer(this)
@@ -101,6 +102,7 @@ object YamlDynamicNullableSerializer : KSerializer<Any?> {
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.BLOCK_SEQUENCE -> {
+                this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.STRING -> {

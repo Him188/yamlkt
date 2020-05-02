@@ -117,9 +117,6 @@ internal class TokenStream(
     }
 
     @JvmField
-    var currentToken: Token? = null
-
-    @JvmField
     var currentIndent: Int = 0
 
     /**
@@ -158,7 +155,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(): Token? {
+    fun nextToken(skipEmptyLines: Boolean = true): Token? {
         val reuse = reuseTokenStack.popOrNull()
         if (reuse != null) {
             return if (reuse is String) {
@@ -170,7 +167,7 @@ internal class TokenStream(
             }
         }
 
-        currentIndent = 0
+        //currentIndent = 0
         whileNotEOF { char ->
             when (val token = Token[char]) {
                 NOT_A_TOKEN -> {
@@ -181,11 +178,15 @@ internal class TokenStream(
                 }
                 Token.LINE_SEPARATOR -> {
                     currentIndent = 0
+                    if (!skipEmptyLines) {
+                        return token
+                    }
                 }
                 Token.SPACE -> {
                     currentIndent++
                 }
                 else -> {
+                    currentIndent++
                     //     currentToken = token
                     return token
                 }

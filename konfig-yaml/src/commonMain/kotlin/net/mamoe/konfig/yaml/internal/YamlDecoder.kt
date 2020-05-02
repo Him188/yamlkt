@@ -106,7 +106,7 @@ internal class YamlDecoder(
         final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
         override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
-        override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
+        override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing?  // TODO: 2020/4/19 decode null
         // endregion
 
         final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
@@ -114,12 +114,11 @@ internal class YamlDecoder(
                 dontWrapNextStructure = false
                 return this
             }
-            Debugging.beginStructure(descriptor, this)
-            return this@YamlDecoder.beginStructureImpl(descriptor)
+            return this@YamlDecoder.beginStructureImpl(this, descriptor, if (this is IndentedDecoder) this.baseIndent else 0)
         }
 
-        override fun endStructure(descriptor: SerialDescriptor) {
-            Debugging.endStructure()
+        final override fun endStructure(descriptor: SerialDescriptor) {
+            Debugging.endStructure(descriptor)
         }
 
         final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
@@ -135,7 +134,7 @@ internal class YamlDecoder(
             return kotlin.runCatching {
                 deserializer.deserialize(this)
             }.getOrElse {
-                fail("deserializing nested class", descriptor, index, it)
+                throw contextualDecodingException("deserializing nested class", descriptor, index, it)
             }
         }
 
@@ -149,12 +148,22 @@ internal class YamlDecoder(
     }
 
     abstract inner class IndentedDecoder(
-        @JvmField protected val baseIndent: Int, name: String
+        @JvmField internal val baseIndent: Int, name: String
     ) : AbstractDecoder(name) {
+        init {
+            check(baseIndent >= 0) {
+                "baseIndent must be >= 0"
+            }
+        }
+
         @JvmField
         protected var firstIndent = -1
 
         internal fun checkIndent(newIndent: Int): Boolean {
+            if (newIndent > baseIndent) {
+                throw contextualDecodingException("bad indentation, baseIndent=$baseIndent, newIndent=$newIndent")
+            }
+            return baseIndent == newIndent
             if (firstIndent == -1) {
                 if (newIndent >= baseIndent) {
                     firstIndent = newIndent
@@ -199,8 +208,9 @@ internal class YamlDecoder(
                         return READ_DONE
                     }
                     val index = descriptor.getElementIndex(tokenStream.strBuff!!)
-                    if (tokenStream.nextToken() != Token.COLON) {
-                        throw tokenStream.contextualDecodingException("There must be a COLON between class key and value but found ${tokenStream.currentToken} for '${descriptor.serialName}'")
+                    val current = tokenStream.nextToken()
+                    if (current != Token.COLON) {
+                        throw tokenStream.contextualDecodingException("There must be a COLON between class key and value but found $current for '${descriptor.serialName}'")
                     }
 
                     return if (index != CompositeDecoder.UNKNOWN_NAME) {
@@ -212,9 +222,6 @@ internal class YamlDecoder(
                 }
                 else -> throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
             }
-        }
-
-        override fun endStructure(descriptor: SerialDescriptor) {
         }
     }
 
@@ -251,6 +258,7 @@ internal class YamlDecoder(
 
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
+                        Debugging.logCustom("BlockMapDecoder exit: crt=${tokenStream.currentIndent}, base=$baseIndent")
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         return READ_DONE
                     }
@@ -258,17 +266,15 @@ internal class YamlDecoder(
                     if (!checkIndent(tokenStream.currentIndent)) {
                         return READ_DONE
                     }
-                    if (tokenStream.nextToken() != Token.COLON) {
-                        throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found ${tokenStream.currentToken} for '${descriptor.serialName}'")
+                    val current = tokenStream.nextToken()
+                    if (current != Token.COLON) {
+                        throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found $current for '${descriptor.serialName}'")
                     }
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return index++
                 }
                 else -> throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
             }
-        }
-
-        override fun endStructure(descriptor: SerialDescriptor) {
         }
     }
 
@@ -295,7 +301,6 @@ internal class YamlDecoder(
      */
     inner class FlowMapDecoder : AbstractDecoder("Yaml Flow Map") {
 
-        override fun decodeNull(): Nothing? = null
         override val kind: Kind
             get() = Kind.FLOW_MAP
 
@@ -372,9 +377,6 @@ internal class YamlDecoder(
                 else -> throw contextualDecodingException("Illegal token $token")
             }
         }
-
-        override fun endStructure(descriptor: SerialDescriptor) {
-        }
     }
 
     /**
@@ -385,7 +387,6 @@ internal class YamlDecoder(
         private var index = -5
         private var firstValueDecoded = false
 
-        override fun decodeNull(): Nothing? = null
         override val kind: Kind
             get() = Kind.FLOW_CLASS
 
@@ -460,9 +461,6 @@ internal class YamlDecoder(
                 else -> throw contextualDecodingException("Illegal token $token for '${descriptor.serialName}'")
             }
         }
-
-        override fun endStructure(descriptor: SerialDescriptor) {
-        }
     }
 
     /**
@@ -532,8 +530,6 @@ internal class YamlDecoder(
             }
             return index++
         }
-
-        override fun endStructure(descriptor: SerialDescriptor) {}
     }
 
     /**
@@ -558,38 +554,33 @@ internal class YamlDecoder(
         override val kind: Kind
             get() = Kind.BLOCK_SEQUENCE
 
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
+                val token = tokenStream.nextToken()
+                check(token == Token.MULTILINE_LIST_FLAG) {
+                    "The beginning token must be '-' but found $token"
+                }
                 return index++
             }
-            while (true) {
-                tokenStream.nextToken().let { token ->
-                    when (token) {
-                        Token.LINE_SEPARATOR -> {
-                            // continue
-                        }
-                        END_OF_FILE -> return READ_DONE
-                        Token.MULTILINE_LIST_FLAG -> {
-                            return if (checkIndent(tokenStream.currentIndent)) {
-                                index++
-                            } else {
-                                tokenStream.reuseToken(token)
-                                READ_DONE
-                            }
-                        }
-                        Token.STRING -> {
-                            tokenStream.reuseToken(tokenStream.strBuff!!)
-                            return READ_DONE
-                        }
-                        else -> throw contextualDecodingException(
-                            "Expected ${Token.MULTILINE_LIST_FLAG.value}, but found $token on decoding multiline list for '${descriptor.serialName}'"
-                        )
+            when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> return READ_DONE
+                Token.MULTILINE_LIST_FLAG -> {
+                    return if (checkIndent(tokenStream.currentIndent)) {
+                        index++
+                    } else {
+                        tokenStream.reuseToken(token)
+                        READ_DONE
                     }
                 }
+                Token.STRING -> {
+                    tokenStream.reuseToken(tokenStream.strBuff!!)
+                    return READ_DONE
+                }
+                else -> throw contextualDecodingException(
+                    "Expected ${Token.MULTILINE_LIST_FLAG.value}, but found $token on decoding multiline list for '${descriptor.serialName}'"
+                )
             }
-        }
-
-        override fun endStructure(descriptor: SerialDescriptor) {
         }
     }
 
@@ -605,16 +596,11 @@ internal class YamlDecoder(
             get() = Kind.STRING
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = error("shouldn't be called")
-        override fun endStructure(descriptor: SerialDescriptor) {
-        }
     }
 
     inner class YamlNullStringDecoder : AbstractDecoder("Yaml Null") {
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = error("shouldn't be called")
-        override fun endStructure(descriptor: SerialDescriptor) {
-        }
 
-        override fun decodeNull(): Nothing? = null
         override val kind: Kind
             get() = Kind.NULL_STRING
 
@@ -622,13 +608,23 @@ internal class YamlDecoder(
     }
 
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
-        Debugging.beginStructure(descriptor, null)
-        return beginStructureImpl(descriptor)
+        return beginStructureImpl(null, descriptor, 0)
     }
 
     internal fun beginStructureImpl(
-        descriptor: SerialDescriptor
+        parentDecoder: AbstractDecoder?,
+        descriptor: SerialDescriptor,
+        baseIndent: Int
     ): CompositeDecoder {
+        Debugging.beginStructure(descriptor, parentDecoder)
+
+        fun getIndent(): Int {
+            // if bug, change back to `return tokenStream.currentIndent`
+            return tokenStream.currentIndent
+            return if (tokenStream.currentIndent > baseIndent) tokenStream.currentIndent
+            else baseIndent + tokenStream.currentIndent
+        }
+
         when (descriptor.kind) {
             StructureKind.LIST -> {
                 return when (val token = tokenStream.nextToken()) {
@@ -637,8 +633,11 @@ internal class YamlDecoder(
                         tokenStream.reuseToken(token)
                         FlowSequenceDecoder()
                     }
-                    Token.MULTILINE_LIST_FLAG -> BlockSequenceDecoder(tokenStream.currentIndent)
-                    else -> throw contextualDecodingException("illegal beginning token $token on decoding list")
+                    Token.MULTILINE_LIST_FLAG -> {
+                        tokenStream.reuseToken(token)
+                        BlockSequenceDecoder(getIndent())
+                    }
+                    else -> throw contextualDecodingException("expected list(sequence), but found $token")
                 }
             }
             StructureKind.CLASS -> {
@@ -650,22 +649,21 @@ internal class YamlDecoder(
                     }
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        BlockClassDecoder(tokenStream.currentIndent)
+                        BlockClassDecoder(getIndent())
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding class")
                 }
             }
             StructureKind.MAP -> {
-                val indent = tokenStream.currentIndent
-                return when (val token = tokenStream.nextToken()) {
-                    null -> throw contextualDecodingException("Early EOF")
+                return when (val token = tokenStream.nextToken(true)) {
+                    END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
                         tokenStream.reuseToken(token)
                         FlowMapDecoder()
                     }
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        BlockMapDecoder(indent)
+                        BlockMapDecoder(tokenStream.currentIndent)
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")
                 }
@@ -689,6 +687,7 @@ internal class YamlDecoder(
 
                         // the value is at least a String, and can also be Map (so there is a ':' following by).
 
+                        val beforeRealIndent = getIndent()
                         val beforeIndent = tokenStream.currentIndent
                         val stringValue = tokenStream.strBuff!!
 
@@ -697,13 +696,14 @@ internal class YamlDecoder(
                                 yamlStringDecoder
                             }
 
-                            Token.COLON -> {
+                            Token.COLON
+                            -> {
                                 // inferred map
                                 tokenStream.currentIndent = beforeIndent
                                 tokenStream.reuseToken(next)
                                 tokenStream.reuseToken(stringValue)
 
-                                BlockMapDecoder(beforeIndent)
+                                BlockMapDecoder(beforeRealIndent)
                             }
 
                             Token.STRING -> {
@@ -716,7 +716,7 @@ internal class YamlDecoder(
                             }
                             else -> {
                                 tokenStream.reuseToken(next)
-                                tokenStream.strBuff = stringValue
+                                //  tokenStream.strBuff = stringValue
                                 yamlStringDecoder
                             }
                         }
@@ -730,7 +730,7 @@ internal class YamlDecoder(
                     }
                     Token.MULTILINE_LIST_FLAG -> {
                         tokenStream.reuseToken(token)
-                        BlockSequenceDecoder(tokenStream.currentIndent)
+                        BlockSequenceDecoder(getIndent())
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding contextual")
                 }
@@ -752,7 +752,7 @@ internal class YamlDecoder(
     override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
     override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
-    override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
+    override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing? // TODO: 2020/4/19 decode null
     // endregion
 
     /**
@@ -773,37 +773,37 @@ internal class YamlDecoder(
     }
 
     private fun String?.decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int): Byte =
-        withIntegerValue("byte", descriptor, index).limitToByte()
+        this.debuggingLogDecoder(descriptor, index).withIntegerValue("byte", descriptor, index).limitToByte()
 
     private fun String?.decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int): Char =
-        this?.let {
+        this.debuggingLogDecoder(descriptor, index)?.let {
             check(it.length == 1) { "too many chars for a char: $it" }
             it.first()
         } ?: checkNonStrictNullability(descriptor, index)
         ?: 0.toChar()
 
     private fun String?.decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int): Double =
-        this.withDoubleValue("double", descriptor, index)
+        this.debuggingLogDecoder(descriptor, index).withDoubleValue("double", descriptor, index)
 
     private fun String?.decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int): Float =
-        this.withFloatValue("float", descriptor, index)
+        this.debuggingLogDecoder(descriptor, index).withFloatValue("float", descriptor, index)
 
     private fun String?.decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int): Int =
-        this.withIntegerValue("int", descriptor, index).limitToInt()
+        this.debuggingLogDecoder(descriptor, index).withIntegerValue("int", descriptor, index).limitToInt()
 
     private fun String?.decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int): Long =
-        this.withIntegerValue("long", descriptor, index)
+        this.debuggingLogDecoder(descriptor, index).withIntegerValue("long", descriptor, index)
 
     private fun String?.decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int): Short =
-        this.withIntegerValue("short", descriptor, index).limitToShort()
+        this.debuggingLogDecoder(descriptor, index).withIntegerValue("short", descriptor, index).limitToShort()
 
     private fun String?.decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int): String =
-        this
+        this.debuggingLogDecoder(descriptor, index)
             ?: checkNonStrictNullability(descriptor, index)
             ?: ""
 
     private fun String?.decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int) {
-        val value = (this
+        val value = (this.debuggingLogDecoder(descriptor, index)
             ?: checkNonStrictNullability(descriptor, index))
             ?: return
 
@@ -811,7 +811,7 @@ internal class YamlDecoder(
     }
 
     private fun String?.decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int): Boolean {
-        return this?.let { value ->
+        return this.debuggingLogDecoder(descriptor, index)?.let { value ->
             when (value) {
                 "null", "~" -> null
                 "1", "true", "TRUE" -> true
@@ -939,14 +939,6 @@ internal class YamlDecoder(
     }
 }
 
-
-private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, index: Int, cause: Throwable? = null): Nothing {
-    throw YamlSerializationException(
-        "$message " +
-            "when reading element '${index.let { descriptor?.getElementName(it) ?: "<decoding index or beginning>" }}' " +
-            "in '${descriptor?.serialName ?: "<unknown descriptor>"}'" + " remaining=${tokenStream.source.peekRemaining()}", cause
-    )
-}
 
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
