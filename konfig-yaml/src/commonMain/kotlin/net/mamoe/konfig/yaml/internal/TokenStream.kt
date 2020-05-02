@@ -6,46 +6,21 @@ import kotlin.contracts.contract
 import kotlin.jvm.JvmField
 
 @Suppress("ClassName", "PropertyName")
-internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean) {
-    override fun toString(): String {
-        return this::class.simpleName + "('$value')"
-    }
+internal enum class Token(val value: Char) {
+    COMMA(','),
+    COLON(':'),
 
-    override fun equals(other: Any?): Boolean {
-        return other === this
-    }
+    MULTILINE_LIST_FLAG('-'),
 
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
+    LIST_BEGIN('['),
+    LIST_END(']'),
 
-    object COMMA : Token(',', true)
-    object COLON : Token(':', true)
-    // object ObjectCast : TokenClass('!')
-
-    object MULTILINE_LIST_FLAG : Token('-', false)
-
-    object LIST_BEGIN : Token('[', true)
-    object LIST_END : Token(']', true)
-
-    object MAP_BEGIN : Token('{', true)
-    object MAP_END : Token('}', true)
+    MAP_BEGIN('{'),
+    MAP_END('}'),
 
 
-    // object ESCAPE : Token('\\', false)
-
-
-    object STRING : Token(' ', false) {
-        override fun toString(): String {
-            return "STRING"
-        }
-    } // STUB
-
-    object STRING_NULL : Token(' ', false) {
-        override fun toString(): String {
-            return "STRING_NULL"
-        }
-    } // STUB
+    STRING(' '),
+    STRING_NULL(' ');
 
     companion object {
         // char-TokenClass mapping
@@ -144,19 +119,6 @@ internal class TokenStream(
             _stringLength = 0
             // println(it)
         }
-    }
-
-    fun takeStringBufTrimEnd(): String {
-        val lastIndex = _stringLength - 1
-        for (i in lastIndex downTo 0) {
-            if (_stringBuf[i] != ' ') {
-                return String(this._stringBuf, 0, i + 1).also {
-                    _stringLength = 0
-                    // println(it)
-                }
-            }
-        }
-        return ""
     }
 
     fun subStringBufTrimEnd(offset: Int, endIndex: Int): String {
