@@ -16,28 +16,6 @@ internal class EscapeTest {
 
         assertEquals(
             TestData(
-                "p\n"
-            ).toString(),
-            Yaml.default.parse(
-                TestData.serializer(), """
-                    v: p\n
-                """.trimIndent()
-            ).toString()
-        )
-
-        assertEquals(
-            TestData(
-                "\n"
-            ).toString(),
-            Yaml.default.parse(
-                TestData.serializer(), """
-                    v: \n
-                """.trimIndent()
-            ).toString()
-        )
-
-        assertEquals(
-            TestData(
                 "\n"
             ).toString(),
             Yaml.default.parse(
@@ -58,7 +36,29 @@ internal class EscapeTest {
 
         assertEquals(
             TestData(
+                "\\n"
+            ).toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: \n
+                """.trimIndent()
+            ).toString()
+        )
+
+        assertEquals(
+            TestData(
                 "p\\n"
+            ).toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: p\n
+                """.trimIndent()
+            ).toString()
+        )
+
+        assertEquals(
+            TestData(
+                "p\\\\n"
             ).toString(),
             Yaml.default.parse(
                 TestData.serializer(), """

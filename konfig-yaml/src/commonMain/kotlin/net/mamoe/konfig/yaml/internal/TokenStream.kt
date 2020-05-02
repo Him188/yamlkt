@@ -1,7 +1,5 @@
 package net.mamoe.konfig.yaml.internal
 
-import net.mamoe.konfig.CharInputStream
-import net.mamoe.konfig.charInputStream
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -65,7 +63,8 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
 
         private const val valuesLastIndex: Char = 125.toChar()
 
-        operator fun get(char: Char): Token? =
+        @Suppress("NOTHING_TO_INLINE")
+        inline operator fun get(char: Char): Token? =
             if (char > valuesLastIndex) null else values!![char.toInt()]
     }
 }
@@ -110,7 +109,7 @@ internal inline val END_OF_FILE: Nothing? get() = null
  * `"list"`, [Token.COLON], [Token.MULTILINE_LIST_FLAG], `"a"`, [Token.MULTILINE_LIST_FLAG], `"b"`
  */
 internal class TokenStream(
-    @JvmField val source: CharInputStream
+    @JvmField val source: String
 ) {
     init {
         __init
@@ -125,19 +124,83 @@ internal class TokenStream(
     @JvmField
     var strBuff: String? = null
 
-    @JvmField
-    var stringBuilder: StringBuilder = StringBuilder()
-
     /**
-     * Tokens that should be used one more time
+     * Only for internal use
      */
-    private val reuseTokenStack: Stack<Any> = Stack()
+    @JvmField
+    var _stringBuf: CharArray = CharArray(32)
+
+    @JvmField
+    var cur: Int = 0
+
+    inline val endOfInput: Boolean get() = cur == source.length
+
+    @JvmField
+    var _stringLength: Int = 0
 
     /**
      * Used only in [readUnquotedString]
      */
     @JvmField
     val escapeBuff = CharArray(16)
+
+    @JvmField
+    var escapeCount = 0
+
+    private fun incStringBuf() {
+        _stringBuf = _stringBuf.copyOf(_stringBuf.size + _stringBuf.size.ushr(1))
+    }
+
+    fun takeStringBuf(): String {
+        return String(this._stringBuf, 0, _stringLength).also {
+            _stringLength = 0
+            // println(it)
+        }
+    }
+
+    fun takeStringBufTrimEnd(): String {
+        val lastIndex = _stringLength - 1
+        for (i in lastIndex downTo 0) {
+            if (_stringBuf[i] != ' ') {
+                return String(this._stringBuf, 0, i + 1).also {
+                    _stringLength = 0
+                    // println(it)
+                }
+            }
+        }
+        return ""
+    }
+
+    fun append(c: Char) {
+        if (_stringLength == _stringBuf.size) incStringBuf()
+        _stringBuf[_stringLength++] = c
+    }
+
+    fun append(source: String, startIndex: Int, endIndex: Int) {
+        val length = endIndex - startIndex
+        val requiredSize = _stringLength + length + 1
+        while (_stringBuf.size < requiredSize) {
+            incStringBuf()
+        }
+        for (i in 0..length) _stringBuf[_stringLength++] = source[startIndex + i]
+    }
+
+    fun flushEsc() {
+        val requiredSize = _stringLength + escapeCount + 1
+        while (_stringBuf.size < requiredSize) {
+            incStringBuf()
+        }
+        escapeBuff.copyInto(_stringBuf, _stringLength, 0, escapeCount)
+    }
+
+    fun appendEsc(c: Char) {
+        escapeBuff[escapeCount++] = c
+    }
+
+    /**
+     * Tokens that should be used one more time
+     */
+    private val reuseTokenStack: Stack<Any> = Stack()
 
     fun reuseToken(token: Token) {
         reuseTokenStack.add(token)
@@ -209,12 +272,12 @@ internal class TokenStream(
             readDoubleQuotedString()
         }
         else -> { // unquoted
-            readUnquotedString(begin)
+            readUnquotedString(begin).optimizeNull()
         }
     }
 }
 
-internal fun String.asTokenStream(): TokenStream = TokenStream(this.charInputStream())
+internal fun String.asTokenStream(): TokenStream = TokenStream(this)
 
 internal const val SINGLE_QUOTATION = '\''
 internal const val DOUBLE_QUOTATION = '"'
@@ -224,8 +287,8 @@ internal inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothin
     contract {
         callsInPlace(block, InvocationKind.UNKNOWN)
     }
-    while (!source.endOfInput) {
-        block(source.read())
+    while (!endOfInput) {
+        block(source[cur++])
     }
     return null
 }
@@ -236,8 +299,8 @@ internal inline fun TokenStream.whileNotEOFWithBegin(begin: Char, block: (char: 
         callsInPlace(block, InvocationKind.AT_LEAST_ONCE)
     }
     block(begin)
-    while (!source.endOfInput) {
-        block(source.read())
+    while (!endOfInput) {
+        block(source[cur++])
     }
     return null
 }
@@ -255,7 +318,7 @@ private class Stack<T> {
     var content: Array<Any?> = arrayOfNulls(currentSize)
 
     fun increase() {
-        val new = content.size.let { it + it shr 1 }
+        val new = content.size.let { it + it.shr(1) }
         currentSize = new
         content = content.copyOf(currentSize)
     }

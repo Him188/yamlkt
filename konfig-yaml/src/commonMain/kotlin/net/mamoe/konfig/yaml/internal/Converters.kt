@@ -73,7 +73,9 @@ internal fun Long.limitToInt(): Int {
     error("value is too large for int: $this")
 }
 
-internal fun String.optimizeNull(): String? = when (this) {
+// this is very frequently used
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun String.optimizeNull(): String? = when (this) {
     "~", "null", "NULL" -> null
     else -> this
 }

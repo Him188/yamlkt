@@ -1,6 +1,5 @@
 package net.mamoe.konfig.yaml.internal
 
-import net.mamoe.konfig.CharOutputStream
 import kotlin.jvm.JvmField
 
 
@@ -52,103 +51,54 @@ internal const val ESCAPE_16: Int = 0b1000000000000000000000000000000
 internal const val ESCAPE_32: Int = 0b0100000000000000000000000000000
 internal const val ESCAPE_8: Int = 0b0010000000000000000000000000000
 
-private const val STATE_NONE = -1
-private const val STATE_DETECT = -2
-
 /**
  * Stores to [TokenStream.strBuff]
  */
 internal fun TokenStream.readSingleQuotedString(): String {
-    return buildString {
-        var escape = false
-        whileNotEOF { char ->
-            when {
-                escape -> {
-                    if (char == SINGLE_QUOTATION || char == STRING_ESC) {
-                        append(char)
-                    } else {
-                        // throw contextualDecodingException("Illegal escape '$char' when reading single quoted String")
-                        append(STRING_ESC)
-                        append(char)
-                    }
-                    escape = false
-                }
-                char == STRING_ESC -> escape = true
-                char == SINGLE_QUOTATION -> return@buildString
-                else -> append(char)
-            }
+    val startCur = cur
+    whileNotEOF { char ->
+        if (char == SINGLE_QUOTATION) {
+            return source.substring(startCur, cur - 1)
         }
-    }.toString()
+    }
+    throw contextualDecodingException("Unexpected EOF")
 }
 
-internal fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' || this in 'A'..'Z'
-
-private inline fun TokenStream.buildString(builderAction: StringBuilder.() -> Unit): CharSequence {
-    return this.stringBuilder.clear().apply(builderAction)
-}
+@Suppress("NOTHING_TO_INLINE")
+internal inline fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' || this in 'A'..'Z'
 
 /**
  * Stores to [TokenStream.strBuff]
  */
 @OptIn(ExperimentalStdlibApi::class)
-internal fun TokenStream.readUnquotedString(begin: Char): String? {
-    return buildString {
-        var escape = 0
-        whileNotEOFWithBegin(begin) { char ->
-            when {
-                escape and 0x8000000 == 0 && escape and ESCAPE_8 != 0 -> {
-                    val count = escape and 0xff
-                    check(char.isValidHex()) {
-                        throw contextualDecodingException("Illegal escape hex digit '$char'")
-                    }
-                    // TODO: 2020/4/24
-                    escapeBuff[count] = char
-                    escape++
-                }
-                escape == STATE_DETECT -> {
-                    val es = escapeToChar(char.toInt())
+internal fun TokenStream.readUnquotedString(begin: Char): String {
+    var startCur = cur - 1
 
-                    escape = if (es != INVALID) {
-                        append(es)
-                        0
-                    } else when (char) {
-                        'x' -> ESCAPE_8
-                        'u' -> ESCAPE_16
-                        'U' -> ESCAPE_32
-                        else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
-                    }
+    whileNotEOFWithBegin(begin) { char ->
+        when (val token = Token[char]) {
+            NOT_A_TOKEN -> {
+
+            }
+            Token.LINE_SEPARATOR -> {
+                append(source, startCur, cur - 2)
+                currentIndent = 0
+                // no reuse.
+                return takeStringBufTrimEnd()
+            }
+            Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
+            else -> {
+                if (token.canStopUnquotedString) {
+                    append(source, startCur, cur - 2)
+                    startCur = cur + 1
+                    reuseToken(token)
+                    return takeStringBufTrimEnd()
                 }
-                else -> {
-                    if (char == STRING_ESC) {
-                        escape = STATE_DETECT
-                    } else when (val token = Token[char]) {
-                        Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-                        Token.LINE_SEPARATOR -> {
-                            currentIndent = 0
-                            // no reuse.
-                            return@buildString
-                        }
-                        NOT_A_TOKEN -> append(char)
-                        else -> {
-                            if (token.canStopUnquotedString) {
-                                // if (endingTokens.none { it == token }) {
-                                //     // `key: my:value`
-                                //     //         ^ not allowed here
-                                //     throw contextualDecodingException(
-                                //         "Illegal token $token when reading unquoted String"//,
-                                //         //   this@buildString.toString() + char + readUntilNewLine(10),
-                                //         //   this@buildString.length
-                                //     )
-                                // }
-                                reuseToken(token)
-                                return@buildString // don't `return`
-                            } else append(char)
-                        }
-                    }
-                }
+
             }
         }
-    }.trimEnd { it == ' ' }.toString().optimizeNull()
+    }
+    append(source, startCur, cur.coerceAtMost(source.length - 1))
+    return takeStringBufTrimEnd()
 }
 
 /**
@@ -156,43 +106,46 @@ internal fun TokenStream.readUnquotedString(begin: Char): String? {
  */
 @OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readDoubleQuotedString(): String {
-    return buildString {
-        var escape = 0
-        whileNotEOF { char ->
-            when {
-                escape and 0x8000000 == 0 && escape and ESCAPE_8 != 0 -> {
-                    val count = escape and 0xff
-                    check(char.isValidHex()) {
-                        throw contextualDecodingException("Illegal escape hex digit '$char'")
-                    }
-                    // TODO: 2020/4/24
-                    escapeBuff[count] = char
-                    escape++
-                }
-                escape == STATE_DETECT -> {
-                    val es = escapeToChar(char.toInt())
+    var startCur = cur
 
-                    escape = if (es != INVALID) {
-                        append(es)
-                        0
-                    } else when (char) {
-                        'x' -> ESCAPE_8
-                        'u' -> ESCAPE_16
-                        'U' -> ESCAPE_32
-                        else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
-                    }
+    var escapedOnce = false
+    whileNotEOF { char ->
+        when (char) {
+            DOUBLE_QUOTATION -> {
+                if (!escapedOnce) {
+                    return source.substring(startCur, cur - 1)
                 }
-                char == DOUBLE_QUOTATION -> return@buildString
-                else -> {
-                    if (char == STRING_ESC) {
-                        escape = STATE_DETECT
-                    } else append(char)
+                append(source, startCur, cur - 2)
+                return takeStringBuf()
+            }
+            else -> {
+                if (char == STRING_ESC) {
+                    append(source, startCur, cur - 2)
+                    startCur = cur + 1
+                    escapedOnce = true
+
+
+                    if (endOfInput)
+                        throw contextualDecodingException("Unexpected EOF")
+
+                    // detect
+                    val es = escapeToChar(source[cur++].toInt())
+                    if (es != INVALID) {
+                        append(es)
+                        startCur = cur
+                    } else {
+
+                        TODO("higher order escape")
+                        when (char) {
+                            'x' -> ESCAPE_8
+                            'u' -> ESCAPE_16
+                            'U' -> ESCAPE_32
+                            else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
+                        }
+                    }
                 }
             }
         }
-    }.toString()
-}
-
-internal fun CharOutputStream.writeUnquotedString(origin: String) {
-    TODO()
+    }
+    throw contextualDecodingException("Unexpected EOF")
 }
