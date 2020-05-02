@@ -191,23 +191,45 @@ internal class TokenStream(
 
         //currentIndent = 0
         whileNotEOF { char ->
-            when {
-                char == ' ' -> {
+            when (char) {
+                ' ' -> {
                     currentIndent++
                 }
-                char == '\n' -> {
+                '\n' -> {
                     currentIndent = 0
                 }
-                else -> {
-                    val token = Token[char]
-                    if (token == null) {
-                        val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
-                        this.strBuff = str
-                        //  currentToken = Token.STRING
-                        return Token.STRING
-                    }
+                ',' -> {
                     currentIndent++
-                    return token
+                    return Token.COMMA
+                }
+                ':' -> {
+                    currentIndent++
+                    return Token.COLON
+                }
+                '{' -> {
+                    currentIndent++
+                    return Token.MAP_BEGIN
+                }
+                '}' -> {
+                    currentIndent++
+                    return Token.MAP_END
+                }
+                '[' -> {
+                    currentIndent++
+                    return Token.LIST_BEGIN
+                }
+                ']' -> {
+                    currentIndent++
+                    return Token.LIST_END
+                }
+                '-' -> {
+                    currentIndent++
+                    return Token.MULTILINE_LIST_FLAG
+                }
+                else -> {
+                    val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
+                    this.strBuff = str
+                    return Token.STRING
                 }
             }
         }

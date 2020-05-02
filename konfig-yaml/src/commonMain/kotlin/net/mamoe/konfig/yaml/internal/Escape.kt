@@ -85,6 +85,10 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
                 // no reuse.
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
+            ':' -> {
+                reuseToken(Token.COLON)
+                return subStringBufTrimEnd(startCur, cur - 2)
+            }
             '|' -> TODO("MULTILINE STRING")
             '[' -> {
                 reuseToken(Token.LIST_BEGIN)
@@ -100,10 +104,6 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
             }
             '}' -> {
                 reuseToken(Token.MAP_END)
-                return subStringBufTrimEnd(startCur, cur - 2)
-            }
-            ':' -> {
-                reuseToken(Token.COLON)
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
         }
