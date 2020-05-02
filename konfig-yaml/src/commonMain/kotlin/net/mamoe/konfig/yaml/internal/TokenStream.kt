@@ -31,16 +31,7 @@ internal sealed class Token(val value: Char, val canStopUnquotedString: Boolean)
     object MAP_BEGIN : Token('{', true)
     object MAP_END : Token('}', true)
 
-    object LINE_SEPARATOR : Token('\n', true) {
-        override fun toString(): String {
-            return "LINE_SEPARATOR(\\n)"
-        }
-    }
 
-
-    object SPACE : Token(' ', false)
-
-    object MULTILINE_STRING_FLAG : Token('|', false)
     // object ESCAPE : Token('\\', false)
 
 
@@ -77,9 +68,6 @@ internal val __init = run {
         Token.COLON,
         Token.LIST_END, Token.LIST_BEGIN,
         Token.MAP_END, Token.MAP_BEGIN,
-        Token.LINE_SEPARATOR,
-        Token.SPACE,
-        Token.MULTILINE_STRING_FLAG,
         Token.MULTILINE_LIST_FLAG
     )
 
@@ -171,6 +159,15 @@ internal class TokenStream(
         return ""
     }
 
+    fun subStringBufTrimEnd(offset: Int, endIndex: Int): String {
+        for (i in endIndex downTo 0) {
+            if (source[i] != ' ') {
+                return source.substring(offset, i + 1)
+            }
+        }
+        return ""
+    }
+
     fun append(c: Char) {
         if (_stringLength == _stringBuf.size) incStringBuf()
         _stringBuf[_stringLength++] = c
@@ -218,7 +215,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(skipEmptyLines: Boolean = true): Token? {
+    fun nextToken(): Token? {
         val reuse = reuseTokenStack.popOrNull()
         if (reuse != null) {
             return if (reuse is String) {
@@ -232,25 +229,22 @@ internal class TokenStream(
 
         //currentIndent = 0
         whileNotEOF { char ->
-            when (val token = Token[char]) {
-                NOT_A_TOKEN -> {
-                    val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
-                    this.strBuff = str
-                    //  currentToken = Token.STRING
-                    return Token.STRING
-                }
-                Token.LINE_SEPARATOR -> {
-                    currentIndent = 0
-                    if (!skipEmptyLines) {
-                        return token
-                    }
-                }
-                Token.SPACE -> {
+            when {
+                char == ' ' -> {
                     currentIndent++
+                }
+                char == '\n' -> {
+                    currentIndent = 0
                 }
                 else -> {
+                    val token = Token[char]
+                    if (token == null) {
+                        val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
+                        this.strBuff = str
+                        //  currentToken = Token.STRING
+                        return Token.STRING
+                    }
                     currentIndent++
-                    //     currentToken = token
                     return token
                 }
             }

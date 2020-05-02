@@ -630,7 +630,7 @@ internal class YamlDecoder(
                 }
             }
             StructureKind.MAP -> {
-                return when (val token = tokenStream.nextToken(true)) {
+                return when (val token = tokenStream.nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
                         tokenStream.reuseToken(token)

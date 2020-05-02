@@ -72,33 +72,43 @@ internal inline fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'
  */
 @OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readUnquotedString(begin: Char): String {
-    var startCur = cur - 1
+    val startCur = cur - 1
 
     whileNotEOFWithBegin(begin) { char ->
-        when (val token = Token[char]) {
-            NOT_A_TOKEN -> {
-
+        when (char) {
+            ',' -> {
+                reuseToken(Token.COMMA)
+                return subStringBufTrimEnd(startCur, cur - 2)
             }
-            Token.LINE_SEPARATOR -> {
-                append(source, startCur, cur - 2)
+            '\n' -> {
                 currentIndent = 0
                 // no reuse.
-                return takeStringBufTrimEnd()
+                return subStringBufTrimEnd(startCur, cur - 2)
             }
-            Token.MULTILINE_STRING_FLAG -> TODO("multiline string")
-            else -> {
-                if (token.canStopUnquotedString) {
-                    append(source, startCur, cur - 2)
-                    startCur = cur + 1
-                    reuseToken(token)
-                    return takeStringBufTrimEnd()
-                }
-
+            '|' -> TODO("MULTILINE STRING")
+            '[' -> {
+                reuseToken(Token.LIST_BEGIN)
+                return subStringBufTrimEnd(startCur, cur - 2)
+            }
+            ']' -> {
+                reuseToken(Token.LIST_END)
+                return subStringBufTrimEnd(startCur, cur - 2)
+            }
+            '{' -> {
+                reuseToken(Token.MAP_BEGIN)
+                return subStringBufTrimEnd(startCur, cur - 2)
+            }
+            '}' -> {
+                reuseToken(Token.MAP_END)
+                return subStringBufTrimEnd(startCur, cur - 2)
+            }
+            ':' -> {
+                reuseToken(Token.COLON)
+                return subStringBufTrimEnd(startCur, cur - 2)
             }
         }
     }
-    append(source, startCur, cur.coerceAtMost(source.length - 1))
-    return takeStringBufTrimEnd()
+    return subStringBufTrimEnd(startCur, cur - 1)
 }
 
 /**
