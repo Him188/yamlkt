@@ -73,45 +73,9 @@ internal fun Long.limitToInt(): Int {
     error("value is too large for int: $this")
 }
 
-internal fun Long.limitToFloat(): Float {
-    if (this.toFloat().toLong() == this) return this.toFloat()
-    error("value is too large for float: $this")
-}
-
-internal fun Long.limitToDouble(): Double {
-    if (this.toDouble().toLong() == this) return this.toDouble()
-    error("value is too large for double: $this")
-}
-
 internal fun String.optimizeNull(): String? = when (this) {
     "~", "null", "NULL" -> null
     else -> this
-}
-
-internal inline fun String.trimMatching(useLength: Int, block: String.(offset: Int) -> Boolean): Boolean {
-    var cur = 0
-
-    val maxOffset = this.length - useLength
-    // skip ws
-    while (cur <= maxOffset) {
-        if (this[cur] != ' ') {
-            // match
-            if (!block(this, cur)) {
-                return false
-            }
-            cur += useLength
-            // skip ending ws
-            while (cur < maxOffset) {
-                if (this[cur] != ' ') {
-                    // not matching
-                    return false
-                } else cur++
-            }
-            return true
-        } else cur++
-    }
-
-    return false
 }
 
 
