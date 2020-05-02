@@ -94,16 +94,16 @@ internal class YamlDecoder(
         // endregion
 
         // region Decoder primitives override
-        final override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, null)
-        final override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, null)
-        final override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, null)
-        final override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, null)
-        final override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, null)
-        final override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, null)
-        final override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, null)
-        final override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, null)
-        final override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, null)
-        final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, null)
+        final override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, -1)
+        final override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, -1)
+        final override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, -1)
+        final override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, -1)
+        final override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, -1)
+        final override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
+        final override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, -1)
+        final override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, -1)
+        final override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
+        final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
         override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
         override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
@@ -114,7 +114,12 @@ internal class YamlDecoder(
                 dontWrapNextStructure = false
                 return this
             }
+            Debugging.beginStructure(descriptor, this)
             return this@YamlDecoder.beginStructureImpl(descriptor)
+        }
+
+        override fun endStructure(descriptor: SerialDescriptor) {
+            Debugging.endStructure()
         }
 
         final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
@@ -233,6 +238,17 @@ internal class YamlDecoder(
 
             when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> return READ_DONE // in block map it's ok
+
+                // nested
+                Token.MULTILINE_LIST_FLAG -> {
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
+                }
+                Token.LIST_BEGIN -> {
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
+                }
+
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
@@ -606,6 +622,7 @@ internal class YamlDecoder(
     }
 
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
+        Debugging.beginStructure(descriptor, null)
         return beginStructureImpl(descriptor)
     }
 
@@ -639,6 +656,7 @@ internal class YamlDecoder(
                 }
             }
             StructureKind.MAP -> {
+                val indent = tokenStream.currentIndent
                 return when (val token = tokenStream.nextToken()) {
                     null -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
@@ -647,7 +665,7 @@ internal class YamlDecoder(
                     }
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
-                        BlockMapDecoder(tokenStream.currentIndent)
+                        BlockMapDecoder(indent)
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")
                 }
@@ -722,16 +740,16 @@ internal class YamlDecoder(
     }
 
     // region Decoder primitives override
-    override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, null)
-    override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, null)
-    override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, null)
-    override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, null)
-    override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, null)
-    override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, null)
-    override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, null)
-    override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, null)
-    override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, null)
-    override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, null)
+    override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, -1)
+    override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, -1)
+    override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, -1)
+    override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, -1)
+    override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, -1)
+    override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
+    override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, -1)
+    override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, -1)
+    override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
+    override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
     override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
     override fun decodeNull(): Nothing? = null // TODO: 2020/4/19 decode null
@@ -754,37 +772,37 @@ internal class YamlDecoder(
         }
     }
 
-    private fun String?.decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int?): Byte =
+    private fun String?.decodeByteElementImpl(descriptor: SerialDescriptor?, index: Int): Byte =
         withIntegerValue("byte", descriptor, index).limitToByte()
 
-    private fun String?.decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int?): Char =
+    private fun String?.decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int): Char =
         this?.let {
             check(it.length == 1) { "too many chars for a char: $it" }
             it.first()
         } ?: checkNonStrictNullability(descriptor, index)
         ?: 0.toChar()
 
-    private fun String?.decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int?): Double =
+    private fun String?.decodeDoubleElementImpl(descriptor: SerialDescriptor?, index: Int): Double =
         this.withDoubleValue("double", descriptor, index)
 
-    private fun String?.decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int?): Float =
+    private fun String?.decodeFloatElementImpl(descriptor: SerialDescriptor?, index: Int): Float =
         this.withFloatValue("float", descriptor, index)
 
-    private fun String?.decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int?): Int =
+    private fun String?.decodeIntElementImpl(descriptor: SerialDescriptor?, index: Int): Int =
         this.withIntegerValue("int", descriptor, index).limitToInt()
 
-    private fun String?.decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int?): Long =
+    private fun String?.decodeLongElementImpl(descriptor: SerialDescriptor?, index: Int): Long =
         this.withIntegerValue("long", descriptor, index)
 
-    private fun String?.decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int?): Short =
+    private fun String?.decodeShortElementImpl(descriptor: SerialDescriptor?, index: Int): Short =
         this.withIntegerValue("short", descriptor, index).limitToShort()
 
-    private fun String?.decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int?): String =
+    private fun String?.decodeStringElementImpl(descriptor: SerialDescriptor?, index: Int): String =
         this
             ?: checkNonStrictNullability(descriptor, index)
             ?: ""
 
-    private fun String?.decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int?) {
+    private fun String?.decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int) {
         val value = (this
             ?: checkNonStrictNullability(descriptor, index))
             ?: return
@@ -792,7 +810,7 @@ internal class YamlDecoder(
         check(value == "kotlin.Unit") { "value is not 'kotlin.Unit' for kotlin.Unit" }
     }
 
-    private fun String?.decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int?): Boolean {
+    private fun String?.decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int): Boolean {
         return this?.let { value ->
             when (value) {
                 "null", "~" -> null
@@ -816,7 +834,7 @@ internal class YamlDecoder(
     }
 
 
-    private fun String?.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int?): Long? {
+    private fun String?.castFromNullToZeroOrNull(descriptor: SerialDescriptor?, index: Int): Long? {
         if (this == null || this == "~" || (this.length == 4 && this.equals("null", ignoreCase = true))) {
             if (configuration.nonStrictNullability) {
                 return 0
@@ -829,7 +847,7 @@ internal class YamlDecoder(
         const val UNEXPECTED_NULL_MESSAGE = "unexpected null value, you may enable `nonStrictNullability`"
     }
 
-    private fun checkNonStrictNullability(descriptor: SerialDescriptor?, index: Int?): Nothing? {
+    private fun checkNonStrictNullability(descriptor: SerialDescriptor?, index: Int): Nothing? {
         if (!configuration.nonStrictNullability)
             throw contextualDecodingException(UNEXPECTED_NULL_MESSAGE, descriptor, index)
         return null
@@ -840,7 +858,7 @@ internal class YamlDecoder(
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */
-    private fun String?.withDoubleValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Double {
+    private fun String?.withDoubleValue(typeName: String, descriptor: SerialDescriptor?, index: Int): Double {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
             return 0.0
         } ?: kotlin.run {
@@ -867,7 +885,7 @@ internal class YamlDecoder(
      *
      * @param typeName the name of the type, e.g. "double", "float"
      */
-    private fun String?.withFloatValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Float {
+    private fun String?.withFloatValue(typeName: String, descriptor: SerialDescriptor?, index: Int): Float {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
             return 0f
         } ?: kotlin.run {
@@ -894,7 +912,7 @@ internal class YamlDecoder(
      *
      * @param typeName the name of the type, e.g. "int", "long"
      */
-    private fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int?): Long {
+    private fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int): Long {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
             return 0L
         } ?: kotlin.run {
@@ -922,10 +940,10 @@ internal class YamlDecoder(
 }
 
 
-private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, index: Int?, cause: Throwable? = null): Nothing {
+private fun YamlDecoder.fail(message: String, descriptor: SerialDescriptor?, index: Int, cause: Throwable? = null): Nothing {
     throw YamlSerializationException(
         "$message " +
-            "when reading element '${index?.let { descriptor?.getElementName(it) ?: "<decoding index or beginning>" } ?: "<top-level element>"}' " +
+            "when reading element '${index.let { descriptor?.getElementName(it) ?: "<decoding index or beginning>" }}' " +
             "in '${descriptor?.serialName ?: "<unknown descriptor>"}'" + " remaining=${tokenStream.source.peekRemaining()}", cause
     )
 }
@@ -954,7 +972,7 @@ internal fun contextualDecodingException(hint: String, text: String, cur: Int, p
 internal fun YamlDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
-    index: Int? = null,
+    index: Int = -1,
     throwable: Throwable? = null
 ): YamlDecodingException {
     return tokenStream.contextualDecodingException("Top-level decoder: $hint", descriptor, index, throwable)
@@ -964,7 +982,7 @@ internal fun YamlDecoder.contextualDecodingException(
 internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
-    index: Int? = null,
+    index: Int = -1,
     throwable: Throwable? = null
 ): YamlDecodingException {
     return this.parentYamlDecoder.contextualDecodingException(hint, descriptor, index, throwable)
@@ -977,16 +995,16 @@ internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: Strin
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
 internal fun TokenStream.contextualDecodingException(hint: String): YamlDecodingException {
-    return contextualDecodingException(hint, null, null)
+    return contextualDecodingException(hint, null, -1)
 }
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun TokenStream.contextualDecodingException(hint: String, descriptor: SerialDescriptor?, index: Int?, throwable: Throwable? = null): YamlDecodingException {
-    val message: String = if (descriptor == null && index == null)
+internal fun TokenStream.contextualDecodingException(hint: String, descriptor: SerialDescriptor?, index: Int, throwable: Throwable? = null): YamlDecodingException {
+    val message: String = if (descriptor == null)
         hint
     else
-        hint + "for '${index?.let { descriptor?.getElementName(it) ?: "<decoding index or beginning>" } ?: "<top-level element>"}' " +
-            "in '${descriptor?.serialName ?: "<unknown descriptor>"}'"
+        hint + "for '${index.let { descriptor.getElementName(it) }}' " +
+            "in '${descriptor.serialName}'"
 
     /*
     val currentTokenLength = if (currentToken is Token.STRING) {
