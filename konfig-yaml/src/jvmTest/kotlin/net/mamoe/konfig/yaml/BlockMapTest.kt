@@ -19,8 +19,15 @@ price:     1.47
 quantity:  4
     """
         )
-
-        println(map)
+        assertEquals(
+            mapOf(
+                "part_no" to "A4786",
+                "descrip" to "Water Bucket (Filled)",
+                "price" to "1.47",
+                "quantity" to "4"
+            ),
+            map.toContentMap()
+        )
     }
 
     @Test
@@ -35,7 +42,17 @@ t:
     """
         )
 
-        println(map)
+        assertEquals(
+            mapOf(
+                "t" to mapOf(
+                    "part_no" to "A4786",
+                    "descrip" to "Water Bucket (Filled)",
+                    "price" to "1.47",
+                    "quantity" to "4"
+                )
+            ),
+            map.toContentMap()
+        )
     }
 
     @Test
@@ -50,7 +67,19 @@ t:
     """
         )
 
-        println(map)
+        assertEquals(
+            mapOf(
+                "t" to listOf(
+                    mapOf(
+                        "part_no" to "A4786",
+                        "descrip" to "Water Bucket (Filled)",
+                        "price" to "1.47",
+                        "quantity" to "4"
+                    )
+                )
+            ),
+            map.toContentMap()
+        )
     }
 
     @Test

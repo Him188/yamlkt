@@ -297,6 +297,7 @@ fun YamlMap.allKeysLiteral(): Boolean {
  * @throws IllegalArgumentException Thrown if any key is not [YamlLiteral] **and** [constrainLiteralKey] is `true`
  */
 fun YamlMap.toContentMap(constrainLiteralKey: Boolean = true): Map<String, Any?> {
+
     return LinkedHashMap<String, Any?>(this.size).apply {
         this@toContentMap.forEach { (key, value) ->
             if (constrainLiteralKey) {
@@ -304,8 +305,16 @@ fun YamlMap.toContentMap(constrainLiteralKey: Boolean = true): Map<String, Any?>
                     "The YamlMap has compound keys and cannot be constrained with literal keys"
                 }
             }
-            put(key.toString(), value.content)
+            put(key.toString(), value.toContent(constrainLiteralKey))
         }
+    }
+}
+
+internal fun YamlElement.toContent(constrainLiteralKey: Boolean = true): Any? {
+    return when (this) {
+        is YamlPrimitive -> this.content
+        is YamlMap -> this.toContentMap(constrainLiteralKey)
+        is YamlList -> this.toContentList(constrainLiteralKey)
     }
 }
 
@@ -368,8 +377,11 @@ fun yamlListOf(vararg values: Any?): YamlList = YamlList(values)
 
 /**
  * Converts [this] to a list containing [YamlElement.content]s
+ *
+ * @param constrainLiteralKey If `true`, [IllegalArgumentException] will be thrown if any key is not [YamlLiteral],
+ * If `false`, all keys are mapped using [YamlElement.toString]
  */
-fun YamlList.toContentList(): List<Any?> = this.map { it.content }
+fun YamlList.toContentList(constrainLiteralKey: Boolean = true): List<Any?> = this.map { it.toContent(constrainLiteralKey) }
 
 /**
  * Gets a value at index [index] then converts it to a primitive type or a [String]
