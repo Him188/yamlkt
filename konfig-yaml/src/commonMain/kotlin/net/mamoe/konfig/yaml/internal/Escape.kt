@@ -160,7 +160,7 @@ internal fun TokenStream.readDoubleQuotedString(): String {
         var escape = 0
         whileNotEOF { char ->
             when {
-                escape.takeHighestOneBit() == 0 && escape and ESCAPE_8 != 0 -> {
+                escape and 0x8000000 == 0 && escape and ESCAPE_8 != 0 -> {
                     val count = escape and 0xff
                     check(char.isValidHex()) {
                         throw contextualDecodingException("Illegal escape hex digit '$char'")
