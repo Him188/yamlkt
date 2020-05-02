@@ -195,16 +195,16 @@ internal class TokenStream(
                 ' ' -> {
                     currentIndent++
                 }
+                ':' -> {
+                    currentIndent++
+                    return Token.COLON
+                }
                 '\n' -> {
                     currentIndent = 0
                 }
                 ',' -> {
                     currentIndent++
                     return Token.COMMA
-                }
-                ':' -> {
-                    currentIndent++
-                    return Token.COLON
                 }
                 '{' -> {
                     currentIndent++

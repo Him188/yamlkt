@@ -76,8 +76,8 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
 
     whileNotEOFWithBegin(begin) { char ->
         when (char) {
-            ',' -> {
-                reuseToken(Token.COMMA)
+            ':' -> {
+                reuseToken(Token.COLON)
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
             '\n' -> {
@@ -85,8 +85,8 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
                 // no reuse.
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
-            ':' -> {
-                reuseToken(Token.COLON)
+            ',' -> {
+                reuseToken(Token.COMMA)
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
             '|' -> TODO("MULTILINE STRING")
