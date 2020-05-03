@@ -302,6 +302,7 @@ internal class YamlDecoder(
             get() = Kind.FLOW_MAP
 
         override fun decodeNotNullMark(): Boolean {
+            if (valueCache != null) return true
             return when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF")
                 Token.MAP_END -> {
@@ -309,29 +310,29 @@ internal class YamlDecoder(
                     false
                 }
                 Token.STRING -> {
-                    tokenStream.reuseToken(tokenStream.strBuff!!)
+                    valueCache = tokenStream.strBuff
                     true
                 }
                 Token.COMMA -> {
-                    //tokenStream.reuseToken(token)
                     false
                 }
                 else -> throw contextualDecodingException("Illegal token $token")
             }
         }
 
+        private var valueCache: String? = null
+
+        override fun nextStringOrNull(): String? {
+            if (valueCache != null) {
+                return valueCache.also { valueCache = null }
+            }
+            return super.nextStringOrNull()
+        }
+
         override fun decodeSequentially(): Boolean = false
         private var index = 0
-        override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            if (index == 0) {
-                // just start
-                //  tokenStream.nextToken().let { begin ->
-                //      check(begin == Token.MAP_BEGIN) {
-                //          throw contextualDecodingException("Beginning token must a '{', but found $begin")
-                //      }
-                //  }
-            }
 
+        override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index.isOdd()) {
                 return index++
             }
@@ -952,7 +953,7 @@ internal class YamlDecoder(
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
-private fun Int.isOdd(): Boolean {
+@Suppress("NOTHING_TO_INLINE")
+private inline fun Int.isOdd(): Boolean {
     return this and 0b1 != 0
 }
