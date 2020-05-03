@@ -244,16 +244,6 @@ internal class YamlDecoder(
             when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> return READ_DONE // in block map it's ok
 
-                // nested
-                Token.MULTILINE_LIST_FLAG -> {
-                    tokenStream.reuseToken(token)
-                    return READ_DONE
-                }
-                Token.LIST_BEGIN -> {
-                    tokenStream.reuseToken(token)
-                    return READ_DONE
-                }
-
                 Token.STRING -> {
                     if (tokenStream.currentIndent < baseIndent) {
                         Debugging.logCustom { "BlockMapDecoder exit: crt=${tokenStream.currentIndent}, base=$baseIndent" }
@@ -270,6 +260,15 @@ internal class YamlDecoder(
                     }
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return index++
+                }
+                // nested
+                Token.MULTILINE_LIST_FLAG -> {
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
+                }
+                Token.LIST_BEGIN -> {
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
                 }
                 else -> throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
             }
@@ -326,11 +325,11 @@ internal class YamlDecoder(
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
                 // just start
-                tokenStream.nextToken().let { begin ->
-                    check(begin == Token.MAP_BEGIN) {
-                        throw contextualDecodingException("Beginning token must a '{', but found $begin")
-                    }
-                }
+                //  tokenStream.nextToken().let { begin ->
+                //      check(begin == Token.MAP_BEGIN) {
+                //          throw contextualDecodingException("Beginning token must a '{', but found $begin")
+                //      }
+                //  }
             }
 
             if (index.isOdd()) {
@@ -352,20 +351,6 @@ internal class YamlDecoder(
             // read key
             return when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                Token.MAP_END -> READ_DONE
-                Token.COMMA -> { // null entry, meaning `{ name: Bob, }` // we are at ','
-                    /*
-                     when (val peek = tokenStream.nextTokenSkippingEmptyLine()) {
-                         Token.MAP_END -> { // trailing comma is ignored.
-                             return READ_DONE
-                         }
-                         END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
-                         else -> tokenStream.reuseToken(peek)
-                     }*/
-                    tokenStream.reuseToken(Token.STRING_NULL) // for key
-                    tokenStream.reuseToken(Token.STRING_NULL) // for value
-                    index++
-                }
                 Token.STRING -> {
                     when (val next = tokenStream.nextToken()) {
                         Token.COLON -> {
@@ -380,6 +365,20 @@ internal class YamlDecoder(
                         }
                         else -> throw contextualDecodingException("Illegal token $token")
                     }
+                    index++
+                }
+                Token.MAP_END -> READ_DONE
+                Token.COMMA -> { // null entry, meaning `{ name: Bob, }` // we are at ','
+                    /*
+                     when (val peek = tokenStream.nextTokenSkippingEmptyLine()) {
+                         Token.MAP_END -> { // trailing comma is ignored.
+                             return READ_DONE
+                         }
+                         END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
+                         else -> tokenStream.reuseToken(peek)
+                     }*/
+                    tokenStream.reuseToken(Token.STRING_NULL) // for key
+                    tokenStream.reuseToken(Token.STRING_NULL) // for value
                     index++
                 }
                 else -> throw contextualDecodingException("Illegal token $token")
@@ -419,11 +418,11 @@ internal class YamlDecoder(
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == -5) {
-                tokenStream.nextToken().let { begin ->
-                    check(begin == Token.MAP_BEGIN) {
-                        throw contextualDecodingException("Beginning token must a '{', but found $begin")
-                    }
-                }
+                //  tokenStream.nextToken().let { begin ->
+                //      check(begin == Token.MAP_BEGIN) {
+                //          throw contextualDecodingException("Beginning token must a '{', but found $begin")
+                //      }
+                //  }
             }
 
             if (firstValueDecoded) {
@@ -483,11 +482,11 @@ internal class YamlDecoder(
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
-                tokenStream.nextToken().let { begin ->
-                    check(begin == Token.LIST_BEGIN) {
-                        throw contextualDecodingException("Beginning token must be '[', but found $begin")
-                    }
-                }
+                // tokenStream.nextToken().let { begin ->
+                //     check(begin == Token.LIST_BEGIN) {
+                //         throw contextualDecodingException("Beginning token must be '[', but found $begin")
+                //     }
+                // }
             }
 
             when (val current = tokenStream.nextToken()) {
@@ -643,7 +642,7 @@ internal class YamlDecoder(
                 return when (val token = tokenStream.nextToken()) {
                     null -> throw contextualDecodingException("Early EOF")
                     Token.LIST_BEGIN -> {
-                        tokenStream.reuseToken(token)
+                        //   tokenStream.reuseToken(token)
                         FlowSequenceDecoder()
                     }
                     Token.MULTILINE_LIST_FLAG -> {
@@ -659,7 +658,7 @@ internal class YamlDecoder(
                         emptyClassDecoder
                     }
                     Token.MAP_BEGIN -> {
-                        tokenStream.reuseToken(token)
+                        // tokenStream.reuseToken(token)
                         FlowClassDecoder()
                     }
                     Token.STRING -> {
@@ -673,7 +672,7 @@ internal class YamlDecoder(
                 return when (val token = tokenStream.nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
-                        tokenStream.reuseToken(token)
+                        // tokenStream.reuseToken(token)
                         FlowMapDecoder()
                     }
                     Token.STRING -> {
@@ -687,7 +686,7 @@ internal class YamlDecoder(
                 return when (val token = tokenStream.nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
-                        tokenStream.reuseToken(token)
+                        // tokenStream.reuseToken(token)
                         FlowMapDecoder()
                     }
                     Token.STRING_NULL -> {
@@ -740,7 +739,7 @@ internal class YamlDecoder(
                         error("bug")
                     }
                     Token.LIST_BEGIN -> {
-                        tokenStream.reuseToken(token)
+                        //  tokenStream.reuseToken(token)
                         FlowSequenceDecoder()
                     }
                     Token.MULTILINE_LIST_FLAG -> {
