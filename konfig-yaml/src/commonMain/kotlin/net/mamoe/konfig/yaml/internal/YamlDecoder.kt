@@ -46,7 +46,8 @@ internal class YamlDecoder(
         NULL_STRING,
         BLOCK_CLASS,
         BLOCK_MAP,
-        BLOCK_SEQUENCE
+        BLOCK_SEQUENCE,
+        EMPTY_CLASS,
     }
 
     abstract inner class AbstractDecoder(
@@ -163,6 +164,21 @@ internal class YamlDecoder(
 
     }
 
+    private val emptyClassDecoder = EmptyClassDecoder()
+
+    /**
+     * When reached end of file, but a class is required to be deserialized
+     * Only used with descriptors. Has nothing to do with dynamic deserializing.
+     */
+    inner class EmptyClassDecoder : AbstractDecoder("Yaml Empty Class") {
+        override val kind: Kind
+            get() = Kind.EMPTY_CLASS
+
+        override fun decodeNotNullMark(): Boolean = false
+        override fun decodeSequentially(): Boolean = false
+        override fun decodeElementIndex(descriptor: SerialDescriptor): Int = READ_DONE
+    }
+
     /**
      * Example:
      * ```yaml
@@ -198,7 +214,7 @@ internal class YamlDecoder(
                     return if (index != CompositeDecoder.UNKNOWN_NAME) {
                         index
                     } else {
-                        YamlDynamicSerializer.deserialize(this)
+                        YamlNullableDynamicSerializer.deserialize(this)
                         decodeElementIndex(descriptor)
                     }
                 }
@@ -288,6 +304,7 @@ internal class YamlDecoder(
 
         override fun decodeNotNullMark(): Boolean {
             return when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> throw contextualDecodingException("Early EOF")
                 Token.MAP_END -> {
                     tokenStream.reuseToken(token)
                     false
@@ -350,10 +367,19 @@ internal class YamlDecoder(
                     index++
                 }
                 Token.STRING -> {
-                    if (tokenStream.nextToken() != Token.COLON) {
-                        throw contextualDecodingException("Expected a COLON between flow map entries but found $token for '${descriptor.serialName}'")
+                    when (val next = tokenStream.nextToken()) {
+                        Token.COLON -> {
+                            tokenStream.reuseToken(tokenStream.strBuff!!)
+                        }
+                        Token.COMMA,
+                        Token.MAP_END
+                        -> {
+                            tokenStream.reuseToken(next)
+                            tokenStream.reuseToken(Token.STRING_NULL)
+                            tokenStream.reuseToken(tokenStream.strBuff!!)
+                        }
+                        else -> throw contextualDecodingException("Illegal token $token")
                     }
-                    tokenStream.reuseToken(tokenStream.strBuff!!)
                     index++
                 }
                 else -> throw contextualDecodingException("Illegal token $token")
@@ -436,7 +462,8 @@ internal class YamlDecoder(
                         this.index = index
                         index
                     } else {
-                        YamlDynamicSerializer.deserialize(this)
+                        this.index = -1
+                        YamlNullableDynamicSerializer.deserialize(this)
                         return decodeElementIndex(descriptor)
                     }
                 }
@@ -590,6 +617,17 @@ internal class YamlDecoder(
         override fun decodeNotNullMark(): Boolean = false
     }
 
+
+    override fun decodeNotNullMark(): Boolean {
+        return when (val token = tokenStream.nextToken()) {
+            END_OF_FILE -> false
+            else -> {
+                tokenStream.reuseToken(token)
+                true
+            }
+        }
+    }
+
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
         return beginStructureImpl(null, descriptor)
     }
@@ -617,7 +655,9 @@ internal class YamlDecoder(
             }
             StructureKind.CLASS -> {
                 return when (val token = tokenStream.nextToken()) {
-                    null -> throw contextualDecodingException("Early EOF")
+                    END_OF_FILE -> {
+                        emptyClassDecoder
+                    }
                     Token.MAP_BEGIN -> {
                         tokenStream.reuseToken(token)
                         FlowClassDecoder()
@@ -645,7 +685,7 @@ internal class YamlDecoder(
             }
             UnionKind.CONTEXTUAL -> {
                 return when (val token = tokenStream.nextToken()) {
-                    null -> throw contextualDecodingException("Early EOF")
+                    END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
                         tokenStream.reuseToken(token)
                         FlowMapDecoder()
@@ -726,7 +766,6 @@ internal class YamlDecoder(
     override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
     override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
-    override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
     override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing? // TODO: 2020/4/19 decode null
     // endregion
 

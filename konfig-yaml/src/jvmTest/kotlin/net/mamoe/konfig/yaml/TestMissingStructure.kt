@@ -25,4 +25,35 @@ internal class TestMissingStructure {
             )
         )
     }
+
+    @Test
+    fun `test missing structure in block map with extra elements`() {
+        assertEquals(
+            Data(Data.Inner("default")),
+            Yaml.default.parse(
+                Data.serializer(), """unknown: s"""
+            )
+        )
+    }
+
+    @Test
+    fun `test missing structure in flow map`() {
+        assertEquals(
+            Data(Data.Inner("default")),
+            Yaml.default.parse(
+                Data.serializer(), "{}"
+            )
+        )
+    }
+
+    @Test
+    fun `test missing structure in flow map with extra elements`() {
+        assertEquals(
+            Data(Data.Inner("default")),
+            Yaml.default.parse(
+                Data.serializer(), """{unknown: s}"""
+            )
+        )
+    }
+
 }

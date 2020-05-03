@@ -154,7 +154,7 @@ fun Yaml.parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList 
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
  */
 fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey: Boolean = false): Map<String, Any?> {
-    when (val v = parse(YamlDynamicNullableSerializer, yamlContent)) {
+    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
         is Map<*, *> -> {
             val result = LinkedHashMap<String, Any?>(v.size)
 
@@ -181,7 +181,7 @@ fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey:
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
  */
 fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
-    when (val v = parse(YamlDynamicNullableSerializer, yamlContent)) {
+    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
         is List<*> -> return v
         else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
     }

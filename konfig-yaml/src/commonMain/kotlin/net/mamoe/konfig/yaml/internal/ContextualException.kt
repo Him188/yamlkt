@@ -6,8 +6,9 @@ import kotlinx.serialization.SerializationException
 
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stacktrace
-internal fun contextualDecodingException(hint: String, text: String, cur: Int, position: String, throwable: Throwable? = null): YamlDecodingException {
+@kotlin.internal.InlineOnly // not shown in stacktrace
+@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+internal inline fun contextualDecodingException(hint: String, text: String, cur: Int, position: String, throwable: Throwable? = null): YamlDecodingException {
     return YamlDecodingException(buildString {
         append(hint)
         append('\n')
@@ -24,8 +25,9 @@ internal fun contextualDecodingException(hint: String, text: String, cur: Int, p
 }
 
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun YamlDecoder.contextualDecodingException(
+@kotlin.internal.InlineOnly // not shown in stacktrace
+@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+internal inline fun YamlDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
     index: Int = -1,
@@ -34,8 +36,9 @@ internal fun YamlDecoder.contextualDecodingException(
     return tokenStream.contextualDecodingException("Top-level decoder: $hint", descriptor, index, throwable)
 }
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(
+@kotlin.internal.InlineOnly // not shown in stacktrace
+@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
     index: Int = -1,
@@ -45,12 +48,17 @@ internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(
 }
 
 @Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
+internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
     return this.parentYamlDecoder.contextualDecodingException(this.name + ": " + hint)
 }
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
-internal fun TokenStream.contextualDecodingException(hint: String): YamlDecodingException {
+/*
+ * I made them inline to reduce useless stacktrace
+ */
+
+@kotlin.internal.InlineOnly // not shown in stacktrace
+@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
+internal inline fun TokenStream.contextualDecodingException(hint: String): YamlDecodingException {
     return contextualDecodingException(hint, null, -1)
 }
 
@@ -106,7 +114,7 @@ internal fun TokenStream.readLine(): String {
     return buffer.toString()
 }
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
+// this function is always shown only in stacktrace
 internal fun TokenStream.contextualDecodingException(hint: String, descriptor: SerialDescriptor?, index: Int, throwable: Throwable? = null): YamlDecodingException {
     val message: String = if (descriptor == null)
         hint

@@ -82,7 +82,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
  *
  * @see YamlDynamicSerializer the non-null serializer
  */
-object YamlDynamicNullableSerializer : KSerializer<Any?> {
+object YamlNullableDynamicSerializer : KSerializer<Any?> {
     override val descriptor: SerialDescriptor = SerialDescriptor("YamlNullableDynamic", UnionKind.CONTEXTUAL)
 
     @JvmStatic

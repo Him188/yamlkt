@@ -178,4 +178,14 @@ internal class FlowMapTest {
 
         println(json)
     }
+
+    @Test
+    fun `test flow map missing value`() {
+        assertEquals(
+            mapOf("test" to null),
+            default.parseMap(
+                """{test}"""
+            )
+        )
+    }
 }
