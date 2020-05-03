@@ -58,7 +58,7 @@ internal val TokenStream.lineNumberAndCurrentLine: Pair<Int, String> // line to 
     get() {
         var lineStartingCur = 0
         var isLastLineSeparator = 0
-        var _lineNumber: Int = 1
+        var _lineNumber = 1
 
         // lineNumber  = _lineNumber - isLastLineSeparator
         // fun currentLine() = source.substring(startIndex = lineStartingCur, endIndex = cur - isLastLineSeparator)
@@ -76,9 +76,10 @@ internal val TokenStream.lineNumberAndCurrentLine: Pair<Int, String> // line to 
             } // don't move cur++ into []
         }
 
-        for (i in 0..(cur - 1).coerceIn(source.indices)) {
-            read(i)
-        }
+        if (source.isNotEmpty())
+            for (i in 0..(cur - 1).coerceIn(source.indices)) {
+                read(i)
+            }
         return Pair(
             _lineNumber - isLastLineSeparator,
             source.substring(startIndex = lineStartingCur, endIndex = cur - isLastLineSeparator)
@@ -120,7 +121,7 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
 
     val v = this.lineNumberAndCurrentLine
     val lineNumber = v.first
-    val columnNumber = v.second.length
+    val columnNumber = v.second.length + 1
 
     val before = v.second.limitLast(32)
 

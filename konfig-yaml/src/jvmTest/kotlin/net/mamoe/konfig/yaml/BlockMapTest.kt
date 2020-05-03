@@ -10,6 +10,27 @@ import kotlin.test.assertEquals
 internal class BlockMapTest {
 
     @Test
+    fun `test dynamic block map null`() {
+        val map = Yaml.default.parseYamlMap(
+            """
+part_no:   A4786
+descrip2:   'null'
+descrip:   "null"
+quantity:  null
+    """
+        )
+        assertEquals(
+            mapOf(
+                "part_no" to "A4786",
+                "descrip2" to "null",
+                "descrip" to "null",
+                "quantity" to null
+            ),
+            map.toContentMap()
+        )
+    }
+
+    @Test
     fun `test dynamic block map`() {
         val map = Yaml.default.parseYamlMap(
             """
