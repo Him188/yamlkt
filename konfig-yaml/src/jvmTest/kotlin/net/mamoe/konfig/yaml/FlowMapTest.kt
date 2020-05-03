@@ -188,4 +188,10 @@ internal class FlowMapTest {
             )
         )
     }
+
+
+    @Test
+    fun ttt() {
+        println(default.parseMap("'123456789': 123456789"))
+    }
 }

@@ -28,7 +28,7 @@ sealed class YamlElement {
     abstract val content: Any?
 
     /**
-     * Prints this element to YAML text
+     * Prints this element into YAML format
      */
     abstract override fun toString(): String
 }
@@ -184,7 +184,32 @@ fun YamlPrimitive.asLiteralOrNull(): YamlLiteral? {
 @Serializable(with = YamlLiteralSerializer::class)
 data class YamlLiteral(
     override val content: String
-) : YamlPrimitive()
+) : YamlPrimitive() {
+    // Using members to make it easier to be used from Java.
+
+    fun toByte(): Byte = content.toByte()
+    fun toShort(): Short = content.toShort()
+    fun toInt(): Int = content.toInt()
+    fun toLong(): Long = content.toLong()
+    fun toFloat(): Float = content.toFloat()
+    fun toDouble(): Double = content.toDouble()
+
+    /**
+     * Returns `true` if [content] is equal to `"true"`, `"TRUE"`.
+     * Returns `false` otherwise.
+     */
+    fun toBoolean(): Boolean = when (content) {
+        "true", "TRUE" -> true
+        else -> false
+    }
+
+    fun toByteOrNull(): Byte? = content.toByteOrNull()
+    fun toShortOrNull(): Short? = content.toShortOrNull()
+    fun toIntOrNull(): Int? = content.toIntOrNull()
+    fun toLongOrNull(): Long? = content.toLongOrNull()
+    fun toFloatOrNull(): Float? = content.toFloatOrNull()
+    fun toDoubleOrNull(): Double? = content.toDoubleOrNull()
+}
 
 /**
  * Class representing YAML `null` value.
