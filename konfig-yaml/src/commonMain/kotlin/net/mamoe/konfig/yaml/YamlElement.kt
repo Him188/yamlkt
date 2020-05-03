@@ -23,12 +23,12 @@ import kotlin.reflect.KClass
 @Serializable(with = YamlElementSerializer::class)
 sealed class YamlElement {
     /**
-     * The content of this primitive value.
+     * The content of this element.
      */
     abstract val content: Any?
 
     /**
-     * Prints this element into YAML format
+     * Prints this element into YAML format.
      */
     abstract override fun toString(): String
 }
@@ -53,8 +53,8 @@ sealed class YamlElement {
  *
  * @throws IllegalArgumentException if the type isn't supported
  */
-fun Any?.asYamlElement(): YamlElement =
-    asYamlElementOrNull() ?: throw IllegalArgumentException("unsupported class: ${this!!::class.simpleName}")
+fun Any?.toYamlElement(): YamlElement =
+    toYamlElementOrNull() ?: throw IllegalArgumentException("unsupported class: ${this!!::class.simpleName}")
 
 /**
  * Cast to [YamlElement].
@@ -75,7 +75,7 @@ fun Any?.asYamlElement(): YamlElement =
  *
  * @return `null` if the type isn't supported, otherwise casted element.
  */
-fun Any?.asYamlElementOrNull(): YamlElement? = asYamlElementOrNullImpl()
+fun Any?.toYamlElementOrNull(): YamlElement? = asYamlElementOrNullImpl()
 
 /**
  * @return `true` if [this] is [YamlNull], `false` otherwise.
@@ -213,7 +213,7 @@ data class YamlLiteral(
 
 /**
  * Class representing YAML `null` value.
- * "~" and "null" literals are read as [YamlNull].
+ * Unquoted "~" and "null" literals are read as [YamlNull].
  */
 @Serializable(with = YamlNullSerializer::class)
 object YamlNull : YamlPrimitive() {
@@ -262,7 +262,7 @@ data class YamlMap(
         @JvmStatic
         @JvmName("fromStringToElementMap")
         operator fun invoke(map: Map<String, YamlElement>): YamlMap {
-            return YamlMap(map.mapKeys { it.asYamlElement() })
+            return YamlMap(map.mapKeys { it.toYamlElement() })
         }
 
         @JvmStatic
@@ -271,7 +271,7 @@ data class YamlMap(
             return YamlMap(
                 LinkedHashMap<YamlElement, YamlElement>(map.size).apply {
                     map.forEach { (key, value) ->
-                        put(YamlLiteral(key), value.asYamlElement())
+                        put(YamlLiteral(key), value.toYamlElement())
                     }
                 }
             )
@@ -280,7 +280,7 @@ data class YamlMap(
         @JvmStatic
         @JvmName("fromElementToAnyMap")
         operator fun invoke(map: Map<out YamlElement, Any?>): YamlMap {
-            return YamlMap(map.mapValues { it.asYamlElement() })
+            return YamlMap(map.mapValues { it.toYamlElement() })
         }
     }
 }
@@ -360,6 +360,8 @@ fun YamlMap.constrainLiteralKey(): Map<String, YamlElement> {
 //// LISTS ////
 ///////////////
 
+typealias YamlSequence = YamlList
+
 /**
  * Class representing YAML sequences.
  */
@@ -373,19 +375,19 @@ data class YamlList(
         @JvmStatic
         @JvmName("from")
         operator fun invoke(values: Collection<*>): YamlList {
-            return YamlList(values.map { it.asYamlElement() })
+            return YamlList(values.map { it.toYamlElement() })
         }
 
         @JvmStatic
         @JvmName("from")
         operator fun invoke(values: Array<*>): YamlList {
-            return YamlList(values.map { it.asYamlElement() })
+            return YamlList(values.map { it.toYamlElement() })
         }
 
         @JvmStatic
         @JvmName("from")
         operator fun invoke(values: Sequence<*>): YamlList {
-            return YamlList(values.map { it.asYamlElement() }.toList())
+            return YamlList(values.map { it.toYamlElement() }.toList())
         }
     }
 }
@@ -469,23 +471,23 @@ internal fun Any?.asYamlElementOrNullImpl(): YamlElement? = when (this) {
     is Short -> YamlLiteral(this.toString())
     is Char -> YamlLiteral(this.toString())
     is Boolean -> YamlLiteral(this.toString())
-    is Array<*> -> YamlList(this.map { it.asYamlElement() })
-    is ByteArray -> YamlList(this.map { it.asYamlElement() })
-    is IntArray -> YamlList(this.map { it.asYamlElement() })
-    is ShortArray -> YamlList(this.map { it.asYamlElement() })
-    is LongArray -> YamlList(this.map { it.asYamlElement() })
-    is FloatArray -> YamlList(this.map { it.asYamlElement() })
-    is DoubleArray -> YamlList(this.map { it.asYamlElement() })
-    is CharArray -> YamlList(this.map { it.asYamlElement() })
-    is BooleanArray -> YamlList(this.map { it.asYamlElement() })
+    is Array<*> -> YamlList(this.map { it.toYamlElement() })
+    is ByteArray -> YamlList(this.map { it.toYamlElement() })
+    is IntArray -> YamlList(this.map { it.toYamlElement() })
+    is ShortArray -> YamlList(this.map { it.toYamlElement() })
+    is LongArray -> YamlList(this.map { it.toYamlElement() })
+    is FloatArray -> YamlList(this.map { it.toYamlElement() })
+    is DoubleArray -> YamlList(this.map { it.toYamlElement() })
+    is CharArray -> YamlList(this.map { it.toYamlElement() })
+    is BooleanArray -> YamlList(this.map { it.toYamlElement() })
     is Map<*, *> -> {
         val map = LinkedHashMap<YamlElement, YamlElement>(this.size)
         for ((key, value) in this) {
-            map[key.asYamlElement()] = value.asYamlElement()
+            map[key.toYamlElement()] = value.toYamlElement()
         }
         YamlMap(map)
     }
-    is List<*> -> YamlList(this.map { it.asYamlElement() })
+    is List<*> -> YamlList(this.map { it.toYamlElement() })
     else -> null
 }
 
