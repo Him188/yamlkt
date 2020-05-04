@@ -104,7 +104,16 @@ internal class YamlDecoder(
         final override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
         final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
-        override fun decodeNotNullMark(): Boolean = false // TODO: 2020/4/19 not null mark
+        override fun decodeNotNullMark(): Boolean =
+            when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> false
+                Token.STRING_NULL -> false
+                else -> {
+                    tokenStream.reuseToken(token)
+                    true
+                }
+            }
+
         override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing?  // TODO: 2020/4/19 decode null
         // endregion
 
@@ -621,6 +630,7 @@ internal class YamlDecoder(
     override fun decodeNotNullMark(): Boolean {
         return when (val token = tokenStream.nextToken()) {
             END_OF_FILE -> false
+            Token.STRING_NULL -> false
             else -> {
                 tokenStream.reuseToken(token)
                 true

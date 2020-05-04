@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialDescriptor
 
 @Suppress("ConstantConditionIf")
 internal object Debugging {
-    internal const val enabled: Boolean = false
+    internal const val enabled: Boolean = true
     var logIndent = 0
 
     fun beginStructure(descriptor: SerialDescriptor, decoder: YamlDecoder.AbstractDecoder?) {
