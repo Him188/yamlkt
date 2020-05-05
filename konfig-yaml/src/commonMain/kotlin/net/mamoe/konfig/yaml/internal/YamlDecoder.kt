@@ -952,7 +952,11 @@ internal class YamlDecoder(
 
             return this.toLongOrNull() ?: kotlin.runCatching {
                 if (configuration.nonStrictNumber) {
-                    this.toFloat().toLong()
+                    kotlin.runCatching {
+                        this.toFloat()
+                    }.getOrElse {
+                        throw contextualDecodingException("Cannot cast $this to $typeName", descriptor, index)
+                    }.toLong()
                 } else {
                     throw contextualDecodingException("Number $this overflow for $typeName", descriptor, index)
                 }
