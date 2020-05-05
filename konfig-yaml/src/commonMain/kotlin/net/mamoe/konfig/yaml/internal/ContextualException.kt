@@ -98,7 +98,7 @@ internal val TokenStream.lineNumber: Int // line to column to current line
     get() {
         var line = 1
         for (i in 0..cur.coerceAtMost(source.length)) {
-            if (source[i] == '\n') {
+            if (source[i].isLineSeparator()) {
                 line++
             }
         }
@@ -108,7 +108,7 @@ internal val TokenStream.lineNumber: Int // line to column to current line
 internal fun TokenStream.readLine(): String {
     val buffer = StringBuilder()
     whileNotEOF {
-        if (it == '\n') return buffer.toString()
+        if (it.isLineSeparator()) return buffer.toString()
         buffer.append(it)
     }
     return buffer.toString()
@@ -125,7 +125,7 @@ internal fun TokenStream.contextualDecodingException(hint: String, descriptor: S
     val message: String = if (descriptor == null)
         hint
     else
-        hint + "for '${index.let { descriptor.getElementName(it) }}' " +
+        hint + " for '${index.let { descriptor.getElementName(it) }}' " +
             "in '${descriptor.serialName}'"
 
     /*

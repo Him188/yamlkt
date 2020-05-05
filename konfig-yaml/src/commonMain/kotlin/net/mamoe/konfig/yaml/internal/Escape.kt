@@ -80,7 +80,7 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
                 reuseToken(Token.COLON)
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
-            '\n' -> {
+            '\n', '\r' -> {
                 currentIndent = 0
                 // no reuse.
                 return subStringBufTrimEnd(startCur, cur - 2)

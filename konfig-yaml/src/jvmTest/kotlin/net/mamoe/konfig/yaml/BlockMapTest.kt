@@ -1,13 +1,34 @@
 package net.mamoe.konfig.yaml
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import org.junit.Test
+import java.io.File
 import kotlin.test.assertEquals
 
 
 internal class BlockMapTest {
+
+    @Serializable
+    data class Config(val bot: Bot, val owner: Owner) {
+        @Serializable
+        data class Bot(val account: Long, val password: String)
+
+        @Serializable
+        data class Owner(val account: Long)
+    }
+
+    @Test
+    fun `test descriptor block map`() {
+        println(
+            Yaml.default.parse(
+                Config.serializer(), File("E:\\Projects\\konfig\\konfig-yaml\\src\\jvmTest\\kotlin\\net\\mamoe\\konfig\\yaml\\config.yml").readText()
+            )
+        )
+    }
+
 
     @Test
     fun `test dynamic block map null`() {

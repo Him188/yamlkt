@@ -199,7 +199,7 @@ internal class TokenStream(
                     currentIndent++
                     return Token.COLON
                 }
-                '\n' -> {
+                '\n', '\r' -> {
                     currentIndent = 0
                 }
                 ',' -> {
