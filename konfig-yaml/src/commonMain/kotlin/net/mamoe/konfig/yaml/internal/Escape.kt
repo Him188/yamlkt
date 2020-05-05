@@ -106,6 +106,13 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
                 reuseToken(Token.MAP_END)
                 return subStringBufTrimEnd(startCur, cur - 2)
             }
+            '#' -> {
+                val cur = cur - 2
+                this.skipLine()
+                this.cur--
+                currentIndent = 0
+                return subStringBufTrimEnd(startCur, cur).also { println(it) }
+            }
         }
     }
     return subStringBufTrimEnd(startCur, cur - 1)

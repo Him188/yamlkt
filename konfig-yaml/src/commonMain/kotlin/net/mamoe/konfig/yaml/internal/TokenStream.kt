@@ -226,6 +226,10 @@ internal class TokenStream(
                     currentIndent++
                     return Token.MULTILINE_LIST_FLAG
                 }
+                '#' -> {
+                    this.skipLine()
+                    currentIndent = 0
+                }
                 else -> {
                     val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
                     this.strBuff = str

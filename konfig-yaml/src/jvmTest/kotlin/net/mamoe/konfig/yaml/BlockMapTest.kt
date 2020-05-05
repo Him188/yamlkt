@@ -13,10 +13,12 @@ internal class BlockMapTest {
     fun `test dynamic block map null`() {
         val map = Yaml.default.parseYamlMap(
             """
-part_no:   A4786
-descrip2:   'null'
+     #test
+part_no:   A4786    #test
+descrip2:   'null'  #test
 descrip:   "null"
-quantity:  null
+ #test
+quantity:  null   #test
     """
         )
         assertEquals(

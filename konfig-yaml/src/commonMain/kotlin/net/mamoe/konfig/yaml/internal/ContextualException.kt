@@ -114,6 +114,12 @@ internal fun TokenStream.readLine(): String {
     return buffer.toString()
 }
 
+internal fun TokenStream.skipLine() {
+    whileNotEOF {
+        if (it.isLineSeparator()) return
+    }
+}
+
 // this function is always shown only in stacktrace
 internal fun TokenStream.contextualDecodingException(hint: String, descriptor: SerialDescriptor?, index: Int, throwable: Throwable? = null): YamlDecodingException {
     val message: String = if (descriptor == null)
