@@ -5,7 +5,6 @@ package net.mamoe.konfig.yaml
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import kotlinx.serialization.modules.SerializersModule
-import net.mamoe.konfig.Language
 import net.mamoe.konfig.yaml.internal.*
 import kotlin.jvm.JvmOverloads
 

@@ -24,7 +24,7 @@ kotlin {
         all {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
             dependencies {
-                api(project(":konfig-core"))
+              //  api(project(":konfig-core"))
             }
         }
 

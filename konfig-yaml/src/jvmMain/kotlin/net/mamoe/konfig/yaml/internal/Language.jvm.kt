@@ -1,4 +1,4 @@
-package net.mamoe.konfig
+package net.mamoe.konfig.yaml.internal
 
 import org.intellij.lang.annotations.Language
 
