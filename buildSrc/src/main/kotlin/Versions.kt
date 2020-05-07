@@ -1,6 +1,6 @@
 object Versions {
     object Konfig {
-        const val version = "0.1.0"
+        const val version = "0.1.1"
     }
 
     object Kotlin {

@@ -1,13 +1,17 @@
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.SerialDescriptor
+import kotlin.jvm.JvmStatic
 
 
 @Suppress("ConstantConditionIf")
 internal object Debugging {
-    internal const val enabled: Boolean = true
+    internal const val enabled: Boolean = false
+
+    @JvmStatic
     var logIndent = 0
 
+    @JvmStatic
     fun beginStructure(descriptor: SerialDescriptor, decoder: YamlDecoder.AbstractDecoder?) {
         if (!enabled) return
         if (decoder == null) {
@@ -21,13 +25,17 @@ internal object Debugging {
         logIndent += 4
     }
 
+    @JvmStatic
     fun endStructure(descriptor: SerialDescriptor?) {
         if (!enabled) return
         logIndent -= 4
         println(space(logIndent) + "}")
     }
 
+    @JvmStatic
     private var decodeValue = 0
+
+    @JvmStatic
     fun logDecode(descriptor: SerialDescriptor?, index: Int, value: String) {
         if (!enabled) return
         if (descriptor == null) {
@@ -49,6 +57,7 @@ internal object Debugging {
     }
 
 
+    @JvmStatic
     private fun space(count: Int) = " ".repeat(count.coerceAtLeast(0))
 }
 
