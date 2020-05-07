@@ -968,6 +968,6 @@ internal class YamlDecoder(
 }
 
 @Suppress("NOTHING_TO_INLINE")
-private inline fun Int.isOdd(): Boolean {
+internal inline fun Int.isOdd(): Boolean {
     return this and 0b1 != 0
 }

@@ -103,7 +103,9 @@ class Yaml @JvmOverloads constructor(
      * ```
      */
     override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
-        TODO("not implemented")
+        val sb = StringBuilder()
+        serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
+        return sb.toString()
     }
 
     companion object {

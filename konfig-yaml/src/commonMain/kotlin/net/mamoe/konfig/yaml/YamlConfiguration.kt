@@ -38,7 +38,7 @@ data class YamlConfiguration(
     /**
      * Encode all strings with quotation.
      */
-    @JvmField val stringSerialization: StringSerialization = StringSerialization.SINGLE_QUOTATION,
+    @JvmField val stringSerialization: StringSerialization = StringSerialization.NONE,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
@@ -53,6 +53,10 @@ data class YamlConfiguration(
      * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
      */
     @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
+    /**
+     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
+     */
+    @JvmField val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     /**
      * The format for [StructureKind.LIST]s
      */
