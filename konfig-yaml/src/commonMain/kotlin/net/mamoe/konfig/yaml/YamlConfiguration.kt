@@ -3,6 +3,8 @@
 package net.mamoe.konfig.yaml
 
 import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.PrimitiveKind
+import kotlinx.serialization.StructureKind
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
@@ -36,7 +38,7 @@ data class YamlConfiguration(
     /**
      * Encode all strings with quotation.
      */
-    @JvmField val stringSerialization: StringSerialization = StringSerialization.DOUBLE_QUOTATION,
+    @JvmField val stringSerialization: StringSerialization = StringSerialization.SINGLE_QUOTATION,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
@@ -46,24 +48,48 @@ data class YamlConfiguration(
      * The value set for `null` serialization.
      * Default: serialize `null` as "null"
      */
-    @JvmField val nullSerialization: NullSerialization = NullSerialization.NULL
+    @JvmField val nullSerialization: NullSerialization = NullSerialization.NULL,
+    /**
+     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
+     */
+    @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
+    /**
+     * The format for [StructureKind.LIST]s
+     */
+    @JvmField val listSerialization: ListSerialization = ListSerialization.AUTO
 ) {
     /**
      * The value set for [String] serialization
      */
     enum class StringSerialization {
         /**
-         * Quote all [String]s with `"`
+         * Quote all [String]s with `'`
+         *
+         * Escaping is only available
          */
         SINGLE_QUOTATION,
 
         /**
-         * Quote all [String]s with "'"
+         * Quote all [String]s with `"`
+         *
+         * Char escaping is fully available in strings in this format. Strings can also have line breaks, as:
+         * ```yaml
+         * test: "Konfig is a
+         * YAML \u0123parser\u0125
+         * "
+         * ```
+         * The value of deserialized 'test' is:
+         * ```
+         * Konfig is a
+         * YAML {parser}
+         * ```
          */
         DOUBLE_QUOTATION,
 
         /**
-         * Don't quote any [String].
+         * Don't quote any [String] as mush as possible.
+         *
+         * Will still use [SINGLE_QUOTATION] if chars can't be serialized without escape.
          */
         NONE
     }
@@ -76,19 +102,14 @@ data class YamlConfiguration(
         val falseValue: String
     ) {
         /**
-         * Serialize [Boolean] as "on" or "off"
-         */
-        object ON_OFF : BooleanSerialization("on", "off")
-
-        /**
          * Serialize [Boolean] as "true" or "false"
          */
         object TRUE_FALSE : BooleanSerialization("true", "false")
 
         /**
-         * Serialize [Boolean] as "1" or "0"
+         * Serialize [Boolean] as "TRUE" or "FALSE"
          */
-        object ONE_ZERO : BooleanSerialization("1", "0")
+        object TRUE_FALSE_UPPERCASE : BooleanSerialization("TRUE", "FALSE")
     }
 
     /**
@@ -106,6 +127,78 @@ data class YamlConfiguration(
          * Serialize `null` as "null"
          */
         object NULL : NullSerialization("null")
+
+        /**
+         * Serialize `null` as "NULL"
+         */
+        object NULL_UPPERCASE : NullSerialization("NULL")
+    }
+
+    /**
+     * The serial format for [StructureKind.MAP]s and [StructureKind.CLASS]s
+     */
+    enum class MapSerialization {
+        /**
+         * Serialize [StructureKind.MAP]s and [StructureKind.CLASS]s as block maps.
+         *
+         * YAML text example:
+         * ```yaml
+         * name: Alice
+         * age: 20
+         * ```
+         */
+        BLOCK_MAP,
+
+        /**
+         * Serialize [StructureKind.MAP]s and [StructureKind.CLASS]s as flow maps
+         *
+         * YAML text example:
+         * ```yaml
+         * { name: Alice, age: 20 }
+         * ```
+         */
+        FLOW_MAP
+    }
+
+    /**
+     * The serial format for [StructureKind.LIST]s.
+     */
+    enum class ListSerialization {
+        /**
+         * Force serialize [StructureKind.LIST]s as block(multiline) sequences
+         *
+         * YAML text example:
+         * ```yaml
+         * - orange
+         * - apple
+         * - banana
+         * ```
+         */
+        BLOCK_SEQUENCE,
+
+        /**
+         * Force serialize [StructureKind.LIST]s as flow sequences
+         *
+         * YAML text example:
+         * ```yaml
+         * [orange, apple, banana]
+         * ```
+         */
+        FLOW_SEQUENCE,
+
+        /**
+         * Automatically chose the format depending on the type of elements.
+         *
+         * If the element is [PrimitiveKind], it is then serialized in [FLOW_SEQUENCE],
+         * otherwise in [BLOCK_SEQUENCE].
+         *
+         * YAML text example:
+         * ```yaml
+         * - [orange, apple, banana]
+         * - [java, kotlin, golang]
+         * ```
+         */
+        AUTO
     }
 
     companion object {
