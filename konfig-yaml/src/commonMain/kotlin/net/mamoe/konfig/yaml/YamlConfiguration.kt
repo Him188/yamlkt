@@ -34,7 +34,7 @@ data class YamlConfiguration(
      * Whether the format should encode values that are equal to the default values.
      * @see CompositeEncoder.shouldEncodeElementDefault for more information
      */
-    @JvmField val encodeDefaultValues: Boolean = false,
+    @JvmField val encodeDefaultValues: Boolean = true,
     /**
      * Encode all strings with quotation.
      */
