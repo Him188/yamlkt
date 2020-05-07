@@ -1,6 +1,7 @@
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.decoder
 
 import net.mamoe.konfig.yaml.Yaml.Companion.default
+import net.mamoe.konfig.yaml.parseMap
 import org.junit.Test
 
 internal class FullYamlTest {

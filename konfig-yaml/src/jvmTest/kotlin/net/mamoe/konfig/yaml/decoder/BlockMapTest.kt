@@ -1,9 +1,12 @@
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.decoder
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import net.mamoe.konfig.yaml.Yaml
+import net.mamoe.konfig.yaml.parseYamlMap
+import net.mamoe.konfig.yaml.toContentMap
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertEquals

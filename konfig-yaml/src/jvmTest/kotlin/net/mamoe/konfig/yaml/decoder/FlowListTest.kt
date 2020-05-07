@@ -1,6 +1,6 @@
 @file:Suppress("unused")
 
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.decoder
 
 import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.Yaml.Companion.default

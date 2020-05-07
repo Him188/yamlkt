@@ -1,4 +1,4 @@
-package net.mamoe.konfig.yaml
+package net.mamoe.konfig.yaml.decoder
 
 import org.junit.Test
 import org.yaml.snakeyaml.Yaml as SnakeYaml
