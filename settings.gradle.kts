@@ -1,7 +1,6 @@
-rootProject.name = "konfig"
+rootProject.name = "yamlkt"
 
-include(":konfig-core")
-include(":konfig-yaml")
+include(":yamlkt")
 include(":benchmark")
 
 enableFeaturePreview("GRADLE_METADATA")

@@ -1,13 +1,9 @@
 object Versions {
-    object Konfig {
-        const val version = "0.1.1"
-    }
+    const val version = "0.1.0"
 
     object Kotlin {
         const val stdlib = "1.3.71"
         const val serialization = "0.20.0"
-
-        const val io = "0.1.16"
     }
 
     object Publishing {

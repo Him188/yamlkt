@@ -27,6 +27,6 @@ jobs:
             -   name: Gradle build
                 run: ./gradlew build # if test's failed, don't publish
             -   name: Check keys
-                run: ./gradlew :konfig-yaml:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :konfig-yaml:bintrayUpload
-                run: ./gradlew :konfig-yaml:bintrayUpload -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+                run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+            -   name: Gradle :yamlkt:bintrayUpload
+                run: ./gradlew :yamlkt:bintrayUpload -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}

@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import net.mamoe.konfig.yaml.Yaml
+import net.mamoe.yamlkt.Yaml
 import org.openjdk.jmh.annotations.*
 import test.Constants.content
 import test.Constants.gson
-import test.Constants.konfig
 import test.Constants.kotlinJson
+import test.Constants.yamlkt
 import java.util.concurrent.TimeUnit
 
 @Serializable
@@ -62,7 +62,7 @@ object Constants {
 """
 
     val kotlinJson = Json(JsonConfiguration.Stable)
-    val konfig = Yaml.default
+    val yamlkt = Yaml.default
     val gson = Gson()
 
 }
@@ -71,8 +71,8 @@ object Constants {
 
 Benchmark                                   Mode  Cnt       Score       Error  Units
 DeserializingTest.snakeYaml                 avgt   10  273006.420 ± 38247.820  ns/op
-DeserializingTest.konfigContextual          avgt   10   19171.890 ±   970.259  ns/op
-DeserializingTest.konfigWithDescriptor      avgt   10   12812.011 ±   462.406  ns/op
+DeserializingTest.yamlktContextual          avgt   10   19171.890 ±   970.259  ns/op
+DeserializingTest.yamlktWithDescriptor      avgt   10   12812.011 ±   462.406  ns/op
 DeserializingTest.kotlinContextual          avgt   10   11527.638 ±   457.245  ns/op
 DeserializingTest.kotlinJsonWIthDescriptor  avgt   10   12650.368 ±   769.779  ns/op
 DeserializingTest.gson                      avgt   10    8645.489 ±   465.499  ns/op
@@ -93,13 +93,13 @@ open class DeserializingTest {
     }
 
     @Benchmark
-    fun konfigWithDescriptor() {
-        konfig.parse(Data.serializer(), content)
+    fun yamlktWithDescriptor() {
+        yamlkt.parse(Data.serializer(), content)
     }
 
     @Benchmark
-    fun konfigContextual() {
-        konfig.parseYamlMap(content)
+    fun yamlktContextual() {
+        yamlkt.parseYamlMap(content)
     }
 
     private val snakeYaml = org.yaml.snakeyaml.Yaml()

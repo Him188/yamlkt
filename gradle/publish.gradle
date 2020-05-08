@@ -1,5 +1,4 @@
-// 部分源码来自 kotlinx.coroutines
-// Source code from kotlinx.coroutines
+// Some source code from kotlinx.coroutines
 
 task ensureBintrayAvailable() {
     doLast {
@@ -14,7 +13,7 @@ if (!Bintray.isBintrayAvailable(project)) {
     return
 }
 
-def vcs = "https://github.com/mamoe/konfig"
+def vcs = "https://github.com/mamoe/yamlkt"
 
 def pomConfig = {
     licenses {
@@ -43,8 +42,8 @@ bintray {
 
     pkg {
         userOrg = 'mamoe'
-        repo = 'konfig'
-        name = "konfig"
+        repo = 'yamlkt'
+        name = "yamlkt"
         licenses = ['Apache-2.0']
         vcsUrl = vcs
     }

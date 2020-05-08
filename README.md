@@ -1,4 +1,7 @@
-# konfig
+# Yamlkt
+![Gradle CI](https://github.com/mamoe/yamlkt/workflows/Gradle%20CI/badge.svg?branch=master)
+[![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
+
 Multi-platform Yaml with comments support for kotlinx.serialization
 
 This project is under development.
@@ -7,25 +10,31 @@ This project is under development.
 
 Dependency requirements:
 
-| konfig | Required Kotlin | Using kotlinx.serialization |
+| yamlkt | Required Kotlin | Using kotlinx.serialization |
 |:-------|:----------------|:-------------------------------|
-| 0.1.0  | 1.3.70+         | 0.20.0                         |
+| 0.1.0  | 1.3.70+          | 0.20.0                         |
 
 #### Gradle
-Replace `<version>` with the newest version here: \<not yet published\>
+Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
 ```kotlin
-implementation("net.mamoe:konfig-yaml:<version>")
+implementation("net.mamoe.yamlkt:yamlkt:<version>")
 ```
 
 
 #### Maven
-Replace `$version` with the newest version here: \<not yet published\>
+Replace `$version` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
 ```xml
+<repository>
+    <name>jcenter</name>
+    <url>https://jcenter.bintray.com/</url>
+</repository>
+```
+```xml
 <dependency>
-    <groupId>net.mamoe</groupId>
-    <artifactId>konfig-yaml</artifactId>
+    <groupId>net.mamoe.yamlkt</groupId>
+    <artifactId>yamlkt</artifactId>
     <version>$version</version>
 </dependency>
 ```
@@ -51,7 +60,7 @@ In progress
 ### Deserializing
 
 #### Descriptor-based deserializing
-Like Json from `kotlinx.serialization`, Konfig supports deserialization with descriptors.  
+Like Json from `kotlinx.serialization`, YamlKt supports deserialization with descriptors.  
 Using descriptor is the most fast and recommended way as the decoder doesn't need to guess the type.
 ```kotlin
 @Serializable
@@ -76,7 +85,7 @@ list: [str, "str2"]
 ```
 
 #### Contextual deserializing
-Konfig provides a contextual serializer `YamlDynamicSerializer` for `Any`  
+YamlKt provides a contextual serializer `YamlDynamicSerializer` for `Any`  
 and `YamlNullDynamicSerializer` for `Any?
 
 By default, `YamlDynamicSerializer` is installed to `Any`.  

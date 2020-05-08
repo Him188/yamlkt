@@ -16,8 +16,8 @@ plugins {
 }
 
 allprojects {
-    group = "net.mamoe"
-    version = Versions.Konfig.version
+    group = "net.mamoe.yamlkt"
+    version = Versions.version
 
     repositories {
         mavenCentral()
