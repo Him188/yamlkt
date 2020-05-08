@@ -1,6 +1,19 @@
 // 部分源码来自 kotlinx.coroutines
 // Source code from kotlinx.coroutines
 
+task ensureBintrayAvailable() {
+    doLast {
+        if (!Bintray.isBintrayAvailable(project)) {
+            throw new IllegalStateException("bintray isn't available. ")
+        }
+    }
+}
+
+if (!Bintray.isBintrayAvailable(project)) {
+    println("bintray isn't available. NO PUBLICATIONS WILL BE SET")
+    return
+}
+
 def vcs = "https://github.com/mamoe/konfig"
 
 def pomConfig = {
