@@ -107,10 +107,9 @@ class Yaml @JvmOverloads constructor(
     /**
      * Stringify [value] to [String] in YAML format using [YamlNullableDynamicSerializer]
      *
-     * **WARNING**: This approach is very slow and may not work as expected on JS,
+     * **WARNING**: This approach is slow and may not work as expected on JS or native,
      * see [YamlDynamicSerializer] for more information
-     */
-    @ImplicitReflectionSerializer
+     */ // not annotated with @ImplicitReflectionSerializer as mostly config isn't supposed to have best performance.
     fun stringify(value: Any?): String {
         return stringify(YamlNullableDynamicSerializer, value)
     }
