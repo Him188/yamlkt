@@ -6,6 +6,7 @@ package net.mamoe.konfig.yaml.internal
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.yaml.YamlConfiguration
+import net.mamoe.konfig.yaml.YamlDynamicSerializer
 import net.mamoe.konfig.yaml.YamlElement
 import net.mamoe.konfig.yaml.YamlNullableDynamicSerializer
 import kotlin.jvm.JvmField
@@ -437,14 +438,6 @@ internal class YamlDecoder(
 
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            if (index == -5) {
-                //  tokenStream.nextToken().let { begin ->
-                //      check(begin == Token.MAP_BEGIN) {
-                //          throw contextualDecodingException("Beginning token must a '{', but found $begin")
-                //      }
-                //  }
-            }
-
             if (firstValueDecoded) {
                 // skip a comma
                 when (val token = tokenStream.nextToken()) {
@@ -501,14 +494,6 @@ internal class YamlDecoder(
             get() = Kind.FLOW_SEQUENCE
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
-            if (index == 0) {
-                // tokenStream.nextToken().let { begin ->
-                //     check(begin == Token.LIST_BEGIN) {
-                //         throw contextualDecodingException("Beginning token must be '[', but found $begin")
-                //     }
-                // }
-            }
-
             when (val current = tokenStream.nextToken()) {
                 END_OF_FILE -> throw contextualDecodingException("Unexpected EOF")
                 Token.STRING -> {

@@ -9,6 +9,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.yaml.Yaml
 import net.mamoe.konfig.yaml.YamlConfiguration
+import net.mamoe.konfig.yaml.YamlNullableDynamicSerializer
 import net.mamoe.konfig.yaml.internal.YamlEncoder.AbstractEncoder
 import net.mamoe.konfig.yaml.internal.YamlEncoder.BlockMapOrClassEncoder
 import kotlin.jvm.JvmMultifileClass
