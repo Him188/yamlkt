@@ -36,8 +36,8 @@ def pomConfig = {
 }
 
 bintray {
-    user = file("../bintray.user.txt").text
-    key = file("../bintray.key.txt").text
+    user = Bintray.getUser(project)
+    key = Bintray.getKey(project)
     version = project.version
 
     pkg {
