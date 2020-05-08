@@ -420,8 +420,18 @@ internal class YamlDecoder(
 
         override fun decodeNotNullMark(): Boolean {
             return when (val token = tokenStream.nextToken()) {
-                Token.MAP_END -> {
+                Token.MAP_END
+                -> {
                     tokenStream.reuseToken(token)
+                    false
+                }
+                Token.MAP_BEGIN,
+                Token.LIST_BEGIN
+                -> {
+                    tokenStream.reuseToken(token)
+                    true
+                }
+                Token.STRING_NULL -> {
                     false
                 }
                 Token.STRING -> {
