@@ -53,7 +53,7 @@ internal actual fun IYamlDynamicSerializer.serializeImpl(
             serializer = value::class.serializerOrNull()
                 as? KSerializer<Any>?
                 ?: error(
-                    "Cannot find serializer for ${value.classSimpleName()}. Please use descriptor-based serializing."
+                    "Cannot find serializer for ${value.classSimpleName()}. Please use specify serializers manually."
                 ),
             value = value
         )
