@@ -12,7 +12,7 @@ Dependency requirements:
 
 | yamlkt | Required Kotlin | Using kotlinx.serialization |
 |:-------|:----------------|:-------------------------------|
-| 0.1.0  | 1.3.70+          | 0.20.0                         |
+| 0.x    | 1.3.70+          | 0.20.0                         |
 
 #### Gradle
 Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
