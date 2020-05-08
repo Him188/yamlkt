@@ -104,66 +104,57 @@ internal class YamlEncoder(
         }
 
         private var justStarted: Boolean = true
-        private var count: Int = 0
 
         // region for map
-        @Suppress("DuplicatedCode")
-        override fun encodeValue(value: Char) {
-            val isKey = count++.isEvenOrZero()
+
+        private var isKey: Boolean = true
+        private inline fun structuredKeyValue(block: YamlWriter.() -> Unit) {
+            val isKey = isKey.also { isKey = !isKey }
             if (isKey) {
                 if (justStarted) {
                     justStarted = false
                 } else writer.write(", ")
 
-                writer.write(value)
-            } else {
+                writer.block()
                 writer.write(": ")
-                writer.write(value)
+            } else {
+                writer.block()
             }
         }
 
-        @Suppress("DuplicatedCode")
-        override fun encodeValue(value: String) {
-            val isKey = count++.isEvenOrZero()
-            if (isKey) {
-                if (justStarted) {
-                    justStarted = false
-                } else writer.write(", ")
-
-                writer.write(value)
-            } else {
-                writer.write(": ")
-                writer.write(value)
-            }
-        }
+        override fun encodeValue(value: Char) = writer.write(value)
+        override fun encodeValue(value: String) = writer.write(value)
         // endregion
 
         // region for class
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
-            if (justStarted) justStarted = false
-            else writer.write(", ")
-            writer.write(descriptor.getElementName(index))
-            writer.write(": ")
-            writer.write(value)
-        }
-
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
-            if (justStarted) justStarted = false
-            else writer.write(", ")
-            writer.write(descriptor.getElementName(index))
-            writer.write(": ")
-            writer.write(value)
-        }
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = writer.write(value)
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = writer.write(value)
 
         override fun endStructure0(descriptor: SerialDescriptor) {
             writer.write(" }")
         }
 
+        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+            if (descriptor.kind == StructureKind.CLASS) {
+                if (justStarted) justStarted = false
+                else writer.write(", ")
+
+                writer.write(descriptor.getElementName(index))
+                writer.write(": ")
+
+                super.encodeSerializableElement0(descriptor, index, serializer, value)
+            } else structuredKeyValue {
+                super.encodeSerializableElement0(descriptor, index, serializer, value)
+            }
+        }
+
         override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
+
             if (justStarted) justStarted = false
             else writer.write(", ")
+
             writer.write(descriptor.getElementName(index))
             writer.write(": ")
         }
@@ -173,32 +164,27 @@ internal class YamlEncoder(
     internal inner class FlowSequenceEncoder(
         linebreakAfterFinish: Boolean
     ) : FlowEncoder(linebreakAfterFinish) {
-        private var justStarted = true
 
         init {
             writer.write("[ ")
         }
 
-        @Suppress("DuplicatedCode")
-        override fun encodeValue(value: Char) {
-            if (justStarted) justStarted = false
-            else writer.write(", ")
-
-            writer.write(value)
+        override fun endStructure0(descriptor: SerialDescriptor) {
+            writer.write(" ]")
         }
 
-        @Suppress("DuplicatedCode")
-        override fun encodeValue(value: String) {
-            if (justStarted) justStarted = false
-            else writer.write(", ")
-
-            writer.write(value)
-        }
+        override fun encodeValue(value: Char) = writer.write(value)
+        override fun encodeValue(value: String) = writer.write(value)
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
-        override fun endStructure0(descriptor: SerialDescriptor) {
-            writer.write(" ]")
+
+        private var justStarted = true
+        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+            if (justStarted) justStarted = false
+            else writer.write(", ")
+
+            super.encodeSerializableElement0(descriptor, index, serializer, value)
         }
 
         override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) = Unit

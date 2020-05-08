@@ -10,7 +10,7 @@ internal class ComplexEncoderTests {
     @Test
     fun testNestedList() {
         Thread.sleep(1000)
-        default.testDynamic(
+        allFlow.testDynamic(
             listOf(
                 "apple",
                 listOf(
@@ -56,7 +56,10 @@ internal class ComplexEncoderTests {
             mapOf(
                 "apple" to listOf("ba", "na", "na"),
                 "test" to mapOf(
-                    "ba" to "na",
+                    "ba" to mapOf(
+                        "ba" to "na",
+                        "fa" to "pa"
+                    ),
                     "fa" to mapOf(
                         "ba" to "na",
                         "fa" to "pa"
