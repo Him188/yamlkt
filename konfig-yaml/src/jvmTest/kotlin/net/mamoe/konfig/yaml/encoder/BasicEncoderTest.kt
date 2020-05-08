@@ -28,6 +28,5 @@ internal class BasicEncoderTest {
         default.testDynamic(true)
         default.testDynamic("s")
         default.testDynamic(listOf("test", "s"))
-        default.testDynamic(mapOf("test" to "s", "test" to "s"))
     }
 }
