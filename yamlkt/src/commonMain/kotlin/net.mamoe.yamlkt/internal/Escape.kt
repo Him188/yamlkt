@@ -282,8 +282,7 @@ internal val String.quotationAvailability: Int
         }
         if (lastIsColon) canBeUnquoted = false
 
-        return 0b00 or
-            (if (canBeSingleQuoted) SINGLE else 0) or
+        return (if (canBeSingleQuoted) SINGLE else 0) or
             (if (canBeUnquoted) UNQUOTED else 0) or
             (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
     }

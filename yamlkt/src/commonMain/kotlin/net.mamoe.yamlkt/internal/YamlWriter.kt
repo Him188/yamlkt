@@ -16,10 +16,13 @@ internal class YamlWriter(
     /**
      * Mostly delegated by a [StringBuilder]
      */
-    output: Appendable
-) : Appendable by output {
+    private val output: Appendable
+) {
     @JvmField
     internal var level: Int = -1
+
+    @JvmField
+    internal var currentIndent = 0
 
     fun levelIncrease() {
         level++
@@ -27,6 +30,18 @@ internal class YamlWriter(
 
     fun levelDecrease() {
         level--
+    }
+
+    inline fun append(char: Char) {
+        if (char == '\n') {
+            currentIndent = 0
+        } else currentIndent++
+        output.append(char)
+    }
+
+    inline fun append(char: String) { // String doesn't matter indenting
+        currentIndent += char.length
+        output.append(char)
     }
 
     inline operator fun String.unaryPlus() {
@@ -45,12 +60,12 @@ internal inline fun YamlWriter.write(char: Char) {
 }
 
 internal inline fun YamlWriter.writeln(char: Char) {
-    append(char)
+    write(char)
     writeln()
 }
 
 internal inline fun YamlWriter.writeln() {
-    append('\n')
+    write('\n')
 }
 
 internal inline fun YamlWriter.write(chars: String) {
@@ -69,7 +84,7 @@ internal inline fun YamlWriter.writeLineIndented(line: YamlWriter.() -> Unit) {
 }
 
 internal inline fun YamlWriter.writeln(chars: String) {
-    append(chars)
+    write(chars)
     writeln()
 }
 
@@ -80,8 +95,20 @@ internal inline fun YamlWriter.writelnIndented(chars: String) {
 
 internal inline fun YamlWriter.writeIndented(chars: String) {
     writeIndent()
-    append(chars)
+    write(chars)
 }
+
+internal fun YamlWriter.writeIndentedSmart(chars: String) {
+    val required = INDENT_STRING.length * level
+    if (currentIndent > required) {
+        error("Internal error: bad indent $currentIndent, expected no bigger than $required")
+    }
+    repeat(required - currentIndent) {
+        append(' ')
+    }
+    write(chars)
+}
+
 
 internal inline fun YamlWriter.writelnIndented(char: Char) {
     writeIndented(char)
@@ -90,11 +117,11 @@ internal inline fun YamlWriter.writelnIndented(char: Char) {
 
 internal inline fun YamlWriter.writeIndent() {
     repeat(level) {
-        append(INDENT_STRING)
+        write(INDENT_STRING)
     }
 }
 
 internal inline fun YamlWriter.writeIndented(char: Char) {
     writeIndent()
-    append(char)
+    write(char)
 }

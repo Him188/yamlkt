@@ -13,13 +13,22 @@ val snakeYaml = org.yaml.snakeyaml.Yaml()
 
 fun <T> Yaml.testDescriptorBased(
     serializer: KSerializer<T>,
-    value: T
+    value: T,
+    print: Boolean = false
 ) {
     val dump = kotlin.runCatching {
         this.stringify(serializer, value)
     }.getOrElse {
         throw AssertionError("Filed dump. value=$value", it)
     }
+
+    if (print) println(
+        """
+```
+$dump
+```
+""".trim()
+    )
 
     kotlin.runCatching {
         assertEquals(value, this.parse(serializer, dump))
@@ -28,9 +37,11 @@ fun <T> Yaml.testDescriptorBased(
     }
 }
 
-fun Yaml.testDynamic(
-    value: Any
-) = testDescriptorBased(YamlDynamicSerializer, value)
+@Suppress("NOTHING_TO_INLINE")
+inline fun Yaml.testDynamic(
+    value: Any,
+    print: Boolean = false
+) = testDescriptorBased(YamlDynamicSerializer, value, print)
 
 val allFlow = Yaml(
     configuration = YamlConfiguration(

@@ -37,7 +37,7 @@ data class YamlConfiguration(
     /**
      * Encode all strings with quotation.
      */
-    @JvmField val stringSerialization: StringSerialization = StringSerialization.DOUBLE_QUOTATION,
+    @JvmField val stringSerialization: StringSerialization = StringSerialization.NONE,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"

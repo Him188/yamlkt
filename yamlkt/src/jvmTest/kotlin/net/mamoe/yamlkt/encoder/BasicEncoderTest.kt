@@ -29,4 +29,14 @@ internal class BasicEncoderTest {
         default.testDynamic("s")
         default.testDynamic(listOf("test", "s"))
     }
+
+    @Test
+    fun testDynamicMap() {
+        default.testDynamic(
+            mapOf(
+                "apple" to "banana",
+                "test" to "sss"
+            )
+        )
+    }
 }
