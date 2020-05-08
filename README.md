@@ -41,7 +41,6 @@ The YAML features that are't yet supported:
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|`, `>`, `\`)
-- Unicode escape (e.g. `\u0000`)
 
 ## Learn to use
 
