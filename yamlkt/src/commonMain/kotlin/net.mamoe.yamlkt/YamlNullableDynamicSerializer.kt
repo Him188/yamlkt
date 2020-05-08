@@ -4,15 +4,14 @@ import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import net.mamoe.yamlkt.internal.IYamlDynamicSerializer
-import net.mamoe.yamlkt.internal.YamlDecoder
-import net.mamoe.yamlkt.internal.adjustDynamicString
-import net.mamoe.yamlkt.internal.serializeImpl
+import net.mamoe.yamlkt.internal.*
 import kotlin.jvm.JvmStatic
 
-
 /**
- * The serializer that can deserialize `null`s on comparison to [YamlDynamicSerializer]
+ * The serializer that can deserialize `null` as it self.
+ *
+ * For input text `name: ~`, this serializer can return a `null` for the value corresponding to 'key'.
+ * But [YamlDynamicSerializer] will throw a [YamlDecodingException]
  *
  * See [YamlDynamicSerializer] for more information
  *
@@ -30,7 +29,9 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
     /**
      * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
      */
-    override fun deserialize(decoder: Decoder): Any? = decoder.decodeStructure(descriptor) {
+    override fun deserialize(decoder: Decoder): Any? = decode(decoder)
+
+    internal inline fun decode(decoder: Decoder, crossinline whenNull: YamlDecoder.AbstractDecoder. () -> Unit = {}): Any? = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
@@ -48,6 +49,7 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
                 return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!.adjustDynamicString(parentYamlDecoder.tokenStream.quoted)
             }
             YamlDecoder.Kind.NULL_STRING -> {
+                whenNull()
                 return@decodeStructure null
             }
             else -> error("bad decoder returned: $this")
