@@ -8,6 +8,7 @@ package net.mamoe.yamlkt.internal
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.modules.SerialModule
+import net.mamoe.yamlkt.Comment
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlConfiguration
 import net.mamoe.yamlkt.YamlNullableDynamicSerializer
@@ -265,15 +266,29 @@ internal class YamlEncoder(
             }
         }
 
+        private fun SerialDescriptor.getComments(index: Int): String? {
+            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.line
+        }
+
+        private fun YamlWriter.writeComments(descriptor: SerialDescriptor, index: Int) {
+            descriptor.getComments(index)?.let { comment ->
+                writer.writeIndentedSmart("# ")
+                writer.write(comment.trim())
+                writer.writeln()
+            }
+        }
+
         // region for class
         // fast way
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
+            writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
             writer.writeln(value)
         }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
             writer.writeln(value)
@@ -286,6 +301,7 @@ internal class YamlEncoder(
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
             // structuredKeyValue {
+            writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
             //  }
@@ -445,7 +461,3 @@ internal class YamlEncoder(
     }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun Int.isEvenOrZero(): Boolean {
-    return this and 0b1 == 0
-}

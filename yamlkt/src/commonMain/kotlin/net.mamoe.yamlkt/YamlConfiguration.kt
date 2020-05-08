@@ -5,6 +5,7 @@ package net.mamoe.yamlkt
 import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.StructureKind
+import net.mamoe.yamlkt.YamlConfiguration.MapSerialization
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
 
@@ -53,7 +54,9 @@ data class YamlConfiguration(
      */
     @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     /**
-     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
+     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s.
+     *
+     * Comments are supported only when this is set to [MapSerialization.BLOCK_MAP]
      */
     @JvmField val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     /**
@@ -161,6 +164,8 @@ data class YamlConfiguration(
          * name: Alice
          * age: 20
          * ```
+         *
+         * For classes, [BLOCK_MAP] enabled the comment feature, see [Comment] for details.
          */
         BLOCK_MAP,
 
