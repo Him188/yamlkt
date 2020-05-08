@@ -6,8 +6,6 @@ import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.StructureKind
 import kotlin.jvm.JvmField
-import kotlin.jvm.JvmStatic
-import kotlin.jvm.JvmSynthetic
 
 /**
  * Configurations to [Yaml]
@@ -203,18 +201,6 @@ data class YamlConfiguration(
          * ```
          */
         AUTO
-    }
-
-    companion object {
-
-        /**
-         * Create a [YamlConfiguration] with default values and modify it using [block]
-         */
-        @JvmSynthetic
-        @JvmStatic
-        inline operator fun invoke(block: YamlConfiguration.() -> Unit): YamlConfiguration {
-            return YamlConfiguration().apply(block)
-        }
     }
 }
 
