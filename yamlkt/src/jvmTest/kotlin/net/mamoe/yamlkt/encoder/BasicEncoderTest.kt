@@ -17,9 +17,14 @@ internal class BasicEncoderTest {
 
     @Test
     fun testDescriptorBased() {
-        blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
         allFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
+        blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
     }
+
+    /*
+    Data(v1=value1, number=123456, map={bob=2}, list=[value1, value2], anotherData=Data(v1=, number=111, map={bob=2}, list=[value1, value2], anotherData=null))
+    (v1=, number=0, map={bob=2}, list=[value1, value2], anotherData=Data(v1=, number=0, map={bob=2}, list=[value1, value2], anotherData=null))>
+     */
 
     @Test
     fun testDynamic() {

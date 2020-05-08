@@ -6,6 +6,7 @@
 package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.*
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlConfiguration
@@ -127,8 +128,17 @@ internal class YamlEncoder(
         // endregion
 
         // region for class
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = writer.write(value)
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = writer.write(value)
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
+            writeValueHead(descriptor, index)
+            writer.write(value)
+            writeValueTail(descriptor, index)
+        }
+
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            writeValueHead(descriptor, index)
+            writer.write(value)
+            writeValueTail(descriptor, index)
+        }
 
         override fun endStructure0(descriptor: SerialDescriptor) {
             writer.write(" }")
@@ -136,19 +146,13 @@ internal class YamlEncoder(
 
         override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             if (descriptor.kind == StructureKind.CLASS) {
-                if (justStarted) justStarted = false
-                else writer.write(", ")
-
-                writer.write(descriptor.getElementName(index))
-                writer.write(": ")
-
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
             } else structuredKeyValue {
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
             }
         }
 
-        override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
 
@@ -187,7 +191,7 @@ internal class YamlEncoder(
             super.encodeSerializableElement0(descriptor, index, serializer, value)
         }
 
-        override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) = Unit
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
     }
 
     internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean) : BlockEncoder(linebreakAfterFinish) {
@@ -215,7 +219,7 @@ internal class YamlEncoder(
             super.encodeSerializableElement0(descriptor, index, serializer, value)
         }
 
-        override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) = Unit
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
     }
 
     internal inner class BlockMapOrClassEncoder(parent: AbstractEncoder?) : BlockEncoder(false) {
@@ -270,7 +274,7 @@ internal class YamlEncoder(
 
         override fun endStructure0(descriptor: SerialDescriptor) = Unit
 
-        override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
             // structuredKeyValue {
@@ -315,13 +319,13 @@ internal class YamlEncoder(
             }
         }
 
-        override fun <T> writeSerializableElementTail(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun writeValueTail(descriptor: SerialDescriptor, index: Int) {
             return
         }
     }
 
     internal abstract inner class BlockEncoder constructor(linebreakAfterFinish: Boolean) : AbstractEncoder(linebreakAfterFinish) {
-        final override fun <T> writeSerializableElementTail(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        final override fun writeValueTail(descriptor: SerialDescriptor, index: Int) {
             ///  if (descriptor.kind is StructureKind) {
             ///      writer.writeln()
             ///  }
@@ -356,18 +360,18 @@ internal class YamlEncoder(
         }
 
         abstract fun endStructure0(descriptor: SerialDescriptor)
-        abstract fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T)
-        abstract fun <T> writeSerializableElementTail(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T)
+        abstract fun writeValueHead(descriptor: SerialDescriptor, index: Int)
+        abstract fun writeValueTail(descriptor: SerialDescriptor, index: Int)
         open fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             serializer.serialize(this, value)
         }
 
         final override fun <T> encodeSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             // if (descriptor.kind !is PrimitiveKind) {
-            writeSerializableElementHead(descriptor, index, serializer, value)
+            writeValueHead(descriptor, index)
             //  }
             encodeSerializableElement0(descriptor, index, serializer, value)
-            writeSerializableElementTail(descriptor, index, serializer, value)
+            writeValueTail(descriptor, index)
             return
         }
 
@@ -409,7 +413,7 @@ internal class YamlEncoder(
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
-                encodeElement(descriptor, index, configuration.nullSerialization.value)
+                encodeSerializableElement(descriptor, index, String.serializer(), configuration.nullSerialization.value)
             } else encodeSerializableElement(descriptor, index, serializer, value)
         }
 
