@@ -131,9 +131,13 @@ internal class YamlDecoder(
 
         final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
             return kotlin.runCatching {
-                deserializer.deserialize(this)
+                if (decodeNotNullMark()) {
+                    deserializer.deserialize(this)
+                } else {
+                    decodeNull()
+                }
             }.getOrElse {
-                throw contextualDecodingException("deserializing nested class", descriptor, index)
+                throw contextualDecodingException("deserializing nested class", descriptor, index, it)
             }
         }
 
