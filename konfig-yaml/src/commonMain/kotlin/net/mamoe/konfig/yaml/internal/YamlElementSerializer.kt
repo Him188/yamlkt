@@ -3,6 +3,7 @@ package net.mamoe.konfig.yaml.internal
 import kotlinx.serialization.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import net.mamoe.konfig.yaml.*
 
 internal object YamlElementMapSerializer : KSerializer<Map<YamlElement, YamlElement>> by MapSerializer(YamlElement.serializer(), YamlElement.serializer())
@@ -37,8 +38,10 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
         }
     }
 
-    override fun serialize(encoder: Encoder, value: YamlElement) {
-        TODO("not implemented")
+    override fun serialize(encoder: Encoder, value: YamlElement) = when (value) {
+        is YamlPrimitive -> YamlPrimitive.serializer().serialize(encoder, value)
+        is YamlMap -> YamlMap.serializer().serialize(encoder, value)
+        is YamlList -> YamlList.serializer().serialize(encoder, value)
     }
 }
 
@@ -62,7 +65,7 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
     }
 
     override fun serialize(encoder: Encoder, value: YamlPrimitive) {
-        TODO("not implemented")
+        encoder.encodeNullableSerializableValue(String.serializer(), value.content)
     }
 }
 
@@ -87,7 +90,7 @@ internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
     }
 
     override fun serialize(encoder: Encoder, value: YamlLiteral) {
-        TODO("not implemented")
+        encoder.encodeSerializableValue(String.serializer(), value.content)
     }
 }
 
@@ -110,7 +113,7 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
     }
 
     override fun serialize(encoder: Encoder, value: YamlNull) {
-        TODO("not implemented")
+        encoder.encodeNullableSerializableValue(String.serializer(), null)
     }
 }
 
@@ -136,9 +139,8 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
         }
     } as? YamlMap ?: error("Yaml Internal error: bad YamlElement casted for a map")
 
-    override fun serialize(encoder: Encoder, value: YamlMap) {
-        TODO("not implemented")
-    }
+    override fun serialize(encoder: Encoder, value: YamlMap) =
+        encoder.encodeSerializableValue(YamlElementMapSerializer, value)
 }
 
 
@@ -164,7 +166,6 @@ internal object YamlListSerializer : KSerializer<YamlList> {
         }
     } as? YamlList ?: error("Yaml Internal error: bad YamlElement casted for a list")
 
-    override fun serialize(encoder: Encoder, value: YamlList) {
-        TODO("not implemented")
-    }
+    override fun serialize(encoder: Encoder, value: YamlList) =
+        encoder.encodeSerializableValue(YamlElementListSerializer, value)
 }

@@ -3,6 +3,7 @@ package net.mamoe.konfig.yaml.encoder
 import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.Yaml
 import net.mamoe.konfig.yaml.YamlConfiguration
+import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
 import org.junit.Test
 
 
@@ -26,6 +27,17 @@ internal class PrimitiveEncoderTest {
                     classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
                 )
             ).stringify(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
+        )
+
+
+        println(
+            Yaml(
+                configuration = YamlConfiguration(
+                    mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP,
+                    listSerialization = YamlConfiguration.ListSerialization.FLOW_SEQUENCE,
+                    classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
+                )
+            ).stringify(YamlDynamicSerializer, listOf("test", "s"))
         )
     }
 }
