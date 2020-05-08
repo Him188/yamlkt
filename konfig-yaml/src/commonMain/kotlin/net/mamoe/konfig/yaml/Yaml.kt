@@ -177,6 +177,15 @@ fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey:
 }
 
 /**
+ * Parse a [YamlElement] from [yamlContent].
+ *
+ * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+ */
+fun Yaml.parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
+    return parse(YamlElement.serializer(), yamlContent)
+}
+
+/**
  * Parse a [List] from [yamlContent].
  *
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
@@ -186,4 +195,15 @@ fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
         is List<*> -> return v
         else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
     }
+}
+
+/**
+ * Parse an object from [yamlContent].
+ *
+ * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
+ *
+ * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+ */
+fun Yaml.parseAny(@Language("yaml", "", "") yamlContent: String): Any? {
+    return parse(YamlNullableDynamicSerializer, yamlContent)
 }
