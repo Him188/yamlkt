@@ -17,6 +17,8 @@ import kotlin.jvm.JvmStatic
  * - If it is "false", "FALSE", "true", "TRUE", it will be the corresponding [Boolean] primitive.
  * - Otherwise, e.g. if a number is too large, it will be a [String].
  *
+ * Deserialization result can be [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
+ *
  * **Throws exception when encountered with `null`**, use [YamlNullableDynamicSerializer] to condone `null`s.
  *
  * ### Serializing
@@ -41,6 +43,9 @@ object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
     @JvmStatic
     internal val mapSerializer = MapSerializer(this, this)
 
+    /**
+     * @return can be [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
+     */
     override fun deserialize(decoder: Decoder): Any = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
@@ -87,6 +92,9 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
     @JvmStatic
     internal val mapSerializer = MapSerializer(this, this)
 
+    /**
+     * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
+     */
     override fun deserialize(decoder: Decoder): Any? = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
