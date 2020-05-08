@@ -23,16 +23,12 @@ kotlin {
 
         all {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
-            dependencies {
-              //  api(project(":konfig-core"))
-            }
         }
 
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 api(kotlinx("serialization-runtime-common", serializationVersion))
-                api(kotlinx("io", kotlinXIoVersion))
             }
         }
 
@@ -40,7 +36,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib"))
                 api(kotlinx("serialization-runtime", serializationVersion))
-                api(kotlinx("io-jvm", kotlinXIoVersion))
             }
         }
 
@@ -48,7 +43,6 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-js"))
                 api(kotlinx("serialization-runtime-js", serializationVersion))
-                api(kotlinx("io-js", kotlinXIoVersion))
             }
         }
 
