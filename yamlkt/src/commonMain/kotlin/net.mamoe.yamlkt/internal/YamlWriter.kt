@@ -99,6 +99,12 @@ internal inline fun YamlWriter.writeIndented(chars: String) {
 }
 
 internal fun YamlWriter.writeIndentedSmart(chars: String) {
+    writeIndentSmart()
+    write(chars)
+}
+
+
+internal fun YamlWriter.writeIndentSmart() {
     val required = INDENT_STRING.length * level
     if (currentIndent > required) {
         error("Internal error: bad indent $currentIndent, expected no bigger than $required")
@@ -106,9 +112,7 @@ internal fun YamlWriter.writeIndentedSmart(chars: String) {
     repeat(required - currentIndent) {
         append(' ')
     }
-    write(chars)
 }
-
 
 internal inline fun YamlWriter.writelnIndented(char: Char) {
     writeIndented(char)

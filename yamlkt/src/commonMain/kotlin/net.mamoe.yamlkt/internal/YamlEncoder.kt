@@ -79,12 +79,15 @@ internal class YamlEncoder(
                         FlowSequenceEncoder(parent is BlockEncoder)
                     }
                     YamlConfiguration.ListSerialization.BLOCK_SEQUENCE -> {
-                        BlockSequenceEncoder(parent, false)
+                        if (parent is BlockMapOrClassEncoder) {
+                            writer.levelDecrease()
+                            BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = true)
+                        } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
                     YamlConfiguration.ListSerialization.AUTO -> {
                         if (typeSerializers[0].descriptor is PrimitiveKind) {
                             FlowSequenceEncoder(parent is BlockEncoder)
-                        } else BlockSequenceEncoder(parent, false)
+                        } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
                 }
             }
@@ -194,7 +197,8 @@ internal class YamlEncoder(
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
     }
 
-    internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean) : BlockEncoder(linebreakAfterFinish) {
+    internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean, private val increaseBackLevel: Boolean) :
+        BlockEncoder(linebreakAfterFinish) {
         init {
             if (parent is BlockMapOrClassEncoder) {
                 writer.writeln()
@@ -206,7 +210,11 @@ internal class YamlEncoder(
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
-        override fun endStructure0(descriptor: SerialDescriptor) = Unit
+        override fun endStructure0(descriptor: SerialDescriptor) {
+            if (increaseBackLevel) {
+                writer.levelIncrease()
+            }
+        }
 
         private var justStarted = true
         override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
@@ -229,35 +237,20 @@ internal class YamlEncoder(
             }
         }
 
-        // region for class
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
-            writer.writeLineIndented {
-                +descriptor.getElementName(index)
-                +": "
-                +value
-            }
-        }
-
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
-            writer.writeLineIndented {
-                +descriptor.getElementName(index)
-                +": "
-                +value
-            }
-        }
-        // endregion
-
+        private var justStarted = true
 
         private var isKey: Boolean = true
         private inline fun structuredKeyValue(block: YamlWriter.() -> Unit) {
             val isKey = isKey.also { isKey = !isKey }
             if (isKey) {
-                writer.writeIndent()
+                if (justStarted) justStarted = false
+                else writer.writeln()
+
+                writer.writeIndentSmart()
                 writer.block()
                 writer.write(": ")
             } else {
                 writer.block()
-                writer.writeln()
             }
         }
 
@@ -272,13 +265,28 @@ internal class YamlEncoder(
             }
         }
 
+        // region for class
+        // fast way
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
+            writer.writeIndentedSmart(descriptor.getElementName(index))
+            writer.write(": ")
+            writer.writeln(value)
+        }
+
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            writer.writeIndentedSmart(descriptor.getElementName(index))
+            writer.write(": ")
+            writer.writeln(value)
+        }
+        // endregion
+
         override fun endStructure0(descriptor: SerialDescriptor) = Unit
 
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
             // structuredKeyValue {
-            writer.writeIndented(descriptor.getElementName(index))
+            writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
             //  }
         }

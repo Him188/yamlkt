@@ -1,7 +1,6 @@
 package net.mamoe.yamlkt.encoder
 
 import kotlinx.serialization.ImplicitReflectionSerializer
-import net.mamoe.yamlkt.Yaml.Companion.default
 import org.junit.Test
 
 
@@ -10,9 +9,21 @@ internal class ComplexEncoderTests {
     @Test
     fun testNestedList() {
         Thread.sleep(1000)
-        allFlow.testDynamic(
+        allBlock.testDynamic(
             listOf(
-                "apple",
+                mapOf(
+                    "test" to "p",
+                    "tests" to listOf(
+                        "apple",
+                        mapOf(
+                            "test" to "p",
+                            "tests" to listOf(
+                                "apple",
+                                "test"
+                            )
+                        )
+                    )
+                ),
                 listOf(
                     "apple",
                     listOf(
@@ -34,38 +45,31 @@ internal class ComplexEncoderTests {
     @Test
     fun testBlockNestedMap() {
         Thread.sleep(1000)
-        default.testDynamic(
-            mapOf(
-                "apple" to listOf("ba", "na", "na"),
-                "test" to mapOf(
-                    "ba" to "na",
-                    "fa" to mapOf(
-                        "ba" to "na",
-                        "fa" to "pa"
-                    )
-                )
-            ),
+        allBlock.testDynamic(
+            testContent,
             true
         )
     }
+
+    private val testContent = mapOf(
+        "apple" to listOf("ba", "na", "na"),
+        "test" to mapOf(
+            "ba" to mapOf(
+                "ba" to "na",
+                "fa" to "pa"
+            ),
+            "fa" to mapOf(
+                "ba" to "na",
+                "fa" to listOf("test", "ppp")
+            )
+        )
+    )
 
     @Test
     fun testFlowNestedMap() {
         Thread.sleep(1000)
         allFlow.testDynamic(
-            mapOf(
-                "apple" to listOf("ba", "na", "na"),
-                "test" to mapOf(
-                    "ba" to mapOf(
-                        "ba" to "na",
-                        "fa" to "pa"
-                    ),
-                    "fa" to mapOf(
-                        "ba" to "na",
-                        "fa" to "pa"
-                    )
-                )
-            ),
+            testContent,
             true
         )
     }
