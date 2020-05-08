@@ -20,6 +20,7 @@ internal class YamlWriter(
 ) : Appendable by output {
     @JvmField
     internal var level: Int = -1
+
     fun levelIncrease() {
         level++
     }
@@ -35,6 +36,8 @@ internal class YamlWriter(
     inline operator fun Char.unaryPlus() {
         write(this)
     }
+
+    internal val escapeBuf: StringBufHolder = StringBufHolder()
 }
 
 internal inline fun YamlWriter.write(char: Char) {

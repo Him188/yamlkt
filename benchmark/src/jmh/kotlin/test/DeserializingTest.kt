@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import net.mamoe.konfig.yaml.Yaml
-import net.mamoe.konfig.yaml.parseYamlMap
 import org.openjdk.jmh.annotations.*
 import test.Constants.content
 import test.Constants.gson

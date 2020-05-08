@@ -287,7 +287,7 @@ internal class YamlEncoder(
     override fun encodeInt(value: Int) = writer.write(value.toString())
     override fun encodeLong(value: Long) = writer.write(value.toString())
     override fun encodeShort(value: Short) = writer.write(value.toString())
-    override fun encodeString(value: String) = writer.write(value.toEscapedString(configuration.stringSerialization))
+    override fun encodeString(value: String) = writer.write(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
     override fun encodeNull() = writer.write(configuration.nullSerialization.value)
     override fun encodeUnit() = error("Unit isn't supported")
 
@@ -389,7 +389,7 @@ internal class YamlEncoder(
             encodeElement(descriptor, index, value.toString())
 
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
-            encodeElement(descriptor, index, value.toEscapedString(configuration.stringSerialization))
+            encodeElement(descriptor, index, value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
         final override fun encodeUnitElement(descriptor: SerialDescriptor, index: Int) {
             error("Unit isn't supported")
@@ -415,7 +415,7 @@ internal class YamlEncoder(
         final override fun encodeNull() = encodeValue(configuration.nullSerialization.value)
         final override fun encodeShort(value: Short) = encodeValue(value.toString())
         final override fun encodeUnit(): Unit = error("Unit isn't supported")
-        final override fun encodeString(value: String) = encodeValue(value.toEscapedString(configuration.stringSerialization))
+        final override fun encodeString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
         final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaultValues
         final override val context: SerialModule get() = this@YamlEncoder.context

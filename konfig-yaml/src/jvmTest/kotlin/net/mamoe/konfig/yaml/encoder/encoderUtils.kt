@@ -9,6 +9,8 @@ import net.mamoe.konfig.yaml.YamlDynamicSerializer
 import kotlin.test.assertEquals
 
 
+val snakeYaml = org.yaml.snakeyaml.Yaml()
+
 fun <T> Yaml.testDescriptorBased(
     serializer: KSerializer<T>,
     value: T

@@ -1,12 +1,14 @@
 @file:JvmMultifileClass
 @file:JvmName("KonfigYamlUtils")
+@file:Suppress("NOTHING_TO_INLINE")
 
 package net.mamoe.konfig.yaml.internal
 
 import net.mamoe.konfig.yaml.YamlConfiguration
-import kotlin.jvm.JvmField
+import net.mamoe.konfig.yaml.YamlConfiguration.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
 
 
 ///////////////////
@@ -26,8 +28,28 @@ internal const val INVALID = 0.toChar()
 internal const val UNICODE_ESC = 'u'
 
 private object EscapeCharMappings {
-    @JvmField
+    @JvmStatic
     val ESCAPE_2_CHAR = CharArray(ESC2C_MAX)
+
+    @JvmStatic
+    var REPLACEMENT_CHARS: Array<String?> = arrayOfNulls(128)
+
+    init {
+        for (i in 0..0xf) {
+            REPLACEMENT_CHARS[i] = "\\u000$i"
+        }
+        for (i in 0x10..0x1f) {
+            REPLACEMENT_CHARS[i] = "\\u00$i"
+        }
+        REPLACEMENT_CHARS['"'.toInt()] = "\\\""
+        REPLACEMENT_CHARS['\\'.toInt()] = "\\\\"
+        REPLACEMENT_CHARS['\t'.toInt()] = "\\t"
+        REPLACEMENT_CHARS['\b'.toInt()] = "\\b"
+        REPLACEMENT_CHARS['\n'.toInt()] = "\\n"
+        REPLACEMENT_CHARS['\r'.toInt()] = "\\r"
+        REPLACEMENT_CHARS[12] = "\\f"
+    }
+
 
     init {
         for (i in 0x00..0x1f) {
@@ -63,7 +85,7 @@ internal const val ESCAPE_8: Int = 0b0010000000000000000000000000000
 internal fun TokenStream.readSingleQuotedString(): String {
     val startCur = cur
     whileNotEOF { char ->
-        if (char == SINGLE_QUOTATION) {
+        if (char == SINGLE_QUOTATION_CHAR) {
             return source.substring(startCur, cur - 1)
         }
     }
@@ -134,7 +156,7 @@ internal fun TokenStream.readDoubleQuotedString(): String {
     var escapedOnce = false
     whileNotEOF { char ->
         when (char) {
-            DOUBLE_QUOTATION -> {
+            DOUBLE_QUOTATION_CHAR -> {
                 if (!escapedOnce) {
                     return source.substring(startCur, cur - 1)
                 }
@@ -174,7 +196,84 @@ internal fun TokenStream.readDoubleQuotedString(): String {
 }
 
 
-internal fun String.toEscapedString(stringSerialization: YamlConfiguration.StringSerialization): String {
-    return this
-    // TODO: 2020/5/8 escaping serializing
+internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlConfiguration.StringSerialization): String {
+    val availability = quotationAvailability
+    when {
+        stringSerialization == SINGLE_QUOTATION && availability hasFlag SINGLE -> return "'$this'"
+        stringSerialization == NONE && availability hasFlag UNQUOTED -> return this
+        stringSerialization == DOUBLE_QUOTATION -> {
+            return if (availability hasFlag DOUBLE_WITHOUT_ESCAPE) "\"$this\""
+            else this.toDoubleQuotedString(buf)
+        }
+    }
+    return when {
+        availability hasFlag UNQUOTED -> this
+        availability hasFlag SINGLE -> "\'$this\'"
+        availability hasFlag DOUBLE_WITHOUT_ESCAPE -> "\"$this\""
+        else -> {
+            // double with escape
+            return if (availability hasFlag DOUBLE_WITHOUT_ESCAPE) "\"$this\""
+            else this.toDoubleQuotedString(buf)
+        }
+    }
 }
+
+private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
+    println("debugger nmsl")
+    buf.append('\"')
+    for (ch in this@toDoubleQuotedString) {
+        val es = EscapeCharMappings.REPLACEMENT_CHARS[ch.toInt()]
+        if (es != null) {
+            append(es, 0, es.length - 1)
+        } else append(ch)
+    }
+
+    buf.append('\"')
+    buf.takeStringBuf()
+}
+
+private inline infix fun Int.hasFlag(flag: Int): Boolean = this and flag != 0
+
+private const val SINGLE = /*          */ 0b001
+private const val UNQUOTED = /*        */ 0b010
+private const val DOUBLE_WITHOUT_ESCAPE = 0b100
+
+// canBeSingleQuoted or canBeUnquoted
+internal val String.quotationAvailability: Int
+    get() {
+        if (this.isEmpty()) {
+            return DOUBLE_WITHOUT_ESCAPE or SINGLE
+        }
+        var canBeSingleQuoted = true
+        var canBeUnquoted = true
+        var doubleWithoutEscape = true
+
+        if (this.startsWith(' ') || this.endsWith(' ')) {
+            canBeUnquoted = false
+        }
+
+        var lastIsColon = false
+        for (c in this) {
+            when {
+                !doubleWithoutEscape && !canBeSingleQuoted && !canBeUnquoted -> return 0
+                c.isLineSeparator() -> {
+                    if (!canBeSingleQuoted) return 0 // fast path
+                    doubleWithoutEscape = false
+                    canBeUnquoted = false
+                }
+                doubleWithoutEscape && EscapeCharMappings.REPLACEMENT_CHARS[c.toInt()] != null -> {
+                    doubleWithoutEscape = false
+                }
+                c == '\'' -> canBeSingleQuoted = false
+                c == '\"' -> doubleWithoutEscape = false
+                c == ':' -> lastIsColon = true
+                c == ' ' && lastIsColon -> canBeUnquoted = false
+            }
+        }
+        if (lastIsColon) canBeUnquoted = false
+
+        return 0b00 or
+            (if (canBeSingleQuoted) SINGLE else 0) or
+            (if (canBeUnquoted) UNQUOTED else 0) or
+            (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
+    }

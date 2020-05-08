@@ -63,6 +63,45 @@ internal val __init = run {
 internal inline val END_OF_FILE: Nothing? get() = null
 
 /**
+ * Resizable [CharArray], keep the size in a whole process.
+ */
+internal open class StringBufHolder {
+
+    /**
+     * Only for internal use
+     */
+    protected var _stringBuf: CharArray = CharArray(32)
+
+    @Suppress("PropertyName")
+    protected var _stringLength: Int = 0
+
+    protected fun incStringBuf() {
+        _stringBuf = _stringBuf.copyOf(_stringBuf.size + _stringBuf.size.ushr(1))
+    }
+
+    fun takeStringBuf(): String {
+        return String(this._stringBuf, 0, _stringLength).also {
+            _stringLength = 0
+            // println(it)
+        }
+    }
+
+    fun append(c: Char) {
+        if (_stringLength == _stringBuf.size) incStringBuf()
+        _stringBuf[_stringLength++] = c
+    }
+
+    fun append(source: String, startIndex: Int, endIndex: Int) {
+        val length = endIndex - startIndex
+        val requiredSize = _stringLength + length + 1
+        while (_stringBuf.size < requiredSize) {
+            incStringBuf()
+        }
+        for (i in 0..length) _stringBuf[_stringLength++] = source[startIndex + i]
+    }
+}
+
+/**
  * The stream of [Token]s and [String]s
  *
  * ### Example
@@ -77,7 +116,10 @@ internal inline val END_OF_FILE: Nothing? get() = null
  */
 internal class TokenStream(
     @JvmField val source: String
-) {
+) : StringBufHolder() {
+    @JvmField
+    var cur: Int = 0
+
     init {
         __init
     }
@@ -97,17 +139,7 @@ internal class TokenStream(
     @JvmField
     var quoted: Boolean = false
 
-    /**
-     * Only for internal use
-     */
-    private var _stringBuf: CharArray = CharArray(32)
-
-    @JvmField
-    var cur: Int = 0
-
     inline val endOfInput: Boolean get() = cur == source.length
-
-    private var _stringLength: Int = 0
 
     /**
      * Used only in [readUnquotedString]
@@ -118,16 +150,6 @@ internal class TokenStream(
     @JvmField
     var escapeCount = 0
 
-    private fun incStringBuf() {
-        _stringBuf = _stringBuf.copyOf(_stringBuf.size + _stringBuf.size.ushr(1))
-    }
-
-    fun takeStringBuf(): String {
-        return String(this._stringBuf, 0, _stringLength).also {
-            _stringLength = 0
-            // println(it)
-        }
-    }
 
     fun subStringBufTrimEnd(offset: Int, endIndex: Int): String {
         for (i in endIndex downTo 0) {
@@ -136,20 +158,6 @@ internal class TokenStream(
             }
         }
         return ""
-    }
-
-    fun append(c: Char) {
-        if (_stringLength == _stringBuf.size) incStringBuf()
-        _stringBuf[_stringLength++] = c
-    }
-
-    fun append(source: String, startIndex: Int, endIndex: Int) {
-        val length = endIndex - startIndex
-        val requiredSize = _stringLength + length + 1
-        while (_stringBuf.size < requiredSize) {
-            incStringBuf()
-        }
-        for (i in 0..length) _stringBuf[_stringLength++] = source[startIndex + i]
     }
 
     fun flushEsc() {
@@ -255,11 +263,11 @@ internal class TokenStream(
      * Always read a next token after the string being read, and adds to [reuseTokenStack]
      */
     private fun prepareStringAndNextToken(begin: Char) = when (begin) {
-        SINGLE_QUOTATION -> {
+        SINGLE_QUOTATION_CHAR -> {
             quoted = true
             readSingleQuotedString()
         }
-        DOUBLE_QUOTATION -> {
+        DOUBLE_QUOTATION_CHAR -> {
             quoted = true
             readDoubleQuotedString()
         }
@@ -272,8 +280,8 @@ internal class TokenStream(
 
 internal fun String.asTokenStream(): TokenStream = TokenStream(this)
 
-internal const val SINGLE_QUOTATION = '\''
-internal const val DOUBLE_QUOTATION = '"'
+internal const val SINGLE_QUOTATION_CHAR = '\''
+internal const val DOUBLE_QUOTATION_CHAR = '"'
 
 @OptIn(ExperimentalContracts::class)
 internal inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothing? {
