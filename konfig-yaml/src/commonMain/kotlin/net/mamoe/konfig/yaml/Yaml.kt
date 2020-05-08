@@ -7,6 +7,7 @@ import kotlinx.serialization.modules.SerialModule
 import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.konfig.yaml.internal.*
 import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 
 
 /**
@@ -57,6 +58,67 @@ class Yaml @JvmOverloads constructor(
     },
     private val updateMode: UpdateMode = UpdateMode.BANNED
 ) : StringFormat {
+    companion object {
+        /**
+         * The [Yaml] using all default configurations
+         */
+        @JvmStatic
+        val default: Yaml = Yaml()
+
+        /**
+         * The [Yaml] using all non-strict configurations.
+         * Some incompatible types may be casted unsafely.
+         *
+         * It's not encouraged to use this.
+         */
+        @JvmStatic
+        val nonStrict: Yaml = Yaml(
+            configuration = YamlConfiguration(
+                nonStrictNumber = true,
+                nonStrictNullability = true
+            )
+        )
+    }
+
+    // region stringify
+
+    /**
+     * Stringify [value] to [String] in YAML format using [serializer]
+     *
+     * Example:
+     * ```
+     * @Serializer
+     * class User(val name: String, val age: Int)
+     *
+     * val dump = Yaml.default.stringify(User.serializer(), User("Bob", 20))
+     * // the value of `dump`:
+     * // """
+     * //  name: Bob
+     * //  age: 20
+     * // """
+     * ```
+     */
+    override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
+        val sb = StringBuilder()
+        serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
+        return sb.toString()
+    }
+
+    /**
+     * Stringify [value] to [String] in YAML format using [YamlNullableDynamicSerializer]
+     *
+     * **WARNING**: This approach is very slow and may not work as expected on JS,
+     * see [YamlDynamicSerializer] for more information
+     */
+    @ImplicitReflectionSerializer
+    fun stringify(value: Any?): String {
+        return stringify(YamlNullableDynamicSerializer, value)
+    }
+
+    // endregion
+
+
+    // region parse
 
     /**
      * Parse [string] to a [T] using [deserializer]
@@ -87,134 +149,92 @@ class Yaml @JvmOverloads constructor(
     }
 
     /**
-     * Stringify [value] to [String] in YAML format using [serializer]
-     *
-     * Example:
-     * ```
-     * @Serializer
-     * class User(val name: String, val age: Int)
-     *
-     * val dump = Yaml.default.stringify(User.serializer(), User("Bob", 20))
-     * // the value of `dump`:
-     * // """
-     * //  name: Bob
-     * //  age: 20
-     * // """
-     * ```
+     * Parse a [YamlElement] from [yamlContent].
      */
-    override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
-        val sb = StringBuilder()
-        serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
-        return sb.toString()
+    fun parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
+        return parse(YamlElement.serializer(), yamlContent)
     }
 
-    companion object {
-        /**
-         * The [Yaml] using all default configurations
-         */
-        val default: Yaml = Yaml()
-
-        /**
-         * The [Yaml] using all non-strict configurations.
-         * Some incompatible types may be casted unsafely.
-         *
-         * It's not encouraged to use this.
-         */
-        val nonStrict: Yaml = Yaml(
-            configuration = YamlConfiguration(
-                nonStrictNumber = true,
-                nonStrictNullability = true
-            )
-        )
+    /**
+     * Parse a [YamlMap] from [yamlContent] safely
+     */
+    fun parseYamlMap(@Language("yaml", "", "") yamlContent: String): YamlMap {
+        return parse(YamlMap.serializer(), yamlContent)
     }
-}
 
-
-/**
- * Parse a [YamlElement] from [yamlContent].
- */
-fun Yaml.parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
-    return parse(YamlElement.serializer(), yamlContent)
-}
-
-/**
- * Parse a [YamlMap] from [yamlContent] safely
- */
-fun Yaml.parseYamlMap(@Language("yaml", "", "") yamlContent: String): YamlMap {
-    return parse(YamlMap.serializer(), yamlContent)
-}
-
-/**
- * Parse a [YamlList] from [yamlContent] safely
- */
-fun Yaml.parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList {
-    return parse(YamlList.serializer(), yamlContent)
-}
-
-
-/**
- * Parse a [Map] from [yamlContent].
- *
- * Non-literal keys are mapped using [Any.toString]
- *
- * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
- */
-fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?> {
-    @Suppress("IMPLICIT_CAST_TO_ANY", "USELESS_IS_CHECK", "UNCHECKED_CAST")
-    return when (val v = parseMapOrNullImpl(yamlContent)) {
-        null -> throw IllegalArgumentException("Cannot cast `null` to Map<String, Any?>")
-        is Map<*, *> -> v
-        else -> throw IllegalArgumentException("Cannot cast ${v.classSimpleName()} to Map<String, Any?>")
-    } as Map<String?, Any?>
-}
-
-/**
- * Parse a [Map] from [yamlContent].
- *
- * Non-literal keys are mapped using [Any.toString]
- *
- * @return the [Map] if succeed, `null` otherwise.
- */
-fun Yaml.parseMapOrNull(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?>? {
-    @Suppress("UNCHECKED_CAST")
-    return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
-}
-
-/**
- * Parse a [List] from [yamlContent].
- *
- * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
- */
-fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
-    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
-        is List<*> -> return v
-        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
+    /**
+     * Parse a [YamlList] from [yamlContent] safely
+     */
+    fun parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList {
+        return parse(YamlList.serializer(), yamlContent)
     }
-}
 
-/**
- * Parse a [List] from [yamlContent].
- *
- * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
- */
-fun Yaml.parseListOrNull(@Language("yaml", "", "") yamlContent: String): List<Any?> {
-    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
-        is List<*> -> return v
-        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
+
+    /**
+     * Parse a [Map] from [yamlContent].
+     *
+     * Non-literal keys are mapped using [Any.toString]
+     *
+     * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
+     */
+    fun parseMap(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?> {
+        @Suppress("IMPLICIT_CAST_TO_ANY", "USELESS_IS_CHECK", "UNCHECKED_CAST")
+        return when (val v = parseMapOrNullImpl(yamlContent)) {
+            null -> throw IllegalArgumentException("Cannot cast `null` to Map<String, Any?>")
+            is Map<*, *> -> v
+            else -> throw IllegalArgumentException("Cannot cast ${v.classSimpleName()} to Map<String, Any?>")
+        } as Map<String?, Any?>
     }
-}
 
-/**
- * Parse an object from [yamlContent].
- *
- * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
- *
- * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
- */
-fun Yaml.parseAny(@Language("yaml", "", "") yamlContent: String): Any? {
-    return parse(YamlNullableDynamicSerializer, yamlContent)
-}
+    /**
+     * Parse a [Map] from [yamlContent].
+     *
+     * Non-literal keys are mapped using [Any.toString]
+     *
+     * @return the [Map] if succeed, `null` otherwise.
+     */
+    fun parseMapOrNull(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?>? {
+        @Suppress("UNCHECKED_CAST")
+        return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
+    }
 
+    /**
+     * Parse a [List] from [yamlContent].
+     *
+     * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+     */
+    fun parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
+        when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+            is List<*> -> return v
+            else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
+        }
+    }
+
+    /**
+     * Parse a [List] from [yamlContent].
+     *
+     * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+     */
+    fun parseListOrNull(@Language("yaml", "", "") yamlContent: String): List<Any?> {
+        when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+            is List<*> -> return v
+            else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
+        }
+    }
+
+    /**
+     * Parse an object from [yamlContent].
+     *
+     * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
+     *
+     * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+     */
+    fun parseAny(@Language("yaml", "", "") yamlContent: String): Any? {
+        return parse(YamlNullableDynamicSerializer, yamlContent)
+    }
+
+    // endregion
+}
 
 // internal
 

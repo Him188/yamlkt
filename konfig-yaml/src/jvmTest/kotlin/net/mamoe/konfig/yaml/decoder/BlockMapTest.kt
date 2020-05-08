@@ -5,7 +5,6 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import net.mamoe.konfig.yaml.Yaml
-import net.mamoe.konfig.yaml.parseYamlMap
 import net.mamoe.konfig.yaml.toContentMap
 import org.junit.Test
 import kotlin.test.assertEquals

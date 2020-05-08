@@ -4,8 +4,6 @@ import kotlinx.serialization.Serializable
 import net.mamoe.konfig.yaml.Yaml.Companion.default
 import net.mamoe.konfig.yaml.internal.asTokenStream
 import net.mamoe.konfig.yaml.joinTokenToString
-import net.mamoe.konfig.yaml.parseMap
-import net.mamoe.konfig.yaml.parseYamlMap
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -75,17 +73,6 @@ internal class FlowMapTest {
     }
 
     @Test
-    fun testFlowMapWithTwoTrailingCommaCondoneNullKey() {
-        val map = default.parseMap(
-            """{ name: Bob , , }"""
-        )
-        // should give  `{ name: 'Bob', null: null }`
-        assertEquals(1, map.size)
-        assertEquals("name", map.entries.first().key)
-        assertEquals("Bob", map.entries.first().value)
-    }
-
-    @Test
     fun testFlowYamlMapWithTwoBeginning() {
         val map = default.parseYamlMap("""{  , , name: Bob }""")
         // should give  `{ null: null, name: 'Bob' }`
@@ -96,18 +83,6 @@ internal class FlowMapTest {
         assertEquals("name", map.entries.drop(1).first().key.content)
         assertEquals("Bob", map.entries.drop(1).first().value.content)
     }
-
-    @Test
-    fun testFlowMapWithTwoBeginningCondoneNullKey() {
-        val map = default.parseMap(
-            """{  , , name: Bob }"""
-        )
-        // should give  `{ null: null, name: 'Bob' }`
-        assertEquals(1, map.size)
-        assertEquals("name", map.entries.first().key)
-        assertEquals("Bob", map.entries.first().value)
-    }
-
     /**
      * Test compatibility with legal JSON text.
      */

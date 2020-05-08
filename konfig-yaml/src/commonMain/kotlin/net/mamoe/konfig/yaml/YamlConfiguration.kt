@@ -37,7 +37,7 @@ data class YamlConfiguration(
     /**
      * Encode all strings with quotation.
      */
-    @JvmField val stringSerialization: StringSerialization = StringSerialization.NONE,
+    @JvmField val stringSerialization: StringSerialization = StringSerialization.AUTO,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
@@ -62,13 +62,15 @@ data class YamlConfiguration(
     @JvmField val listSerialization: ListSerialization = ListSerialization.AUTO
 ) {
     /**
-     * The value set for [String] serialization
+     * The suggested format for [String] serialization.
+     *
+     * [String] isn't always serialized in this format, depending on the content.
      */
     enum class StringSerialization {
         /**
          * Quote all [String]s with `'`
          *
-         * Escaping is only available
+         * If a value can't be serialized using single quotation, it will be in [DOUBLE_QUOTATION]
          */
         SINGLE_QUOTATION,
 
@@ -94,7 +96,14 @@ data class YamlConfiguration(
          *
          * Will still use [SINGLE_QUOTATION] if chars can't be serialized without escape.
          */
-        NONE
+        NONE,
+
+        /**
+         * Automatically choose the best format.
+         *
+         * First [NONE], then [SINGLE_QUOTATION], finally [DOUBLE_QUOTATION].
+         */
+        AUTO
     }
 
     /**
