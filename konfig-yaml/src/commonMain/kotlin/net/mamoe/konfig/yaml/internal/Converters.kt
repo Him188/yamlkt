@@ -1,5 +1,10 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 import kotlin.math.pow
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance

@@ -1,10 +1,16 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.*
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.konfig.yaml.YamlConfiguration
 import net.mamoe.konfig.yaml.YamlElement
+import net.mamoe.konfig.yaml.YamlNullableDynamicSerializer
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 private inline val READ_DONE: Int get() = CompositeDecoder.READ_DONE
 
@@ -126,7 +132,7 @@ internal class YamlDecoder(
         }
 
         final override fun endStructure(descriptor: SerialDescriptor) {
-            Debugging.endStructure(descriptor)
+            Debugging.endStructure()
         }
 
         final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {

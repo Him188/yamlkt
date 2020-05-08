@@ -1,9 +1,14 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 @Suppress("ClassName", "PropertyName")
 internal enum class Token(val value: Char) {

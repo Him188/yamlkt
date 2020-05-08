@@ -5,7 +5,7 @@ package net.mamoe.konfig.yaml.encoder
 import kotlinx.serialization.KSerializer
 import net.mamoe.konfig.yaml.Yaml
 import net.mamoe.konfig.yaml.YamlConfiguration
-import net.mamoe.konfig.yaml.internal.YamlDynamicSerializer
+import net.mamoe.konfig.yaml.YamlDynamicSerializer
 import kotlin.test.assertEquals
 
 

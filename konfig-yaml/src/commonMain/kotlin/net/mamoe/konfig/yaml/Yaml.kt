@@ -131,6 +131,13 @@ class Yaml @JvmOverloads constructor(
 
 
 /**
+ * Parse a [YamlElement] from [yamlContent].
+ */
+fun Yaml.parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
+    return parse(YamlElement.serializer(), yamlContent)
+}
+
+/**
  * Parse a [YamlMap] from [yamlContent] safely
  */
 fun Yaml.parseYamlMap(@Language("yaml", "", "") yamlContent: String): YamlMap {
@@ -147,42 +154,30 @@ fun Yaml.parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList 
 
 /**
  * Parse a [Map] from [yamlContent].
- * Support only literal keys.
  *
- * @param condoneNullKey `true` if ignore entries with null key. Anyway there can only be one null key, otherwise a [YamlDecodingException] will be thrown.
+ * Non-literal keys are mapped using [Any.toString]
  *
- * @throws IllegalStateException if a key is not literal. E.g. is compound or `null`
  * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
  */
-fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey: Boolean = false): Map<String, Any?> {
-    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
-        is Map<*, *> -> {
-            val result = LinkedHashMap<String, Any?>(v.size)
-
-            v.forEach { (key, value) ->
-                if (!condoneNullKey) {
-                    checkNotNull(key) { "null key is not allowed" }
-                }
-                if (key == null) return@forEach
-
-                //if (key is String) {
-                result[key.toString()] = value
-                //} else error("Cannot cast compound key ${key.classSimpleName()} to a String. Consider using `Yaml.parseYamlMap`")
-            }
-
-            return result
-        }
-        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to Map<String, Any?>")
-    }
+fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?> {
+    @Suppress("IMPLICIT_CAST_TO_ANY", "USELESS_IS_CHECK", "UNCHECKED_CAST")
+    return when (val v = parseMapOrNullImpl(yamlContent)) {
+        null -> throw IllegalArgumentException("Cannot cast `null` to Map<String, Any?>")
+        is Map<*, *> -> v
+        else -> throw IllegalArgumentException("Cannot cast ${v.classSimpleName()} to Map<String, Any?>")
+    } as Map<String?, Any?>
 }
 
 /**
- * Parse a [YamlElement] from [yamlContent].
+ * Parse a [Map] from [yamlContent].
  *
- * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+ * Non-literal keys are mapped using [Any.toString]
+ *
+ * @return the [Map] if succeed, `null` otherwise.
  */
-fun Yaml.parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
-    return parse(YamlElement.serializer(), yamlContent)
+fun Yaml.parseMapOrNull(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?>? {
+    @Suppress("UNCHECKED_CAST")
+    return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
 }
 
 /**
@@ -198,6 +193,18 @@ fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
 }
 
 /**
+ * Parse a [List] from [yamlContent].
+ *
+ * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
+ */
+fun Yaml.parseListOrNull(@Language("yaml", "", "") yamlContent: String): List<Any?> {
+    when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+        is List<*> -> return v
+        else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
+    }
+}
+
+/**
  * Parse an object from [yamlContent].
  *
  * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
@@ -206,4 +213,22 @@ fun Yaml.parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
  */
 fun Yaml.parseAny(@Language("yaml", "", "") yamlContent: String): Any? {
     return parse(YamlNullableDynamicSerializer, yamlContent)
+}
+
+
+// internal
+
+internal fun Yaml.parseMapOrNullImpl(@Language("yaml", "", "") yamlContent: String): Any? {
+    return when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+        is Map<*, *> -> {
+            val result = LinkedHashMap<String?, Any?>(v.size)
+
+            v.forEach { (key, value) ->
+                result[key?.toString()] = value
+            }
+
+            result
+        }
+        else -> v
+    }
 }

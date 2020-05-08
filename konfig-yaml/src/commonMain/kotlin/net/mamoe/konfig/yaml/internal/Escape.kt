@@ -1,7 +1,12 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import net.mamoe.konfig.yaml.YamlConfiguration
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 
 ///////////////////

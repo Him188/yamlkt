@@ -1,8 +1,13 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 @file:Suppress("NOTHING_TO_INLINE")
 
 package net.mamoe.konfig.yaml.internal
 
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 
 internal const val INDENT_STRING = "  "

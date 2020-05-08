@@ -1,6 +1,11 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.SerialDescriptor
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 
@@ -26,7 +31,7 @@ internal object Debugging {
     }
 
     @JvmStatic
-    fun endStructure(descriptor: SerialDescriptor?) {
+    fun endStructure() {
         if (!enabled) return
         logIndent -= 4
         println(space(logIndent) + "}")

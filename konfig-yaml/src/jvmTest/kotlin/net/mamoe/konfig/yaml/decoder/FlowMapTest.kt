@@ -60,7 +60,7 @@ internal class FlowMapTest {
 
     @Test
     fun testFlowMapWithTrailingComma() {
-        println(default.parseMap("""{ name: Bob, }""", true))
+        println(default.parseMap("""{ name: Bob, }"""))
     }
 
     @Test
@@ -77,8 +77,7 @@ internal class FlowMapTest {
     @Test
     fun testFlowMapWithTwoTrailingCommaCondoneNullKey() {
         val map = default.parseMap(
-            """{ name: Bob , , }""",
-            condoneNullKey = true
+            """{ name: Bob , , }"""
         )
         // should give  `{ name: 'Bob', null: null }`
         assertEquals(1, map.size)
@@ -101,8 +100,7 @@ internal class FlowMapTest {
     @Test
     fun testFlowMapWithTwoBeginningCondoneNullKey() {
         val map = default.parseMap(
-            """{  , , name: Bob }""",
-            condoneNullKey = true
+            """{  , , name: Bob }"""
         )
         // should give  `{ null: null, name: 'Bob' }`
         assertEquals(1, map.size)
@@ -185,7 +183,7 @@ internal class FlowMapTest {
     @Test
     fun `test flow map missing value`() {
         assertEquals(
-            mapOf("test" to null),
+            mapOf<String?, String?>("test" to null),
             default.parseMap(
                 """{test}"""
             )

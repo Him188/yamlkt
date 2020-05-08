@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.*
@@ -5,6 +8,8 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import net.mamoe.konfig.yaml.*
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 internal object YamlElementMapSerializer : KSerializer<Map<YamlElement, YamlElement>> by MapSerializer(YamlElement.serializer(), YamlElement.serializer())
 internal object YamlElementListSerializer : KSerializer<List<YamlElement>> by ListSerializer(YamlElement.serializer())

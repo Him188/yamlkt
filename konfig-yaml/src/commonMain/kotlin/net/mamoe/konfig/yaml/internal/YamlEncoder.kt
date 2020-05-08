@@ -1,3 +1,6 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 @file:Suppress("NOTHING_TO_INLINE")
 
 package net.mamoe.konfig.yaml.internal
@@ -8,6 +11,8 @@ import net.mamoe.konfig.yaml.Yaml
 import net.mamoe.konfig.yaml.YamlConfiguration
 import net.mamoe.konfig.yaml.internal.YamlEncoder.AbstractEncoder
 import net.mamoe.konfig.yaml.internal.YamlEncoder.BlockMapOrClassEncoder
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 /**
  * The encoder for the [Yaml] serialization.

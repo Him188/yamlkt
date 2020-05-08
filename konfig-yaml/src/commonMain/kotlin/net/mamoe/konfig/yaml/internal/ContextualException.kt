@@ -1,7 +1,12 @@
+@file:JvmMultifileClass
+@file:JvmName("KonfigYamlUtils")
+
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerializationException
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 
 class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
