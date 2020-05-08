@@ -71,23 +71,6 @@ object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
     override fun serialize(encoder: Encoder, value: Any) = serializeImpl(encoder, value)
 }
 
-private val LONG_AS_DOUBLE_RANGE = Long.MIN_VALUE.toDouble()..Long.MAX_VALUE.toDouble()
-private val INT_AS_DOUBLE_RANGE = Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble()
-
-internal fun String.adjustDynamicString(quoted: Boolean): Any =
-    if (quoted) this
-    else when (this) {
-        "true", "TRUE" -> true
-        "false", "FALSE" -> false
-        else -> when (val double = this.toDoubleOrNull()) {
-            null -> this
-            in INT_AS_DOUBLE_RANGE -> double.toInt()
-            in LONG_AS_DOUBLE_RANGE -> double.toLong()
-            else -> double
-        }
-    }
-
-
 /**
  * The serializer that can deserialize `null`s on comparison to [YamlDynamicSerializer]
  *
@@ -136,6 +119,23 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
         } else serializeImpl(encoder, value)
     }
 }
+
+
+private val LONG_AS_DOUBLE_RANGE = Long.MIN_VALUE.toDouble()..Long.MAX_VALUE.toDouble()
+private val INT_AS_DOUBLE_RANGE = Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble()
+
+internal fun String.adjustDynamicString(quoted: Boolean): Any =
+    if (quoted) this
+    else when (this) {
+        "true", "TRUE" -> true
+        "false", "FALSE" -> false
+        else -> when (val double = this.toDoubleOrNull()) {
+            null -> this
+            in INT_AS_DOUBLE_RANGE -> double.toInt()
+            in LONG_AS_DOUBLE_RANGE -> double.toLong()
+            else -> double
+        }
+    }
 
 
 internal interface IYamlDynamicSerializer
