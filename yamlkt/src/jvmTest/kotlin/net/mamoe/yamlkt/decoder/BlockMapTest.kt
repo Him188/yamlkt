@@ -33,7 +33,7 @@ owner:
   account: 12345678910
 """
             )
-            )
+        )
     }
 
 
@@ -50,7 +50,7 @@ quantity:  null   #test
     """
         )
         assertEquals(
-            mapOf(
+            mapOf<String?, String?>(
                 "part_no" to "A4786",
                 "descrip2" to "null",
                 "descrip" to "null",
@@ -71,7 +71,7 @@ quantity:  4
     """
         )
         assertEquals(
-            mapOf(
+            mapOf<String?, String?>(
                 "part_no" to "A4786",
                 "descrip" to "Water Bucket (Filled)",
                 "price" to "1.47",
@@ -94,8 +94,8 @@ t:
         )
 
         assertEquals(
-            mapOf(
-                "t" to mapOf(
+            mapOf<String?, Map<String?, String?>>(
+                "t" to mapOf<String?, String?>(
                     "part_no" to "A4786",
                     "descrip" to "Water Bucket (Filled)",
                     "price" to "1.47",
@@ -119,9 +119,9 @@ t:
         )
 
         assertEquals(
-            mapOf(
+            mapOf<String?, List<Map<String?, String?>?>?>(
                 "t" to listOf(
-                    mapOf(
+                    mapOf<String?, String?>(
                         "part_no" to "A4786",
                         "descrip" to "Water Bucket (Filled)",
                         "price" to "1.47",

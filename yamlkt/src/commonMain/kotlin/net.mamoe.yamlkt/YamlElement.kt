@@ -1,4 +1,4 @@
-@file:Suppress("unused")
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
 
 package net.mamoe.yamlkt
 
@@ -99,6 +99,38 @@ fun YamlElement.asLiteralOrNull(): YamlLiteral? {
         returnsNotNull() implies (this@asLiteralOrNull is YamlLiteral)
     }
     return this as? YamlLiteral
+}
+
+/**
+ * @return [this] as a [YamlLiteral], `null` otherwise
+ */
+@OptIn(ExperimentalContracts::class)
+inline fun YamlElement.asLiteral(
+    crossinline lazyMessage: (YamlElement) -> String = { "$this is not a YamlLiteral" }
+): YamlLiteral {
+    return this as? YamlLiteral ?: error(lazyMessage(this))
+}
+
+/**
+ * @return [this] as a [YamlPrimitive], `null` otherwise
+ */
+@OptIn(ExperimentalContracts::class)
+fun YamlElement.asPrimitiveOrNull(): YamlPrimitive? {
+    contract {
+        returns(null) implies (this@asPrimitiveOrNull !is YamlPrimitive)
+        returnsNotNull() implies (this@asPrimitiveOrNull is YamlPrimitive)
+    }
+    return this as? YamlPrimitive
+}
+
+/**
+ * @return [this] as a [YamlPrimitive], `null` otherwise
+ */
+@OptIn(ExperimentalContracts::class)
+inline fun YamlElement.asPrimitive(
+    crossinline lazyMessage: (YamlElement) -> String = { "$this is not a YamlPrimitive" }
+): YamlPrimitive {
+    return this as? YamlPrimitive ?: error(lazyMessage(this))
 }
 
 /**
@@ -230,7 +262,7 @@ object YamlNull : YamlPrimitive() {
 /**
  * Class representing YAML map.
  *
- * Yaml can have compound keys. [YamlMap.constrainLiteralKey] can be used to constrain with literal keys.
+ * Yaml can have compound keys.
  */
 @Serializable(with = YamlMapSerializer::class)
 data class YamlMap(
@@ -240,38 +272,58 @@ data class YamlMap(
 
     /**
      * Gets a value whose corresponding key's [YamlElement.content] is [key]
-     *
-     * @throws NoSuchElementException if not found
-     */
-    operator fun get(key: String): YamlElement {
-        return getOrNull(key) ?: throw NoSuchElementException(key)
-    }
-
-    /**
-     * Gets a value whose corresponding key's [YamlElement.content] is [key]
      * @return `null` if not found, otherwise the matched value.
      */
-    fun getOrNull(key: String): YamlElement? {
+    operator fun get(key: Any?): YamlElement? {
         for ((k, value) in this) {
             if (k.content == key) return value
         }
         return null
     }
 
+    /**
+     * Gets a value whose corresponding key's [YamlElement.content] is [key]
+     *
+     * @throws NoSuchElementException if not found
+     */
+    fun getOrFail(key: Any?): YamlElement {
+        return get(key) ?: throw NoSuchElementException(key.toString())
+    }
+
+    fun getInt(key: Any?): Int = getOrFail(key).asLiteral().content.toInt()
+    fun getIntOrNull(key: Any?): Int? = get(key)?.asPrimitiveOrNull()?.content?.toIntOrNull()
+    fun getDouble(key: Any?): Double = getOrFail(key).asLiteral().content.toDouble()
+    fun getDoubleOrNull(key: Any?): Double? = get(key)?.asPrimitiveOrNull()?.content?.toDoubleOrNull()
+    fun getFloat(key: Any?): Float = getOrFail(key).asLiteral().content.toFloat()
+    fun getFloatOrNull(key: Any?): Float? = get(key)?.asPrimitiveOrNull()?.content?.toFloatOrNull()
+    fun getByte(key: Any?): Byte = getOrFail(key).asLiteral().content.toByte()
+    fun getByteOrNull(key: Any?): Byte? = get(key)?.asPrimitiveOrNull()?.content?.toByteOrNull()
+    fun getShort(key: Any?): Short = getOrFail(key).asLiteral().content.toShort()
+    fun getShortOrNull(key: Any?): Short? = get(key)?.asPrimitiveOrNull()?.content?.toShortOrNull()
+    fun getString(key: Any?): String = getOrFail(key).asLiteral().content
+    fun getStringOrNull(key: Any?): String? = get(key)?.asPrimitiveOrNull()?.content
+    fun getLong(key: Any?): Long = getOrFail(key).asLiteral().content.toLong()
+    fun getLongOrNull(key: Any?): Long? = get(key)?.asPrimitiveOrNull()?.content?.toLongOrNull()
+
+    fun getList(key: Any?): List<Any?> = getOrFail(key) as List<Any?>
+
+    @Suppress("UNCHECKED_CAST")
+    fun getMap(key: Any?): Map<Any?, Any?> = getOrFail(key) as Map<Any?, Any?>
+
     companion object {
         @JvmStatic
         @JvmName("fromStringToElementMap")
-        operator fun invoke(map: Map<String, YamlElement>): YamlMap {
+        operator fun invoke(map: Map<out String?, YamlElement>): YamlMap {
             return YamlMap(map.mapKeys { it.toYamlElement() })
         }
 
         @JvmStatic
         @JvmName("fromStringToAnyMap")
-        operator fun invoke(map: Map<String, Any?>): YamlMap {
+        operator fun invoke(map: Map<out String?, Any?>): YamlMap {
             return YamlMap(
                 LinkedHashMap<YamlElement, YamlElement>(map.size).apply {
                     map.forEach { (key, value) ->
-                        put(YamlLiteral(key), value.toYamlElement())
+                        put(YamlPrimitive(key), value.toYamlElement())
                     }
                 }
             )
@@ -292,7 +344,7 @@ data class YamlMap(
  * @throws IllegalArgumentException if [R] is not a primitive type or [String]
  */
 inline fun <reified R : Any> YamlMap.getPrimitive(key: String): R {
-    return getOrNull(key)?.smartCastPrimitive(R::class) ?: throw NoSuchElementException(key)
+    return get(key)?.smartCastPrimitive(R::class) ?: throw NoSuchElementException(key)
 }
 
 /**
@@ -303,55 +355,26 @@ inline fun <reified R : Any> YamlMap.getPrimitive(key: String): R {
  * @return `null` if not found
  */
 inline fun <reified R : Any> YamlMap.getPrimitiveOrNull(key: String): R? {
-    return getOrNull(key)?.smartCastPrimitive(R::class)
+    return get(key)?.smartCastPrimitive(R::class)
 }
 
 /**
  * @return `true` if all keys are instances of [YamlLiteral]
  */
-fun YamlMap.allKeysLiteral(): Boolean {
-    return this.all { it.key is YamlLiteral }
-}
+fun YamlMap.allKeysLiteral(): Boolean = this.all { it.key is YamlLiteral }
+
+/**
+ * @return `true` if all keys are instances of [YamlPrimitive]
+ */
+fun YamlMap.allKeysPrimitive(): Boolean = this.all { it.key is YamlPrimitive }
 
 /**
  * Map keys to [String] using [YamlElement.toString], then map values using [YamlElement.content]
- *
- * @param constrainLiteralKey If `true`, [IllegalArgumentException] will be thrown if any key is not [YamlLiteral],
- * If `false`, all keys are mapped using [YamlElement.toString]
- *
- * @throws IllegalArgumentException Thrown if any key is not [YamlLiteral] **and** [constrainLiteralKey] is `true`
  */
-fun YamlMap.toContentMap(constrainLiteralKey: Boolean = true): Map<String, Any?> {
-
-    return LinkedHashMap<String, Any?>(this.size).apply {
+fun YamlMap.toContentMap(): Map<String?, Any?> {
+    return LinkedHashMap<String?, Any?>(this.size).apply {
         this@toContentMap.forEach { (key, value) ->
-            if (constrainLiteralKey) {
-                require(key is YamlLiteral) {
-                    "The YamlMap has compound keys and cannot be constrained with literal keys"
-                }
-            }
-            put(key.toString(), value.toContent(constrainLiteralKey))
-        }
-    }
-}
-
-internal fun YamlElement.toContent(constrainLiteralKey: Boolean = true): Any? {
-    return when (this) {
-        is YamlPrimitive -> this.content
-        is YamlMap -> this.toContentMap(constrainLiteralKey)
-        is YamlList -> this.toContentList(constrainLiteralKey)
-    }
-}
-
-/**
- * Map keys to [String] using [YamlElement.toString].
- * @throws IllegalArgumentException if any key is not a [YamlLiteral]
- */
-fun YamlMap.constrainLiteralKey(): Map<String, YamlElement> {
-    return this.mapKeys { (key, _) ->
-        when (key) {
-            is YamlLiteral -> key.content
-            else -> throw IllegalArgumentException("The YamlMap has compound keys and cannot be constrained with literal keys")
+            put(key.content?.toString(), value.toContent())
         }
     }
 }
@@ -405,11 +428,8 @@ fun yamlListOf(vararg values: Any?): YamlList = YamlList(values)
 
 /**
  * Converts [this] to a list containing [YamlElement.content]s
- *
- * @param constrainLiteralKey If `true`, [IllegalArgumentException] will be thrown if any key is not [YamlLiteral],
- * If `false`, all keys are mapped using [YamlElement.toString]
  */
-fun YamlList.toContentList(constrainLiteralKey: Boolean = true): List<Any?> = this.map { it.toContent(constrainLiteralKey) }
+fun YamlList.toContentList(): List<Any?> = this.map { it.toContent() }
 
 /**
  * Gets a value at index [index] then converts it to a primitive type or a [String]
@@ -508,4 +528,12 @@ internal fun <R : Any> YamlElement.smartCastPrimitive(clazz: KClass<R>): R { // 
         String::class -> this.literalContentOrNull
         else -> null
     } as? R ?: throw IllegalStateException("$clazz is not a primitive type.")
+}
+
+internal fun YamlElement.toContent(): Any? {
+    return when (this) {
+        is YamlPrimitive -> this.content
+        is YamlMap -> this.toContentMap()
+        is YamlList -> this.toContentList()
+    }
 }
