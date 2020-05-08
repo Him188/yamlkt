@@ -42,6 +42,7 @@ bintray {
     version = project.version
 
     pkg {
+        userOrg = 'mamoe'
         repo = 'konfig'
         name = "konfig"
         licenses = ['Apache-2.0']
