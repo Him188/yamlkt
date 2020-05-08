@@ -141,12 +141,6 @@ internal class TokenStream(
 
     inline val endOfInput: Boolean get() = cur == source.length
 
-    /**
-     * Used only in [readUnquotedString]
-     */
-    @JvmField
-    val escapeBuff = CharArray(16)
-
     @JvmField
     var escapeCount = 0
 
@@ -160,17 +154,28 @@ internal class TokenStream(
         return ""
     }
 
+    // region escape buf
     fun flushEsc() {
-        val requiredSize = _stringLength + escapeCount + 1
-        while (_stringBuf.size < requiredSize) {
-            incStringBuf()
+        if (escapeCount == 0) {
+            return
         }
-        escapeBuff.copyInto(_stringBuf, _stringLength, 0, escapeCount)
+        append(HexConverter.hexToLong(escapeBuff, 0, escapeCount).toInt().toChar())
+        escapeCount = 0
     }
+
+    /**
+     * Used only in [readUnquotedString]
+     */
+    @JvmField
+    val escapeBuff = CharArray(16)
 
     fun appendEsc(c: Char) {
         escapeBuff[escapeCount++] = c
+        if (escapeCount == 4) {
+            flushEsc()
+        }
     }
+    // endregion
 
     /**
      * Tokens that should be used one more time

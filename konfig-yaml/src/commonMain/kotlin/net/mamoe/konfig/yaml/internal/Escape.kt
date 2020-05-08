@@ -15,9 +15,6 @@ import kotlin.jvm.JvmStatic
 // sourcecode from kotlinx.serialization. Copyright 2017-2019 JetBrains s.r.o.
 ///////////////////
 
-// mapping from chars to token classes
-private const val CTC_MAX = 0x7e
-
 // mapping from escape chars real chars
 private const val ESC2C_MAX = 0x75
 
@@ -75,10 +72,6 @@ private object EscapeCharMappings {
 
 internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) EscapeCharMappings.ESCAPE_2_CHAR[c] else INVALID
 
-internal const val ESCAPE_16: Int = 0b1000000000000000000000000000000
-internal const val ESCAPE_32: Int = 0b0100000000000000000000000000000
-internal const val ESCAPE_8: Int = 0b0010000000000000000000000000000
-
 /**
  * Stores to [TokenStream.strBuff]
  */
@@ -91,9 +84,6 @@ internal fun TokenStream.readSingleQuotedString(): String {
     }
     throw contextualDecodingException("Unexpected EOF")
 }
-
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun Char.isValidHex(): Boolean = this in '0'..'9' || this in 'a'..'z' || this in 'A'..'Z'
 
 /**
  * Stores to [TokenStream.strBuff]
@@ -174,19 +164,28 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                         throw contextualDecodingException("Unexpected EOF")
 
                     // detect
-                    val es = escapeToChar(source[cur++].toInt())
+                    val esChar = source[cur++]
+                    val es = escapeToChar(esChar.toInt())
                     if (es != INVALID) {
                         append(es)
                         startCur = cur
                     } else {
-
-                        TODO("higher order escape")
-                        when (char) {
-                            'x' -> ESCAPE_8
-                            'u' -> ESCAPE_16
-                            'U' -> ESCAPE_32
-                            else -> throw contextualDecodingException("Illegal escape '$char' when reading unquoted String")
+                        val digitCount = when (esChar) {
+                            'x' -> 2
+                            'u' -> 4
+                            'U' -> 8
+                            else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
                         }
+                        repeat(digitCount) {
+                            useNext { c ->
+                                if (!c.isHexDigit()) {
+                                    throw contextualDecodingException("Expected hex digit")
+                                }
+                                appendEsc(c)
+                            }
+                        }
+                        startCur = cur
+                        flushEsc() // for \x
                     }
                 }
             }
@@ -195,6 +194,12 @@ internal fun TokenStream.readDoubleQuotedString(): String {
     throw contextualDecodingException("Unexpected EOF")
 }
 
+internal inline fun <R> TokenStream.useNext(block: (ch: Char) -> R?): R? {
+    if (endOfInput) return null
+    return source[cur++].let(block)
+}
+
+internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
 internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlConfiguration.StringSerialization): String {
     val availability = quotationAvailability
@@ -219,7 +224,6 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
 }
 
 private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
-    println("debugger nmsl")
     buf.append('\"')
     for (ch in this@toDoubleQuotedString) {
         val es = EscapeCharMappings.REPLACEMENT_CHARS[ch.toInt()]
