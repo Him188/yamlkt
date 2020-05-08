@@ -8,7 +8,6 @@ import net.mamoe.konfig.yaml.Yaml
 import net.mamoe.konfig.yaml.parseYamlMap
 import net.mamoe.konfig.yaml.toContentMap
 import org.junit.Test
-import java.io.File
 import kotlin.test.assertEquals
 
 
@@ -27,9 +26,15 @@ internal class BlockMapTest {
     fun `test descriptor block map`() {
         println(
             Yaml.default.parse(
-                Config.serializer(), File("E:\\Projects\\konfig\\konfig-yaml\\src\\jvmTest\\kotlin\\net\\mamoe\\konfig\\yaml\\config.yml").readText()
+                Config.serializer(), """
+bot:
+  account: 12345678910
+  password: "=w==w==w="
+owner:
+  account: 12345678910
+"""
             )
-        )
+            )
     }
 
 

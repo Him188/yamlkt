@@ -6,6 +6,7 @@ import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.PrimitiveKind
 import kotlinx.serialization.StructureKind
 import kotlin.jvm.JvmField
+import kotlin.jvm.JvmName
 
 /**
  * Configurations to [Yaml]
@@ -112,6 +113,9 @@ data class YamlConfiguration(
          * Serialize [Boolean] as "TRUE" or "FALSE"
          */
         object TRUE_FALSE_UPPERCASE : BooleanSerialization("TRUE", "FALSE")
+
+        @JvmName("getValue")
+        operator fun get(value: Boolean): String = if (value) trueValue else falseValue
     }
 
     /**

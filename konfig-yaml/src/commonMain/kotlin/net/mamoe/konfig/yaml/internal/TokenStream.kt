@@ -55,7 +55,6 @@ internal val __init = run {
     }
 }
 
-internal inline val NOT_A_TOKEN: Nothing? get() = null
 internal inline val END_OF_FILE: Nothing? get() = null
 
 /**
@@ -88,18 +87,22 @@ internal class TokenStream(
     var strBuff: String? = null
 
     /**
-     * Only for internal use
+     * Whether the current string is quoted
      */
     @JvmField
-    var _stringBuf: CharArray = CharArray(32)
+    var quoted: Boolean = false
+
+    /**
+     * Only for internal use
+     */
+    private var _stringBuf: CharArray = CharArray(32)
 
     @JvmField
     var cur: Int = 0
 
     inline val endOfInput: Boolean get() = cur == source.length
 
-    @JvmField
-    var _stringLength: Int = 0
+    private var _stringLength: Int = 0
 
     /**
      * Used only in [readUnquotedString]
@@ -248,12 +251,15 @@ internal class TokenStream(
      */
     private fun prepareStringAndNextToken(begin: Char) = when (begin) {
         SINGLE_QUOTATION -> {
+            quoted = true
             readSingleQuotedString()
         }
         DOUBLE_QUOTATION -> {
+            quoted = true
             readDoubleQuotedString()
         }
         else -> { // unquoted
+            quoted = false
             readUnquotedString(begin).optimizeNull()
         }
     }

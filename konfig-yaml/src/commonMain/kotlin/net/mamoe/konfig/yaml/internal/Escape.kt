@@ -1,5 +1,6 @@
 package net.mamoe.konfig.yaml.internal
 
+import net.mamoe.konfig.yaml.YamlConfiguration
 import kotlin.jvm.JvmField
 
 
@@ -165,4 +166,10 @@ internal fun TokenStream.readDoubleQuotedString(): String {
         }
     }
     throw contextualDecodingException("Unexpected EOF")
+}
+
+
+internal fun String.toEscapedString(stringSerialization: YamlConfiguration.StringSerialization): String {
+    return this
+    // TODO: 2020/5/8 escaping serializing
 }

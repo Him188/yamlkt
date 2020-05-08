@@ -79,9 +79,6 @@ internal class YamlEncoder(
                     }
                 }
             }
-            UnionKind.CONTEXTUAL -> {
-                TODO("CONTEXTUAL")
-            }
             else -> error("unsupported SerialKind: ${descriptor.kind}")
         }
     }
@@ -118,7 +115,7 @@ internal class YamlEncoder(
         }
 
         @Suppress("DuplicatedCode")
-        override fun encodeValue(value: String, isNumber: Boolean) {
+        override fun encodeValue(value: String) {
             val isKey = count++.isEvenOrZero()
             if (isKey) {
                 if (justStarted) {
@@ -142,7 +139,7 @@ internal class YamlEncoder(
             writer.write(value)
         }
 
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String, isNumber: Boolean) {
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
             if (justStarted) justStarted = false
             else writer.write(", ")
             writer.write(descriptor.getElementName(index))
@@ -182,7 +179,7 @@ internal class YamlEncoder(
         }
 
         @Suppress("DuplicatedCode")
-        override fun encodeValue(value: String, isNumber: Boolean) {
+        override fun encodeValue(value: String) {
             if (justStarted) justStarted = false
             else writer.write(", ")
 
@@ -190,7 +187,7 @@ internal class YamlEncoder(
         }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("BlockMapEncoder.encodeElement shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String, isNumber: Boolean) = error("BlockMapEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("BlockMapEncoder.encodeElement shouldn't be called")
         override fun endStructure0(descriptor: SerialDescriptor) {
             writer.write(" ]")
         }
@@ -210,7 +207,7 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeValue(value: String, isNumber: Boolean) {
+        override fun encodeValue(value: String) {
             writer.writeLineIndented {
                 +"- "
                 +value
@@ -218,7 +215,7 @@ internal class YamlEncoder(
         }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("BlockMapEncoder.encodeElement shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String, isNumber: Boolean) = error("BlockMapEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("BlockMapEncoder.encodeElement shouldn't be called")
         override fun endStructure0(descriptor: SerialDescriptor) = Unit
         override fun <T> writeSerializableElementHead(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) = Unit
     }
@@ -238,7 +235,7 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String, isNumber: Boolean) {
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
             writer.writeLineIndented {
                 +descriptor.getElementName(index)
                 +": "
@@ -257,7 +254,7 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeValue(value: String, isNumber: Boolean) {
+        override fun encodeValue(value: String) {
             val isKey = isKey.also { isKey = !isKey }
             if (isKey) {
                 writer.writeIndented(value)
@@ -275,18 +272,18 @@ internal class YamlEncoder(
         }
     }
 
-    override fun encodeBoolean(value: Boolean) = error("Internal error: shouldn't called")
-    override fun encodeByte(value: Byte) = error("Internal error: shouldn't called")
-    override fun encodeChar(value: Char) = error("Internal error: shouldn't called")
-    override fun encodeDouble(value: Double) = error("Internal error: shouldn't called")
-    override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = error("Internal error: shouldn't called")
-    override fun encodeFloat(value: Float) = error("Internal error: shouldn't called")
-    override fun encodeInt(value: Int) = error("Internal error: shouldn't called")
-    override fun encodeLong(value: Long) = error("Internal error: shouldn't called")
-    override fun encodeShort(value: Short) = error("Internal error: shouldn't called")
-    override fun encodeString(value: String) = error("Internal error: shouldn't called")
-    override fun encodeNull() = error("Internal error: shouldn't called")
-    override fun encodeUnit() = error("Internal error: shouldn't called")
+    override fun encodeBoolean(value: Boolean) = writer.write(configuration.booleanSerialization[value])
+    override fun encodeByte(value: Byte) = writer.write(value.toString())
+    override fun encodeChar(value: Char) = writer.write(value)
+    override fun encodeDouble(value: Double) = writer.write(value.toString())
+    override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = writer.write(enumDescriptor.getElementName(index))
+    override fun encodeFloat(value: Float) = writer.write(value.toString())
+    override fun encodeInt(value: Int) = writer.write(value.toString())
+    override fun encodeLong(value: Long) = writer.write(value.toString())
+    override fun encodeShort(value: Short) = writer.write(value.toString())
+    override fun encodeString(value: String) = writer.write(value.toEscapedString(configuration.stringSerialization))
+    override fun encodeNull() = writer.write(configuration.nullSerialization.value)
+    override fun encodeUnit() = error("Unit isn't supported")
 
     /**
      * Called by contextual
@@ -331,10 +328,10 @@ internal class YamlEncoder(
         private val linebreakAfterFinish: Boolean
     ) : CompositeEncoder, Encoder {
         abstract fun encodeValue(value: Char)
-        abstract fun encodeValue(value: String, isNumber: Boolean)
+        abstract fun encodeValue(value: String)
 
         abstract fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char)
-        abstract fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String, isNumber: Boolean)
+        abstract fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String)
 
         final override fun endStructure(descriptor: SerialDescriptor) {
             writer.levelDecrease()
@@ -365,35 +362,28 @@ internal class YamlEncoder(
             encodeElement(descriptor, index, value)
 
         final override fun encodeBooleanElement(descriptor: SerialDescriptor, index: Int, value: Boolean) =
-            encodeElement(descriptor, index, configuration.booleanSerialization.run { if (value) trueValue else falseValue }, true)
+            encodeElement(descriptor, index, configuration.booleanSerialization.run { if (value) trueValue else falseValue })
 
         final override fun encodeByteElement(descriptor: SerialDescriptor, index: Int, value: Byte) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeDoubleElement(descriptor: SerialDescriptor, index: Int, value: Double) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeFloatElement(descriptor: SerialDescriptor, index: Int, value: Float) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeIntElement(descriptor: SerialDescriptor, index: Int, value: Int) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeLongElement(descriptor: SerialDescriptor, index: Int, value: Long) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeShortElement(descriptor: SerialDescriptor, index: Int, value: Short) =
-            encodeElement(descriptor, index, value.toString(), true)
+            encodeElement(descriptor, index, value.toString())
 
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
-            encodeElement(
-                descriptor, index, when (configuration.stringSerialization) {
-                    YamlConfiguration.StringSerialization.NONE -> if (value.isEmpty()) "\'\'" else value
-                    YamlConfiguration.StringSerialization.SINGLE_QUOTATION -> "\'$value\'"
-                    // TODO: 2020/4/3 ESCAPE
-                    YamlConfiguration.StringSerialization.DOUBLE_QUOTATION -> "\"$value\""
-                }, false
-            )
+            encodeElement(descriptor, index, value.toEscapedString(configuration.stringSerialization))
 
         final override fun encodeUnitElement(descriptor: SerialDescriptor, index: Int) {
             error("Unit isn't supported")
@@ -402,34 +392,24 @@ internal class YamlEncoder(
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
-                encodeElement(descriptor, index, configuration.nullSerialization.value, true)
+                encodeElement(descriptor, index, configuration.nullSerialization.value)
             } else encodeSerializableElement(descriptor, index, serializer, value)
         }
 
         final override fun encodeBoolean(value: Boolean) =
-            encodeValue(if (value) configuration.booleanSerialization.trueValue else configuration.booleanSerialization.falseValue, true)
+            encodeValue(if (value) configuration.booleanSerialization.trueValue else configuration.booleanSerialization.falseValue)
 
         final override fun encodeByte(value: Byte) = encodeValue(value.toChar())
         final override fun encodeChar(value: Char) = encodeValue(value)
-        final override fun encodeDouble(value: Double) = encodeValue(value.toString(), true)
-        final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = encodeValue(enumDescriptor.getElementName(index), false)
-        final override fun encodeFloat(value: Float) = encodeValue(value.toString(), true)
-        final override fun encodeInt(value: Int) = encodeValue(value.toString(), true)
-        final override fun encodeLong(value: Long) = encodeValue(value.toString(), true)
-        final override fun encodeNull() = encodeValue(configuration.nullSerialization.value, true)
-        final override fun encodeShort(value: Short) = encodeValue(value.toString(), true)
+        final override fun encodeDouble(value: Double) = encodeValue(value.toString())
+        final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = encodeValue(enumDescriptor.getElementName(index))
+        final override fun encodeFloat(value: Float) = encodeValue(value.toString())
+        final override fun encodeInt(value: Int) = encodeValue(value.toString())
+        final override fun encodeLong(value: Long) = encodeValue(value.toString())
+        final override fun encodeNull() = encodeValue(configuration.nullSerialization.value)
+        final override fun encodeShort(value: Short) = encodeValue(value.toString())
         final override fun encodeUnit(): Unit = error("Unit isn't supported")
-        final override fun encodeString(value: String) = when (configuration.stringSerialization) {
-            YamlConfiguration.StringSerialization.NONE -> {
-                encodeValue(value, true)
-            }
-            YamlConfiguration.StringSerialization.SINGLE_QUOTATION -> {
-                encodeValue("\'$value\'", true)
-            } // TODO: 2020/4/3 ESCAPE
-            YamlConfiguration.StringSerialization.DOUBLE_QUOTATION -> {
-                encodeValue("\"$value\"", true)
-            }
-        }
+        final override fun encodeString(value: String) = encodeValue(value.toEscapedString(configuration.stringSerialization))
 
         final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaultValues
         final override val context: SerialModule get() = this@YamlEncoder.context

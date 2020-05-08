@@ -165,9 +165,9 @@ fun Yaml.parseMap(@Language("yaml", "", "") yamlContent: String, condoneNullKey:
                 }
                 if (key == null) return@forEach
 
-                if (key is String) {
-                    result[key.toString()] = value
-                } else error("Cannot cast compound key ${key.classSimpleName()} to a String. Consider using `Yaml.parseYamlMap`")
+                //if (key is String) {
+                result[key.toString()] = value
+                //} else error("Cannot cast compound key ${key.classSimpleName()} to a String. Consider using `Yaml.parseYamlMap`")
             }
 
             return result

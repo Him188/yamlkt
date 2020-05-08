@@ -7,16 +7,28 @@ import kotlin.jvm.JvmStatic
 
 
 /**
- * Can deserialize [String]s, [Map]s, [List]s.
- * Primitives except [String] aren't supported, as they should be casted from [String]
+ * The [KSerializer] for serializing and deserializing primitives,  without any specified serializer.
  *
- * The generic types of [Map]s and [List]s this serializer can produce is always a [String]
- * or a nested [Map] or [List] with the same rule in generic types.
+ * ### Deserializing
+ * [String]s may be cased to [Int], [Long], [Double] or [Boolean] if possible, using the following strategy:
+ * - If it belongs in range [Int.MIN_VALUE]..[Int.MAX_VALUE], it will be a [Int]
+ * - If it belongs in range [Long.MIN_VALUE]..[Long.MAX_VALUE], it will be a [Long]
+ * - It it is a decimal value, it will be a [Double].
+ * - If it is "false", "FALSE", "true", "TRUE", it will be the corresponding [Boolean] primitive.
+ * - Otherwise, e.g. if a number is too large, it will be a [String].
  *
- * E.g. output [Map] may be `Map<String, List<String>>`, `Map<Map<String, String>, List<String>>`.
- * But cannot have any primitives except [String]
+ * **Throws exception when encountered with `null`**, use [YamlNullableDynamicSerializer] to condone `null`s.
  *
- * Throws exception on encountering with `null`.
+ * ### Serializing
+ *
+ * Supported types:
+ * - all boxed or unboxed primitive types, e.g. [Int], [Boolean]
+ * - all typed arrays with supported generic types, which is [Array]
+ * - all primitive arrays, e.g. [IntArray]
+ * - [String]
+ * - [Pair], [Triple], [Map.Entry] with supported generic types
+ * - [Map], [List], [Set] with supported generic types
+ * - types (typically annotated with [Serializable]) that has a compiled serializer on its `Companion`
  *
  * A best usage of this serializer is to deserialize [YamlElement]
  */
@@ -47,7 +59,7 @@ object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
                 throw this.parentYamlDecoder.contextualDecodingException("Unexpected null")
             }
             YamlDecoder.Kind.STRING -> {
-                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!
+                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!.adjustDynamicString(parentYamlDecoder.tokenStream.quoted)
             }
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Unexpected YamlNull")
@@ -59,17 +71,27 @@ object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
     override fun serialize(encoder: Encoder, value: Any) = serializeImpl(encoder, value)
 }
 
+private val LONG_AS_DOUBLE_RANGE = Long.MIN_VALUE.toDouble()..Long.MAX_VALUE.toDouble()
+private val INT_AS_DOUBLE_RANGE = Int.MIN_VALUE.toDouble()..Int.MAX_VALUE.toDouble()
+
+internal fun String.adjustDynamicString(quoted: Boolean): Any =
+    if (quoted) this
+    else when (this) {
+        "true", "TRUE" -> true
+        "false", "FALSE" -> false
+        else -> when (val double = this.toDoubleOrNull()) {
+            null -> this
+            in INT_AS_DOUBLE_RANGE -> double.toInt()
+            in LONG_AS_DOUBLE_RANGE -> double.toLong()
+            else -> double
+        }
+    }
+
+
 /**
- * Can deserialize [String]s, `null`s, [Map]s, [List]s.
- * Primitives except [String] aren't supported, as they should be casted from [String]
+ * The serializer that can deserialize `null`s on comparison to [YamlDynamicSerializer]
  *
- * The generic types of [Map]s and [List]s this serializer can produce is always a **nullable** [String]
- * or a nested [Map] or [List] with the same rule in generic types.
- *
- * E.g. output [Map] may be `Map<String?, List<String?>>`, `Map<Map<String?, String?>, List<String?>>`.
- * But cannot have any primitives except [String]
- *
- * A best usage of this serializer is to deserialize [YamlElement]
+ * See [YamlDynamicSerializer] for more information
  *
  * @see YamlDynamicSerializer the non-null serializer
  */
@@ -97,7 +119,7 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
                 listSerializer.deserialize(this)
             }
             YamlDecoder.Kind.STRING -> {
-                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!
+                return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!.adjustDynamicString(parentYamlDecoder.tokenStream.quoted)
             }
             YamlDecoder.Kind.NULL_STRING -> {
                 return@decodeStructure null
@@ -120,6 +142,7 @@ internal interface IYamlDynamicSerializer
 
 internal expect fun IYamlDynamicSerializer.serializeImpl(encoder: Encoder, value: Any)
 
+@Suppress("RemoveExplicitTypeArguments") // compiler bug
 internal object AnyTypedArraySerializer : KSerializer<Array<Any?>> by ArraySerializer<Any, Any?>(YamlNullableDynamicSerializer)
 internal object YamlDynamicPairSerializer : KSerializer<Pair<Any?, Any?>> by PairSerializer(YamlNullableDynamicSerializer, YamlNullableDynamicSerializer)
 internal object YamlDynamicTripleSerializer :
