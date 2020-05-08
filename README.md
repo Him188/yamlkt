@@ -2,9 +2,9 @@
 ![Gradle CI](https://github.com/mamoe/yamlkt/workflows/Gradle%20CI/badge.svg?branch=master)
 [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
-Multi-platform Yaml with comments support for kotlinx.serialization
+Fast multi-platform YAML with comments support for kotlinx.serialization
 
-This project is under development.
+This project is experimental.
 
 ## Setup
 
@@ -41,10 +41,11 @@ Replace `$version` with the newest version here: [![Download](https://api.bintra
 
 ## Overview
 This library supports:
-- fast descriptor-based deserializing
+- fast deserializing YAML text to a structured object
 - contextual deserializing: `@ContextualSerialization`
-- dynamic types: `YamlDynamicSerializer` which can deserialize `Any`
-- `YamlElement` wrapper classes
+- dynamic types: `YamlDynamicSerializer` which can serialize and deserialize `Any`
+- `YamlElement` wrapper classes, allowing `YamlMap.getInt`, `YamlMap.getLong`
+- comments encoding (Using annotation `Comment`)
 
 The YAML features that are't yet supported:
 - Anchors (`*`, `&`)
@@ -53,14 +54,8 @@ The YAML features that are't yet supported:
 
 ## Learn to use
 
-### Serializing
-In progress
-
-### Deserializing
-
-#### Descriptor-based deserializing
-Like Json from `kotlinx.serialization`, YamlKt supports deserialization with descriptors.  
-Using descriptor is the most fast and recommended way as the decoder doesn't need to guess the type.
+#### Serialize / deserialize with compiled serializers
+This approach is the most fast and recommended way as the type is already provided.
 ```kotlin
 @Serializable
 data class Test(
@@ -83,9 +78,9 @@ list: [str, "str2"]
 """))
 ```
 
-#### Contextual deserializing
+#### Contextual serializing / deserializing
 YamlKt provides a contextual serializer `YamlDynamicSerializer` for `Any`  
-and `YamlNullDynamicSerializer` for `Any?
+and `YamlNullDynamicSerializer` for `Any?`
 
 By default, `YamlDynamicSerializer` is installed to `Any`.  
 You can start by using `@ContextualSerialization`:
@@ -106,7 +101,7 @@ test: { key1: v1, key2: [v2, v3, v4] }
 
 Alternatively, you can deserialize without any class:
 ```kotlin
-val map: Map<String, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
+val map: Map<String?, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
 
@@ -115,24 +110,3 @@ val map: Map<String, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [v
 ```kotlin
 val map: YamlMap = Yaml.default.parseYamlMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
-
-
-## To-Do
-
-|    | Done   |
-|:---|:---|
-| Nullable values |  √  |
-| Multiline lists|  √  |
-| Square block lists|  √  |
-| Json-like maps|  √  |
-| Yaml maps|  √  |
-| Nesting | √   |
-| Quotations |  √  |
-| ContextualSerialization | √ |
-| Multiline String   |    |
-| Parsing without descriptor | √|
-| Anchors   |    |
-| Compound key |  √  |
-| Byte Order Mark| |
-| Explicit types | |
-
