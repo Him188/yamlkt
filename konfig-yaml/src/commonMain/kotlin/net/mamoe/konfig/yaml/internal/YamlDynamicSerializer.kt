@@ -1,8 +1,7 @@
 package net.mamoe.konfig.yaml.internal
 
 import kotlinx.serialization.*
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.*
 import net.mamoe.konfig.yaml.YamlElement
 import kotlin.jvm.JvmStatic
 
@@ -21,7 +20,7 @@ import kotlin.jvm.JvmStatic
  *
  * A best usage of this serializer is to deserialize [YamlElement]
  */
-object YamlDynamicSerializer : KSerializer<Any> {
+object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
     override val descriptor: SerialDescriptor = SerialDescriptor("YamlDynamic", UnionKind.CONTEXTUAL)
 
     @JvmStatic
@@ -56,17 +55,32 @@ object YamlDynamicSerializer : KSerializer<Any> {
         }
     }
 
-    override fun serialize(encoder: Encoder, value: Any) {
-        /*
-        check(decoder is YamlDecoder || decoder is YamlDecoder.AbstractDecoder) {
-            "YamlDynamicSerializer can only be used in Yaml serializing and deserializing"
-        }*/
-
-
-        TODO("not implemented")
-    }
+    @OptIn(ImplicitReflectionSerializer::class)
+    override fun serialize(encoder: Encoder, value: Any) = serializeImpl(encoder, value)
 }
 
+internal interface IYamlDynamicSerializer
+
+internal expect fun IYamlDynamicSerializer.serializeImpl(encoder: Encoder, value: Any)
+
+internal object AnyTypedArraySerializer : KSerializer<Array<Any?>> by ArraySerializer<Any, Any?>(YamlNullableDynamicSerializer)
+internal object YamlDynamicPairSerializer : KSerializer<Pair<Any?, Any?>> by PairSerializer(YamlNullableDynamicSerializer, YamlNullableDynamicSerializer)
+internal object YamlDynamicTripleSerializer :
+    KSerializer<Triple<Any?, Any?, Any?>> by TripleSerializer(YamlNullableDynamicSerializer, YamlNullableDynamicSerializer, YamlNullableDynamicSerializer)
+
+internal object YamlMapEntrySerializer : KSerializer<Map.Entry<Any?, Any?>> by MapEntrySerializer(YamlNullableDynamicSerializer, YamlNullableDynamicSerializer)
+
+internal object IntTypedArraySerializer : KSerializer<Array<Int>> by ArraySerializer(Int.serializer())
+internal object DoubleTypedArraySerializer : KSerializer<Array<Double>> by ArraySerializer(Double.serializer())
+internal object FloatTypedArraySerializer : KSerializer<Array<Float>> by ArraySerializer(Float.serializer())
+internal object ByteTypedArraySerializer : KSerializer<Array<Byte>> by ArraySerializer(Byte.serializer())
+internal object ShortTypedArraySerializer : KSerializer<Array<Short>> by ArraySerializer(Short.serializer())
+internal object CharTypedArraySerializer : KSerializer<Array<Char>> by ArraySerializer(Char.serializer())
+internal object StringTypedArraySerializer : KSerializer<Array<String>> by ArraySerializer(String.serializer())
+internal object LongTypedArraySerializer : KSerializer<Array<Long>> by ArraySerializer(Long.serializer())
+
+internal object YamlDynamicMapSerializer : KSerializer<Map<Any?, Any?>> by MapSerializer(YamlNullableDynamicSerializer, YamlNullableDynamicSerializer)
+internal object YamlDynamicListSerializer : KSerializer<List<Any?>> by ListSerializer(YamlNullableDynamicSerializer)
 
 /**
  * Can deserialize [String]s, `null`s, [Map]s, [List]s.
@@ -82,7 +96,7 @@ object YamlDynamicSerializer : KSerializer<Any> {
  *
  * @see YamlDynamicSerializer the non-null serializer
  */
-object YamlNullableDynamicSerializer : KSerializer<Any?> {
+object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer {
     override val descriptor: SerialDescriptor = SerialDescriptor("YamlNullableDynamic", UnionKind.CONTEXTUAL)
 
     @JvmStatic
@@ -115,13 +129,11 @@ object YamlNullableDynamicSerializer : KSerializer<Any?> {
         }
     }
 
+    @OptIn(ImplicitReflectionSerializer::class)
     override fun serialize(encoder: Encoder, value: Any?) {
-        /*
-        check(decoder is YamlDecoder || decoder is YamlDecoder.AbstractDecoder) {
-            "YamlDynamicSerializer can only be used in Yaml serializing and deserializing"
-        }*/
-
-
-        TODO("not implemented")
+        @Suppress("UNCHECKED_CAST")
+        if (value == null) {
+            encoder.encodeNullableSerializableValue(String.serializer(), value)
+        } else serializeImpl(encoder, value)
     }
 }
