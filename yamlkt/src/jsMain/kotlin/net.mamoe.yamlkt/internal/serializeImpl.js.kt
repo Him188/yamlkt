@@ -37,15 +37,6 @@ internal actual fun IYamlDynamicSerializer.serializeImpl(
 
     Array<Any>::class.js -> encoder.encodeSerializableValue(AnyTypedArraySerializer, value as Array<Any?>)
 
-    Array<Int>::class.js -> encoder.encodeSerializableValue(IntTypedArraySerializer, value as Array<Int>)
-    Array<Double>::class.js -> encoder.encodeSerializableValue(DoubleTypedArraySerializer, value as Array<Double>)
-    Array<Float>::class.js -> encoder.encodeSerializableValue(FloatTypedArraySerializer, value as Array<Float>)
-    Array<Byte>::class.js -> encoder.encodeSerializableValue(ByteTypedArraySerializer, value as Array<Byte>)
-    Array<Short>::class.js -> encoder.encodeSerializableValue(ShortTypedArraySerializer, value as Array<Short>)
-    Array<Char>::class.js -> encoder.encodeSerializableValue(CharTypedArraySerializer, value as Array<Char>)
-    Array<String>::class.js -> encoder.encodeSerializableValue(StringTypedArraySerializer, value as Array<String>)
-    Array<Long>::class.js -> encoder.encodeSerializableValue(LongTypedArraySerializer, value as Array<Long>)
-
     else -> when (value) {
         is Map<*, *> -> encoder.encodeSerializableValue(YamlDynamicMapSerializer, value as Map<Any?, Any?>)
         is List<*> -> encoder.encodeSerializableValue(YamlDynamicListSerializer, value as List<Any?>)

@@ -22,6 +22,7 @@ kotlin {
 
         all {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+            languageSettings.progressiveMode = true
         }
 
         val commonMain by getting {
