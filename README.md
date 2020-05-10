@@ -76,7 +76,7 @@ data class Test(
     )
 }
 
-println(yaml.parse(Test.serializer(), """
+println(Yaml.default.parse(Test.serializer(), """
 test: testString
 nest: 
   numberCast: 0xFE
