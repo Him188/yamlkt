@@ -40,6 +40,8 @@ implementation("net.mamoe.yamlkt:yamlkt-js:<version>") // JS
 </repository>
 ```
 
+Only JVM is available for Maven.
+
 Replace `$version` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 ```xml
 <dependency>
