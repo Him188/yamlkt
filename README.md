@@ -15,7 +15,6 @@ Dependency requirements:
 | 0.x    | 1.3.70+          | 0.20.0                         |
 
 #### Gradle
-Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
 ```kotlin
 repositories {
@@ -23,13 +22,16 @@ repositories {
 }
 ```
 
+Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 ```kotlin
-implementation("net.mamoe.yamlkt:yamlkt:<version>")
+// choose one of them depending on your platform
+implementation("net.mamoe.yamlkt:yamlkt:<version>") // JVM
+implementation("net.mamoe.yamlkt:yamlkt-common:<version>") // MPP common
+implementation("net.mamoe.yamlkt:yamlkt-js:<version>") // JS
 ```
 
 
 #### Maven
-Replace `$version` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
 ```xml
 <repository>
@@ -37,6 +39,8 @@ Replace `$version` with the newest version here: [![Download](https://api.bintra
     <url>https://jcenter.bintray.com/</url>
 </repository>
 ```
+
+Replace `$version` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 ```xml
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
