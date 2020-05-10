@@ -18,6 +18,12 @@ Dependency requirements:
 Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
 ```kotlin
+repositories {
+  jcenter()
+}
+```
+
+```kotlin
 implementation("net.mamoe.yamlkt:yamlkt:<version>")
 ```
 
