@@ -34,5 +34,5 @@ import kotlinx.serialization.SerialInfo
  * @param lines '\n' is allowed to generate multi lines.
  */
 @SerialInfo
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
 annotation class Comment(val lines: String) //https://github.com/Kotlin/kotlinx.serialization/issues/836

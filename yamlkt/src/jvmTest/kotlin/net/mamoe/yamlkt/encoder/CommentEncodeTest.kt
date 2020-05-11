@@ -15,11 +15,11 @@ internal class CommentEncodeTest {
         data class CommentTest(
             @Comment("testA")
             val value1: String,
-            @Comment("testA")
+            @Comment("testA\nff")
             val value2: String
         )
 
         Thread.sleep(1000)
-        allBlock.testDescriptorBased(CommentTest.serializer(), CommentTest("vv", "ss"))
+        allBlock.testDescriptorBased(CommentTest.serializer(), CommentTest("vv", "ss"), true)
     }
 }
