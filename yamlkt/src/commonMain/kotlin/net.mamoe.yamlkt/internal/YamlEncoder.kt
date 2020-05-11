@@ -266,15 +266,15 @@ internal class YamlEncoder(
             }
         }
 
-        private fun SerialDescriptor.getComments(index: Int): String? {
-            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.line
+        private fun SerialDescriptor.getComments(index: Int): Sequence<String>? {
+            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.lines?.lineSequence()
         }
 
         private fun YamlWriter.writeComments(descriptor: SerialDescriptor, index: Int) {
-            descriptor.getComments(index)?.let { comment ->
-                writer.writeIndentedSmart("# ")
-                writer.write(comment.trim())
-                writer.writeln()
+            descriptor.getComments(index)?.forEach { comment ->
+                writeIndentedSmart("# ")
+                write(comment.trim())
+                writeln()
             }
         }
 

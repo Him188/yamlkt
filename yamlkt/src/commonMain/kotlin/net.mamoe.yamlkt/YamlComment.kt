@@ -30,8 +30,9 @@ import kotlinx.serialization.SerialInfo
  * # The name of the user
  * name: ""
  * ```
+ *
+ * @param lines '\n' is allowed to generate multi lines.
  */
 @SerialInfo
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-@Repeatable
-annotation class Comment(val line: String) // kotlin doesn't allow vararg as they have default values []
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY, AnnotationTarget.VALUE_PARAMETER)
+annotation class Comment(val lines: String) //https://github.com/Kotlin/kotlinx.serialization/issues/836
