@@ -137,5 +137,5 @@ gives yaml text:
 ```yaml
 # The name of the user
 # Can be first name
-value: ""
+name: ""
 ```

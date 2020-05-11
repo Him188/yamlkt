@@ -29,7 +29,7 @@ import kotlinx.serialization.SerialInfo
  * ```yaml
  * # The name of the user
  * # Can be first name
- * value: ""
+ * name: ""
  * ```
  */
 @SerialInfo
