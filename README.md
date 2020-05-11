@@ -129,13 +129,12 @@ Example:
 ```kotlin
 @Serializable
 data class User(
-  @Comment("The name of the user", "Can be first name")
+  @Comment("The name of the user")
   val name: String = "value"
 )
 ```
 gives yaml text:
 ```yaml
 # The name of the user
-# Can be first name
 name: ""
 ```
