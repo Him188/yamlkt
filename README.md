@@ -122,3 +122,19 @@ val map: Map<String?, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [
 ```kotlin
 val map: YamlMap = Yaml.default.parseYamlMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
+
+#### Comments
+Annotate your comments to a class using `@Comment`:
+Example:
+```kotlin
+data class User(
+  @Comment("The name of the user", "Can be first name")
+  val name: String = "value"
+)
+```
+gives yaml text:
+```yaml
+# The name of the user
+# Can be first name
+value: ""
+```
