@@ -124,7 +124,7 @@ val map: YamlMap = Yaml.default.parseYamlMap("""test: { key1: v1, key2: [v2, v3,
 ```
 
 #### Comments
-Annotate your comments to a class using `@Comment`:
+Annotate your comments to a field(property) using `@Comment`:  
 Example:
 ```kotlin
 @Serializable
