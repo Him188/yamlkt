@@ -16,8 +16,10 @@ import kotlinx.serialization.SerialInfo
  * ```
  * Therefore ensure you are using [YamlConfiguration.MapSerialization.BLOCK_MAP] for [YamlConfiguration.classSerialization]
  *
+ *
  * Example:
  * ```
+ * @Serializable
  * data class User(
  *   @Comment("The name of the user", "Can be first name")
  *   val name: String = "value"
