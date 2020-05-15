@@ -83,7 +83,7 @@ DeserializingTest.gson                      avgt   10    8645.489 ±   465.499  
 @Warmup(iterations = 3)
 @Measurement(iterations = 10)
 @Threads(8)
-@Fork(1)
+@Fork(2)
 @State(Scope.Thread)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 open class DeserializingTest {
@@ -115,7 +115,7 @@ open class DeserializingTest {
     }
 
     @Benchmark
-    fun gson() {
+    fun gsonContextual() {
         gson.fromJson(content, Map::class.java)
     }
 }
