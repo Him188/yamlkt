@@ -32,9 +32,7 @@ import net.mamoe.yamlkt.internal.serializeImpl
  * - [Map], [List], [Set] with supported generic types
  * - types (typically annotated with [Serializable]) that has a compiled serializer on its `Companion`
  *
- * **WARNING**: [YamlDynamicSerializer.serialize] is very slow and may not work as expected on JS,
- * as it use reflection to find capable serializers.
- * It's always better to use specified serializers
+ * It's suggested to use specified serializers (use [Yaml.parse]/[Yaml.stringify] with a known serializer/deserializer)
  *
  * A best usage of this serializer is to deserialize [YamlElement]
  */
@@ -44,10 +42,10 @@ object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
     /**
      * @return can be [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
      */
-    override fun deserialize(decoder: Decoder): Any = YamlNullableDynamicSerializer.decode(decoder, whenNull = {
-        throw this.contextualDecodingException("Unexpected null")
-    })!!
+    override fun deserialize(decoder: Decoder): Any =
+        YamlNullableDynamicSerializer.decode(decoder,
+            whenNull = { throw this.contextualDecodingException("Unexpected null") }
+        )!!
 
-    @ImplicitReflectionSerializer
     override fun serialize(encoder: Encoder, value: Any) = serializeImpl(encoder, value)
 }

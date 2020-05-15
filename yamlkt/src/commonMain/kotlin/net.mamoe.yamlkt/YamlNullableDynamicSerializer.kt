@@ -56,7 +56,6 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
         }
     }
 
-    @ImplicitReflectionSerializer
     override fun serialize(encoder: Encoder, value: Any?) {
         @Suppress("UNCHECKED_CAST")
         if (value == null) {

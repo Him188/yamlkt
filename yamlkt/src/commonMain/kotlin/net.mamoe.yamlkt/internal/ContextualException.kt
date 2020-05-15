@@ -52,7 +52,7 @@ internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(
     return this.parentYamlDecoder.contextualDecodingException(hint, descriptor, index, throwable)
 }
 
-@Suppress("NOTHING_TO_INLINE") // avoid unnecessary stack
+@Suppress("NOTHING_TO_INLINE") // reduce unnecessary stack
 internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
     return this.parentYamlDecoder.contextualDecodingException(this.name + ": " + hint)
 }
@@ -67,6 +67,7 @@ internal inline fun TokenStream.contextualDecodingException(hint: String): YamlD
     return contextualDecodingException(hint, null, -1)
 }
 
+// Only called when reporting a exception. No need to consider about performance.
 internal val TokenStream.lineNumberAndCurrentLine: Pair<Int, String> // line to column to current line
     get() {
         var lineStartingCur = 0
@@ -86,7 +87,7 @@ internal val TokenStream.lineNumberAndCurrentLine: Pair<Int, String> // line to 
                     isLastLineSeparator++
                     _lineNumber++
                 }
-            } // don't move cur++ into []
+            }
         }
 
         if (source.isNotEmpty())
