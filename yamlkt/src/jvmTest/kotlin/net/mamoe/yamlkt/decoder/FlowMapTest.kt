@@ -2,8 +2,6 @@ package net.mamoe.yamlkt.decoder
 
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Yaml.Companion.default
-import net.mamoe.yamlkt.internal.asTokenStream
-import net.mamoe.yamlkt.joinTokenToString
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -40,11 +38,7 @@ internal class FlowMapTest {
     fun testFlowMap1() {
         assertEquals(
             TestData("Bob"),
-            default.parse(TestData.serializer(), """{ name: Bob }""".also {
-                val s = it.asTokenStream().joinTokenToString()
-
-                println(s)
-            })
+            default.parse(TestData.serializer(), """{ name: Bob }""")
         )
     }
 
@@ -83,6 +77,7 @@ internal class FlowMapTest {
         assertEquals("name", map.entries.drop(1).first().key.content)
         assertEquals("Bob", map.entries.drop(1).first().value.content)
     }
+
     /**
      * Test compatibility with legal JSON text.
      */
