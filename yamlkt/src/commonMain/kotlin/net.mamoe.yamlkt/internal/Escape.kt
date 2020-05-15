@@ -11,9 +11,9 @@ import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 
-///////////////////
+// region EscapeCharMappings
+
 // sourcecode from kotlinx.serialization. Copyright 2017-2019 JetBrains s.r.o.
-///////////////////
 
 // mapping from escape chars real chars
 private const val ESC2C_MAX = 0x75
@@ -78,9 +78,13 @@ private object EscapeCharMappings {
 
 internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) EscapeCharMappings.ESCAPE_2_CHAR[c] else INVALID
 
-/**
- * Stores to [TokenStream.strBuff]
+// endregion
+
+
+/*
+ * The String readers and writers
  */
+
 internal fun TokenStream.readSingleQuotedString(): String {
     var startCur = cur
 
@@ -104,9 +108,6 @@ internal fun TokenStream.readSingleQuotedString(): String {
     throw contextualDecodingException("Unexpected EOF")
 }
 
-/**
- * Stores to [TokenStream.strBuff]
- */
 @OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readUnquotedString(begin: Char): String {
     val startCur = cur - 1
@@ -166,7 +167,7 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
     return subStringBufTrimEnd(startCur, cur - 1)
 }
 
-internal fun TokenStream.ensureNotEOF() {
+internal inline fun TokenStream.ensureNotEOF() {
     if (endOfInput) throw contextualDecodingException("Unexpected EOF")
 }
 
@@ -187,9 +188,6 @@ private tailrec fun TokenStream.runNewLineSkippingAndEscaping(addCaret: Boolean 
     }
 }
 
-/**
- * Stores to [TokenStream.strBuff]
- */
 @OptIn(ExperimentalStdlibApi::class)
 internal fun TokenStream.readDoubleQuotedString(): String {
     var startCur = cur
@@ -287,7 +285,7 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
     }
     return when {
         availability hasFlag UNQUOTED -> this
-        availability hasFlag SINGLE -> "\'$this\'"
+        availability hasFlag SINGLE -> "\'$this\'" // TODO: 2020/5/16 ESCAPE newline (blank line)
         availability hasFlag DOUBLE_WITHOUT_ESCAPE -> "\"$this\""
         else -> {
             // double with escape
@@ -298,7 +296,7 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
 }
 
 private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
-    buf.append('\"')
+    append('\"')
     for (ch in this@toDoubleQuotedString) {
         val es = EscapeCharMappings.REPLACEMENT_CHARS[ch.toInt()]
         if (es != null) {
@@ -306,8 +304,8 @@ private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf
         } else append(ch)
     }
 
-    buf.append('\"')
-    buf.takeStringBuf()
+    append('\"')
+    takeStringBuf()
 }
 
 private inline infix fun Int.hasFlag(flag: Int): Boolean = this and flag != 0
