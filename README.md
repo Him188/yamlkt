@@ -59,10 +59,11 @@ This library supports:
 - `YamlElement` wrapper classes, allowing `YamlMap.getInt`, `YamlMap.getLong`
 - comments encoding (Using annotation `Comment`)
 
-The YAML features that are't yet supported:
+The features that are't yet supported:
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|`, `>`, `\`)
+- Polymorphic
 
 ## Learn to use
 
