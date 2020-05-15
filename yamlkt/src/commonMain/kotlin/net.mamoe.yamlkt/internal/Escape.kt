@@ -276,7 +276,7 @@ internal inline fun <R> TokenStream.useNext(block: (ch: Char) -> R?): R? {
 internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
 internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlConfiguration.StringSerialization): String {
-    val availability = quotationAvailability
+    val availability = getQuotationAvailability()
     when {
         stringSerialization == SINGLE_QUOTATION && availability hasFlag SINGLE -> return "'$this'"
         stringSerialization == NONE && availability hasFlag UNQUOTED -> return this
@@ -317,40 +317,39 @@ private const val UNQUOTED = /*        */ 0b010
 private const val DOUBLE_WITHOUT_ESCAPE = 0b100
 
 // canBeSingleQuoted or canBeUnquoted
-internal val String.quotationAvailability: Int
-    get() {
-        if (this.isEmpty()) {
-            return DOUBLE_WITHOUT_ESCAPE or SINGLE
-        }
-        var canBeSingleQuoted = true
-        var canBeUnquoted = true
-        var doubleWithoutEscape = true
-
-        if (this.startsWith(' ') || this.endsWith(' ')) {
-            canBeUnquoted = false
-        }
-
-        var lastIsColon = false
-        for (c in this) {
-            when {
-                !doubleWithoutEscape && !canBeSingleQuoted && !canBeUnquoted -> return 0
-                c.isLineSeparator() -> {
-                    if (!canBeSingleQuoted) return 0 // fast path
-                    doubleWithoutEscape = false
-                    canBeUnquoted = false
-                }
-                doubleWithoutEscape && EscapeCharMappings.REPLACEMENT_CHARS[c.toInt()] != null -> {
-                    doubleWithoutEscape = false
-                }
-                c == '\'' -> canBeSingleQuoted = false
-                c == '\"' -> doubleWithoutEscape = false
-                c == ':' -> lastIsColon = true
-                c == ' ' && lastIsColon -> canBeUnquoted = false
-            }
-        }
-        if (lastIsColon) canBeUnquoted = false
-
-        return (if (canBeSingleQuoted) SINGLE else 0) or
-            (if (canBeUnquoted) UNQUOTED else 0) or
-            (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
+internal fun String.getQuotationAvailability(): Int {
+    if (this.isEmpty()) {
+        return DOUBLE_WITHOUT_ESCAPE or SINGLE
     }
+    var canBeSingleQuoted = true
+    var canBeUnquoted = true
+    var doubleWithoutEscape = true
+
+    if (this.startsWith(' ') || this.endsWith(' ')) {
+        canBeUnquoted = false
+    }
+
+    var lastIsColon = false
+    for (c in this) {
+        when {
+            !doubleWithoutEscape && !canBeSingleQuoted && !canBeUnquoted -> return 0
+            c.isLineSeparator() -> {
+                if (!canBeSingleQuoted) return 0 // fast path
+                doubleWithoutEscape = false
+                canBeUnquoted = false
+            }
+            doubleWithoutEscape && EscapeCharMappings.REPLACEMENT_CHARS[c.toInt()] != null -> {
+                doubleWithoutEscape = false
+            }
+            c == '\'' -> canBeSingleQuoted = false
+            c == '\"' -> doubleWithoutEscape = false
+            c == ':' -> lastIsColon = true
+            c == ' ' && lastIsColon -> canBeUnquoted = false
+        }
+    }
+    if (lastIsColon) canBeUnquoted = false
+
+    return (if (canBeSingleQuoted) SINGLE else 0) or
+        (if (canBeUnquoted) UNQUOTED else 0) or
+        (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
+}
