@@ -111,6 +111,17 @@ internal fun TokenStream.readSingleQuotedString(): String {
 internal fun TokenStream.readUnquotedString(begin: Char): String {
     val startCur = cur - 1
 
+    /*
+    skipIf { it == ' ' }
+    if (source[cur].isLineSeparator()) {
+        cur++
+        escapedOnce = true
+        runNewLineSkippingAndEscaping()
+        startCur = cur
+    } // else, cur isn't moved back because it doesn't matter startCur
+
+     */
+
     whileNotEOFWithBegin(begin) { char ->
         when (char) {
             ':' -> {
@@ -159,6 +170,23 @@ internal fun TokenStream.ensureNotEOF() {
     if (endOfInput) throw contextualDecodingException("Unexpected EOF")
 }
 
+private tailrec fun TokenStream.runNewLineSkippingAndEscaping(addCaret: Boolean = true) {
+    ensureNotEOF()
+    skipIf { it == ' ' }
+    val next = source[cur]
+    when {
+        next.isLineSeparator() -> { // blank line
+            cur++
+            append('\n')
+            runNewLineSkippingAndEscaping(false)
+        }
+        else -> {
+            if (addCaret) append(' ')
+            return
+        }
+    }
+}
+
 /**
  * Stores to [TokenStream.strBuff]
  */
@@ -168,29 +196,13 @@ internal fun TokenStream.readDoubleQuotedString(): String {
 
     var escapedOnce = false
 
-    tailrec fun runNewLineSkippingAndEscaping(addCaret: Boolean = true) {
-        ensureNotEOF()
-        skipIf { it == ' ' }
-        val next = source[cur]
-        when {
-            next.isLineSeparator() -> { // blank line
-                cur++
-                append('\n')
-                runNewLineSkippingAndEscaping(false)
-            }
-            else -> {
-                if (addCaret) append(' ')
-                return
-            }
-        }
-    }
-
+    skipIf { it == ' ' }
     if (source[cur].isLineSeparator()) {
         cur++
         escapedOnce = true
         runNewLineSkippingAndEscaping()
         startCur = cur
-    }
+    } // else, cur isn't moved back because it doesn't matter startCur
 
     whileNotEOF { char ->
         when {
