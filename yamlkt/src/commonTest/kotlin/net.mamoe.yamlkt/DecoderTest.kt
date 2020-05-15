@@ -1,7 +1,6 @@
 package net.mamoe.yamlkt
 
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.internal.asTokenStream
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFails
@@ -174,12 +173,6 @@ internal class DecoderTest {
         @Serializable
         data class TestData(
             val key: String
-        )
-
-        println(
-            """
-                    key: value
-                """.trimIndent().asTokenStream().joinTokenToString()
         )
 
         assertEquals(
