@@ -42,7 +42,7 @@ internal class EscapeTest {
     @Test
     fun testDoubleQuoteNoEscapeLineSeparator() {
         assertEquals(
-            TestData("test").toString(),
+            TestData("te st").toString(),
             Yaml.default.parse(
                 TestData.serializer(), """
                     v: "te
@@ -53,12 +53,25 @@ internal class EscapeTest {
     }
 
     @Test
-    fun testDoubleQuoteLeadingWhiteSpace() {
+    fun testDoubleQuoteLeadingContactLines() {
+        assertEquals(
+            TestData("te st").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "te
+                     st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testDoubleQuoteLeadingEscapeNewline() {
         assertEquals(
             TestData("test").toString(),
             Yaml.default.parse(
                 TestData.serializer(), """
-                    v: "te
+                    v: "te\
                        st"
                 """.trimIndent()
             ).toString()
@@ -90,6 +103,33 @@ internal class EscapeTest {
                     
                     
                     
+                    
+                       st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testDoubleQuoteBlankLine3() {
+        assertEquals(
+            TestData(" st").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "
+                       st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testDoubleQuoteBlankLine4() {
+        assertEquals(
+            TestData("\nst").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "
                     
                        st"
                 """.trimIndent()
@@ -141,6 +181,34 @@ internal class EscapeTest {
                     v: '\n'
                 """.trimIndent()
             ).toString()
+        )
+    }
+
+
+    /**
+     * From https://yaml-multiline.info/
+     */
+    @Test
+    fun testEscapeExample() {
+        assertEquals(
+            TestData(
+                """
+                    Several lines of text, containing "double quotes". Escapes (like \n) work.
+                    In addition, newlines can be escaped to prevent them from being converted to a space.
+                    Newlines can also be added by leaving a blank line. Leading whitespace on lines is ignored.
+                """.trimIndent()
+            ),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                v: "Several lines of text,
+                containing \"double quotes\". Escapes (like \\n) work.\nIn addition,
+                newlines can be esc\
+                aped to prevent them from being converted to a space.
+                
+                Newlines can also be added by leaving a blank line.
+                  Leading whitespace on lines is ignored."
+            """.trimIndent()
+            )
         )
     }
 }

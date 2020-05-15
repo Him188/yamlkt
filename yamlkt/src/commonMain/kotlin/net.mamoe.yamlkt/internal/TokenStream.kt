@@ -294,9 +294,26 @@ internal inline fun TokenStream.whileNotEOF(block: (char: Char) -> Unit): Nothin
         callsInPlace(block, InvocationKind.UNKNOWN)
     }
     while (!endOfInput) {
-        block(source[cur++])
+        block(source[cur++]) // don't change
     }
     return null
+}
+
+/**
+ * Move [TokenStream.cur] to the last unsatisfying point
+ */
+@OptIn(ExperimentalContracts::class)
+internal inline fun TokenStream.skipIf(crossinline block: (char: Char) -> Boolean) {
+    contract {
+        callsInPlace(block, InvocationKind.UNKNOWN)
+    }
+    while (!endOfInput) {
+        if (block(source[cur])) {// don't change
+            cur++
+        } else {
+            break
+        }
+    }
 }
 
 @OptIn(ExperimentalContracts::class)

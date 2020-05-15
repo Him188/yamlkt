@@ -155,6 +155,10 @@ internal fun TokenStream.readUnquotedString(begin: Char): String {
     return subStringBufTrimEnd(startCur, cur - 1)
 }
 
+internal fun TokenStream.ensureNotEOF() {
+    if (endOfInput) throw contextualDecodingException("Unexpected EOF")
+}
+
 /**
  * Stores to [TokenStream.strBuff]
  */
@@ -164,27 +168,31 @@ internal fun TokenStream.readDoubleQuotedString(): String {
 
     var escapedOnce = false
 
-    var leadingWhitespace = false
-
-    whileNotEOF { char ->
-        if (leadingWhitespace) {
-            when {
-                char.isLineSeparator() -> { // blank line
-                    append('\n')
-                    leadingWhitespace = true
-                    startCur = cur
-                    escapedOnce = true
-                }
-                char.isWhitespace() -> {
-                    append(source, startCur, cur - 2)
-                    startCur = cur
-                    escapedOnce = true
-
-                    return@whileNotEOF
-                }
-                else -> leadingWhitespace = false
+    tailrec fun runNewLineSkippingAndEscaping(addCaret: Boolean = true) {
+        ensureNotEOF()
+        skipIf { it == ' ' }
+        val next = source[cur]
+        when {
+            next.isLineSeparator() -> { // blank line
+                cur++
+                append('\n')
+                runNewLineSkippingAndEscaping(false)
+            }
+            else -> {
+                if (addCaret) append(' ')
+                return
             }
         }
+    }
+
+    if (source[cur].isLineSeparator()) {
+        cur++
+        escapedOnce = true
+        runNewLineSkippingAndEscaping()
+        startCur = cur
+    }
+
+    whileNotEOF { char ->
         when {
             char == DOUBLE_QUOTATION_CHAR -> {
                 if (!escapedOnce) {
@@ -195,7 +203,7 @@ internal fun TokenStream.readDoubleQuotedString(): String {
             }
             char.isLineSeparator() -> {
                 append(source, startCur, cur - 2)
-                leadingWhitespace = true
+                runNewLineSkippingAndEscaping()
                 startCur = cur
                 escapedOnce = true
             }
@@ -204,33 +212,43 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                 startCur = cur + 1
                 escapedOnce = true
 
-
-                if (endOfInput)
-                    throw contextualDecodingException("Unexpected EOF")
+                ensureNotEOF()
 
                 // detect
                 val esChar = source[cur++]
-                val es = escapeToChar(esChar.toInt())
-                if (es != INVALID) {
-                    append(es)
-                    startCur = cur
-                } else {
-                    val digitCount = when (esChar) {
-                        'x' -> 2
-                        'u' -> 4
-                        'U' -> 8
-                        else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
+                when {
+                    esChar.isLineSeparator() -> {
+                        skipIf(Char::isWhitespace)
+                        startCur = cur
                     }
-                    repeat(digitCount) {
-                        useNext { c ->
-                            if (!c.isHexDigit()) {
-                                throw contextualDecodingException("Expected hex digit")
+                    esChar.isWhitespace() -> {
+                        append(' ')
+                        startCur = cur
+                    }
+                    else -> {
+                        val es = escapeToChar(esChar.toInt())
+                        if (es != INVALID) {
+                            append(es)
+                            startCur = cur
+                        } else {
+                            val digitCount = when (esChar) {
+                                'x' -> 2
+                                'u' -> 4
+                                'U' -> 8
+                                else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
                             }
-                            appendEsc(c)
+                            repeat(digitCount) {
+                                useNext { c ->
+                                    if (!c.isHexDigit()) {
+                                        throw contextualDecodingException("Expected hex digit")
+                                    }
+                                    appendEsc(c)
+                                }
+                            }
+                            startCur = cur
+                            flushEsc() // for \x
                         }
                     }
-                    startCur = cur
-                    flushEsc() // for \x
                 }
             }
         }
