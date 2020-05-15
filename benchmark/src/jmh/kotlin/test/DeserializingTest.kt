@@ -69,18 +69,18 @@ object Constants {
 
 /*
 
-Benchmark                                   Mode  Cnt       Score       Error  Units
-DeserializingTest.snakeYaml                 avgt   10  273006.420 ± 38247.820  ns/op
-DeserializingTest.yamlktContextual          avgt   10   19171.890 ±   970.259  ns/op
-DeserializingTest.yamlktWithDescriptor      avgt   10   12812.011 ±   462.406  ns/op
-DeserializingTest.kotlinContextual          avgt   10   11527.638 ±   457.245  ns/op
-DeserializingTest.kotlinJsonWIthDescriptor  avgt   10   12650.368 ±   769.779  ns/op
-DeserializingTest.gson                      avgt   10    8645.489 ±   465.499  ns/op
+Benchmark                                   Mode  Cnt       Score      Error  Units
+DeserializingTest.gsonContextual            avgt   20    9539.982 ±   99.535  ns/op
+DeserializingTest.kotlinContextual          avgt   20   11380.491 ±  366.462  ns/op
+DeserializingTest.kotlinJsonWithDescriptor  avgt   20   12408.461 ± 1170.355  ns/op
+DeserializingTest.snakeYaml                 avgt   20  277251.991 ± 1364.468  ns/op
+DeserializingTest.yamlktContextual          avgt   20   20225.689 ±  217.721  ns/op
+DeserializingTest.yamlktWithDescriptor      avgt   20   11864.706 ±  119.724  ns/op
 
  */
 
 @BenchmarkMode(Mode.AverageTime)
-@Warmup(iterations = 3)
+@Warmup(iterations = 4)
 @Measurement(iterations = 10)
 @Threads(8)
 @Fork(2)
