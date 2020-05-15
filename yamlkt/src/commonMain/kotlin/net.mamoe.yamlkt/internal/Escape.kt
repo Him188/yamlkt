@@ -163,49 +163,74 @@ internal fun TokenStream.readDoubleQuotedString(): String {
     var startCur = cur
 
     var escapedOnce = false
+
+    var leadingWhitespace = false
+
     whileNotEOF { char ->
-        when (char) {
-            DOUBLE_QUOTATION_CHAR -> {
+        if (leadingWhitespace) {
+            when {
+                char.isLineSeparator() -> { // blank line
+                    append('\n')
+                    leadingWhitespace = true
+                    startCur = cur
+                    escapedOnce = true
+                }
+                char.isWhitespace() -> {
+                    append(source, startCur, cur - 2)
+                    startCur = cur
+                    escapedOnce = true
+
+                    return@whileNotEOF
+                }
+                else -> leadingWhitespace = false
+            }
+        }
+        when {
+            char == DOUBLE_QUOTATION_CHAR -> {
                 if (!escapedOnce) {
                     return source.substring(startCur, cur - 1)
                 }
                 append(source, startCur, cur - 2)
                 return takeStringBuf()
             }
-            else -> {
-                if (char == STRING_ESC) {
-                    append(source, startCur, cur - 2)
-                    startCur = cur + 1
-                    escapedOnce = true
+            char.isLineSeparator() -> {
+                append(source, startCur, cur - 2)
+                leadingWhitespace = true
+                startCur = cur
+                escapedOnce = true
+            }
+            char == STRING_ESC -> {
+                append(source, startCur, cur - 2)
+                startCur = cur + 1
+                escapedOnce = true
 
 
-                    if (endOfInput)
-                        throw contextualDecodingException("Unexpected EOF")
+                if (endOfInput)
+                    throw contextualDecodingException("Unexpected EOF")
 
-                    // detect
-                    val esChar = source[cur++]
-                    val es = escapeToChar(esChar.toInt())
-                    if (es != INVALID) {
-                        append(es)
-                        startCur = cur
-                    } else {
-                        val digitCount = when (esChar) {
-                            'x' -> 2
-                            'u' -> 4
-                            'U' -> 8
-                            else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
-                        }
-                        repeat(digitCount) {
-                            useNext { c ->
-                                if (!c.isHexDigit()) {
-                                    throw contextualDecodingException("Expected hex digit")
-                                }
-                                appendEsc(c)
-                            }
-                        }
-                        startCur = cur
-                        flushEsc() // for \x
+                // detect
+                val esChar = source[cur++]
+                val es = escapeToChar(esChar.toInt())
+                if (es != INVALID) {
+                    append(es)
+                    startCur = cur
+                } else {
+                    val digitCount = when (esChar) {
+                        'x' -> 2
+                        'u' -> 4
+                        'U' -> 8
+                        else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
                     }
+                    repeat(digitCount) {
+                        useNext { c ->
+                            if (!c.isHexDigit()) {
+                                throw contextualDecodingException("Expected hex digit")
+                            }
+                            appendEsc(c)
+                        }
+                    }
+                    startCur = cur
+                    flushEsc() // for \x
                 }
             }
         }

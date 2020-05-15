@@ -5,19 +5,20 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 
+/**
+ * [Multiline format](https://yaml-multiline.info/
+ */ // https://yaml-multiline.info/
 internal class EscapeTest {
+    @Serializable
+    data class TestData(
+        val v: String
+    )
 
     @Test
     fun testEscape() {
-        @Serializable
-        data class TestData(
-            val v: String
-        )
 
         assertEquals(
-            TestData(
-                "\n"
-            ).toString(),
+            TestData("\n").toString(),
             Yaml.default.parse(
                 TestData.serializer(), """
                     v: "\n"
@@ -28,15 +29,8 @@ internal class EscapeTest {
 
     @Test
     fun testSingleQuoteEscapeSingleQuotes() {
-        @Serializable
-        data class TestData(
-            val v: String
-        )
-
         assertEquals(
-            TestData(
-                "Don't"
-            ).toString(),
+            TestData("Don't").toString(),
             Yaml.default.parse(
                 TestData.serializer(), """
                     v: 'Don''t'
@@ -46,12 +40,65 @@ internal class EscapeTest {
     }
 
     @Test
-    fun testNoEscape() {
-        @Serializable
-        data class TestData(
-            val v: String
+    fun testDoubleQuoteNoEscapeLineSeparator() {
+        assertEquals(
+            TestData("test").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "te
+                    st"
+                """.trimIndent()
+            ).toString()
         )
+    }
 
+    @Test
+    fun testDoubleQuoteLeadingWhiteSpace() {
+        assertEquals(
+            TestData("test").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "te
+                       st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testDoubleQuoteBlankLine() {
+        assertEquals(
+            TestData("te\nst").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "te
+                    
+                       st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testDoubleQuoteBlankLine2() {
+        assertEquals(
+            TestData("te\n\n\n\n\nst").toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: "te
+                    
+                    
+                    
+                    
+                    
+                       st"
+                """.trimIndent()
+            ).toString()
+        )
+    }
+
+    @Test
+    fun testNoEscape() {
         assertEquals(
             TestData(
                 "\\n"
