@@ -26,6 +26,24 @@ internal class EscapeTest {
         )
     }
 
+    @Test
+    fun testSingleQuoteEscapeSingleQuotes() {
+        @Serializable
+        data class TestData(
+            val v: String
+        )
+
+        assertEquals(
+            TestData(
+                "Don't"
+            ).toString(),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    v: 'Don''t'
+                """.trimIndent()
+            ).toString()
+        )
+    }
 
     @Test
     fun testNoEscape() {

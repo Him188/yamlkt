@@ -82,10 +82,23 @@ internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) EscapeCharMappings.
  * Stores to [TokenStream.strBuff]
  */
 internal fun TokenStream.readSingleQuotedString(): String {
-    val startCur = cur
+    var startCur = cur
+
+    var escapedOnce = false
     whileNotEOF { char ->
         if (char == SINGLE_QUOTATION_CHAR) {
-            return source.substring(startCur, cur - 1)
+            if (!endOfInput && source[cur] == SINGLE_QUOTATION_CHAR) {
+                cur++
+                append(source, startCur, cur - 2)
+                escapedOnce = true
+                startCur = cur
+            } else {
+                if (!escapedOnce) {
+                    return source.substring(startCur, cur - 1)
+                }
+                append(source, startCur, cur - 2)
+                return takeStringBuf()
+            }
         }
     }
     throw contextualDecodingException("Unexpected EOF")
