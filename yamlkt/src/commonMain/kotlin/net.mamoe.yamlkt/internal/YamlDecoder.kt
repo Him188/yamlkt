@@ -754,9 +754,6 @@ internal class YamlDecoder(
                                 yamlStringDecoder
                             }
                         }
-
-                        @Suppress("UNREACHABLE_CODE")
-                        error("bug")
                     }
                     Token.LIST_BEGIN -> {
                         //  tokenStream.reuseToken(token)

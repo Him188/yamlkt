@@ -3,18 +3,18 @@ package net.mamoe.yamlkt
 import kotlinx.serialization.SerialInfo
 
 /**
- * The inline comment on a class or a field.
+ * The *inlined comment* on a field.
  *
- * Comments are supported only in encoding, and are ignored while decoding.
+ * Comments are supported only in encoding, and are **ignored** while decoding.
  *
  * Comments are supported only for block maps. A typical commented block map is:
- * ```
+ * ```yaml
  * # The age of the person
  * age: 20
  * # The gender of the person
  * gender: male
  * ```
- * Therefore ensure you are using [YamlConfiguration.MapSerialization.BLOCK_MAP] for [YamlConfiguration.classSerialization]
+ * Therefore ensure you are using [YamlConfiguration.MapSerialization.BLOCK_MAP] for [YamlConfiguration.classSerialization], or use default configuration
  *
  *
  * Example:
@@ -25,14 +25,36 @@ import kotlinx.serialization.SerialInfo
  *   val name: String = "value"
  * )
  * ```
- * gives yaml text:
+ * Gives YAML text:
  * ```yaml
  * # The name of the user
- * name: ""
+ * name: "value"
  * ```
- *
- * @param lines '\n' is allowed to generate multi lines.
  */
 @SerialInfo
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-annotation class Comment(val lines: String) //https://github.com/Kotlin/kotlinx.serialization/issues/836
+annotation class Comment(
+    /**
+     * Lines of comments. It is converted by [String.trimIndent] and then separated by '\n'.
+     *
+     * ```
+     * @Serializable
+     * data class User(
+     *   @Comment("""
+     *   Line 1
+     *   Line 2
+     *   """)
+     *   val name: String = "value"
+     * )
+     * ```
+     * Gives YAML text:
+     * ```
+     * # Line 1
+     * # Line 2
+     * name: "value"
+     * ```
+     *
+     * @suppress **WARNING**: This is experimental. [lines] might be changed to `vararg` if issue#836 from kotlinx.serialization is fixed.
+     */
+    val lines: String
+) //https://github.com/Kotlin/kotlinx.serialization/issues/836

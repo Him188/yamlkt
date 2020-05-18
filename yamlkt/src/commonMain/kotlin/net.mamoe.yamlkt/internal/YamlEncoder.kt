@@ -267,7 +267,7 @@ internal class YamlEncoder(
         }
 
         private fun SerialDescriptor.getComments(index: Int): Sequence<String>? {
-            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.lines?.lineSequence()
+            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.lines?.trimIndent()?.lineSequence()
         }
 
         private fun YamlWriter.writeComments(descriptor: SerialDescriptor, index: Int) {
