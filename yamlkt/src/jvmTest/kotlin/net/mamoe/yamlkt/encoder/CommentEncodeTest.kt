@@ -19,7 +19,6 @@ internal class CommentEncodeTest {
             val value2: String
         )
 
-        Thread.sleep(1000)
         allBlock.testDescriptorBased(CommentTest.serializer(), CommentTest("vv", "ss"), true)
     }
 }

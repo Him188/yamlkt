@@ -1,6 +1,7 @@
-package net.mamoe.yamlkt
+package net.mamoe.yamlkt.escaping
 
 import kotlinx.serialization.Serializable
+import net.mamoe.yamlkt.Yaml
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -8,7 +9,7 @@ import kotlin.test.assertEquals
 /**
  * [Multiline format](https://yaml-multiline.info/
  */ // https://yaml-multiline.info/
-internal class EscapeTest {
+internal class DoubleQuotationMultilineTest {
     @Serializable
     data class TestData(
         val v: String

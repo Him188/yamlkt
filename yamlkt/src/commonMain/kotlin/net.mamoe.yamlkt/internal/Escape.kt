@@ -89,22 +89,40 @@ internal fun TokenStream.readSingleQuotedString(): String {
     var startCur = cur
 
     var escapedOnce = false
+
+    skipIf { it == ' ' }
+    if (source[cur].isLineSeparator()) {
+        cur++
+        escapedOnce = true
+        runNewLineSkippingAndEscaping()
+        startCur = cur
+    } // else, cur isn't moved back because it doesn't matter startCur
+
     whileNotEOF { char ->
-        if (char == SINGLE_QUOTATION_CHAR) {
-            if (!endOfInput && source[cur] == SINGLE_QUOTATION_CHAR) {
-                cur++
-                append(source, startCur, cur - 2)
-                escapedOnce = true
-                startCur = cur
-            } else {
-                if (!escapedOnce) {
-                    return source.substring(startCur, cur - 1)
+        when {
+            char == SINGLE_QUOTATION_CHAR -> {
+                if (!endOfInput && source[cur] == SINGLE_QUOTATION_CHAR) {
+                    cur++
+                    append(source, startCur, cur - 2)
+                    escapedOnce = true
+                    startCur = cur
+                } else {
+                    if (!escapedOnce) {
+                        return source.substring(startCur, cur - 1)
+                    }
+                    append(source, startCur, cur - 2)
+                    return takeStringBuf()
                 }
+            }
+            char.isLineSeparator() -> {
                 append(source, startCur, cur - 2)
-                return takeStringBuf()
+                runNewLineSkippingAndEscaping()
+                startCur = cur
+                escapedOnce = true
             }
         }
     }
+
     throw contextualDecodingException("Unexpected EOF")
 }
 

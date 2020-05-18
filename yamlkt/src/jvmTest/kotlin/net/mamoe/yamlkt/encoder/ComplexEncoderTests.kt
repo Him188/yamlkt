@@ -8,7 +8,6 @@ import org.junit.Test
 internal class ComplexEncoderTests {
     @Test
     fun testNestedList() {
-        Thread.sleep(1000)
         allBlock.testDynamic(
             listOf(
                 mapOf(
@@ -44,7 +43,6 @@ internal class ComplexEncoderTests {
 
     @Test
     fun testBlockNestedMap() {
-        Thread.sleep(1000)
         allBlock.testDynamic(
             testContent,
             true
@@ -67,7 +65,6 @@ internal class ComplexEncoderTests {
 
     @Test
     fun testFlowNestedMap() {
-        Thread.sleep(1000)
         allFlow.testDynamic(
             testContent,
             true
