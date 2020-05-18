@@ -318,12 +318,12 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                                 'x' -> 2
                                 'u' -> 4
                                 'U' -> 8
-                                else -> throw contextualDecodingException("Illegal escape '$esChar' when reading unquoted String")
+                                else -> throw contextualDecodingException("Illegal escape '$esChar' when reading double quoted String")
                             }
                             repeat(digitCount) {
                                 useNext { c ->
                                     if (!c.isHexDigit()) {
-                                        throw contextualDecodingException("Expected hex digit")
+                                        throw contextualDecodingException("Expected hex digit but found '$c'")
                                     }
                                     appendEsc(c)
                                 }
