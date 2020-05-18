@@ -20,6 +20,6 @@ import kotlin.jvm.JvmName
 )
 expect annotation class Language(
     val value: String,
-    val prefix: String, // default values aren't supported yet
-    val suffix: String
+    val prefix: String = "",
+    val suffix: String = ""
 )

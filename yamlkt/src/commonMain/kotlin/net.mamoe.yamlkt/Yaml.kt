@@ -135,7 +135,7 @@ class Yaml @JvmOverloads constructor(
      */
     override fun <T> parse(
         deserializer: DeserializationStrategy<T>,
-        @Language("yaml", "", "") string: String
+        @Language("yaml") string: String
     ): T {
         return deserializer.deserialize(
             YamlDecoder(
@@ -150,21 +150,21 @@ class Yaml @JvmOverloads constructor(
     /**
      * Parse a [YamlElement] from [yamlContent].
      */
-    fun parseYaml(@Language("yaml", "", "") yamlContent: String): YamlElement {
+    fun parseYaml(@Language("yaml") yamlContent: String): YamlElement {
         return parse(YamlElement.serializer(), yamlContent)
     }
 
     /**
      * Parse a [YamlMap] from [yamlContent] safely
      */
-    fun parseYamlMap(@Language("yaml", "", "") yamlContent: String): YamlMap {
+    fun parseYamlMap(@Language("yaml") yamlContent: String): YamlMap {
         return parse(YamlMap.serializer(), yamlContent)
     }
 
     /**
      * Parse a [YamlList] from [yamlContent] safely
      */
-    fun parseYamlList(@Language("yaml", "", "") yamlContent: String): YamlList {
+    fun parseYamlList(@Language("yaml") yamlContent: String): YamlList {
         return parse(YamlList.serializer(), yamlContent)
     }
 
@@ -176,7 +176,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
      */
-    fun parseMap(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?> {
+    fun parseMap(@Language("yaml") yamlContent: String): Map<String?, Any?> {
         @Suppress("IMPLICIT_CAST_TO_ANY", "USELESS_IS_CHECK", "UNCHECKED_CAST")
         return when (val v = parseMapOrNullImpl(yamlContent)) {
             null -> throw IllegalArgumentException("Cannot cast `null` to Map<String, Any?>")
@@ -192,7 +192,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @return the [Map] if succeed, `null` otherwise.
      */
-    fun parseMapOrNull(@Language("yaml", "", "") yamlContent: String): Map<String?, Any?>? {
+    fun parseMapOrNull(@Language("yaml") yamlContent: String): Map<String?, Any?>? {
         @Suppress("UNCHECKED_CAST")
         return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
     }
@@ -202,7 +202,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseList(@Language("yaml", "", "") yamlContent: String): List<Any?> {
+    fun parseList(@Language("yaml") yamlContent: String): List<Any?> {
         when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
             is List<*> -> return v
             else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
@@ -214,7 +214,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseListOrNull(@Language("yaml", "", "") yamlContent: String): List<Any?> {
+    fun parseListOrNull(@Language("yaml") yamlContent: String): List<Any?> {
         when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
             is List<*> -> return v
             else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
@@ -228,7 +228,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseAny(@Language("yaml", "", "") yamlContent: String): Any? {
+    fun parseAny(@Language("yaml") yamlContent: String): Any? {
         return parse(YamlNullableDynamicSerializer, yamlContent)
     }
 
@@ -237,7 +237,7 @@ class Yaml @JvmOverloads constructor(
 
 // internal
 
-internal fun Yaml.parseMapOrNullImpl(@Language("yaml", "", "") yamlContent: String): Any? {
+internal fun Yaml.parseMapOrNullImpl(@Language("yaml") yamlContent: String): Any? {
     return when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
         is Map<*, *> -> {
             val result = LinkedHashMap<String?, Any?>(v.size)
