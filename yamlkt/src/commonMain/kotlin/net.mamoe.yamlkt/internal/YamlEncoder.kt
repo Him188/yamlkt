@@ -365,10 +365,6 @@ internal class YamlEncoder(
          */
         private val linebreakAfterFinish: Boolean
     ) : CompositeEncoder, Encoder {
-        init {
-            println("ENCODER: ${this.classSimpleName()}")
-        }
-
         abstract fun encodeValue(value: Char)
         abstract fun encodeValue(value: String)
 
