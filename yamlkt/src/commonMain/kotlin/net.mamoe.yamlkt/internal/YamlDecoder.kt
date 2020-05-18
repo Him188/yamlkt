@@ -238,7 +238,10 @@ internal class YamlDecoder(
                         decodeElementIndex(descriptor)
                     }
                 }
-                else -> throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
+                else -> {
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
+                }
             }
         }
     }

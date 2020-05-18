@@ -1,5 +1,6 @@
 package net.mamoe.yamlkt.decoder
 
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -114,5 +115,42 @@ internal class BlockSequenceTest {
 
         println(map)
 
+    }
+
+    /**
+     * Test data from https://github.com/Him188/yamlkt/issues/1
+     */
+    @Test
+    fun testNestedList() {
+        @Serializable
+        data class NestedTestData(val item1: String, val item2: String)
+
+        @Serializable
+        data class TestData(val list: List<List<NestedTestData>>)
+
+        assertEquals(
+            TestData(
+                listOf(
+                    listOf(
+                        NestedTestData("1", "A"),
+                        NestedTestData("2", "B")
+                    ),
+                    listOf(
+                        NestedTestData("3", "C")
+                    )
+                )
+            ),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    list:
+                    - - item1: 1
+                        item2: A
+                      - item1: 2
+                        item2: B
+                    - - item1: 3
+                        item2: C
+                """.trimIndent()
+            )
+        )
     }
 }
