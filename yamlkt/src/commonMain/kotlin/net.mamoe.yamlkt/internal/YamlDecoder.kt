@@ -40,7 +40,7 @@ internal class YamlDecoder(
             -> {
                 tokenStream.strBuff!!
             }
-            else -> throw contextualDecodingException("expected string, found token $token instead")
+            else -> throw contextualDecodingException("expected String, found token $token instead")
         }
     }
 
@@ -238,7 +238,7 @@ internal class YamlDecoder(
                         decodeElementIndex(descriptor)
                     }
                 }
-                else -> {
+                else -> { // even if the token is illegal, it's parent decoders' responsibility to throw the exception
                     tokenStream.reuseToken(token)
                     return READ_DONE
                 }
@@ -285,15 +285,11 @@ internal class YamlDecoder(
                     return index++
                 }
                 // nested
-                Token.MULTILINE_LIST_FLAG -> {
+                // Token.LIST_BEGIN, Token.MULTILINE_LIST_FLAG,
+                else -> { // even if the token is illegal, it's parent decoders' responsibility to throw the exception
                     tokenStream.reuseToken(token)
                     return READ_DONE
                 }
-                Token.LIST_BEGIN -> {
-                    tokenStream.reuseToken(token)
-                    return READ_DONE
-                }
-                else -> throw tokenStream.contextualDecodingException("illegal token $token on decoding element index for '${descriptor.serialName}'")
             }
         }
     }
@@ -604,9 +600,14 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return READ_DONE
                 }
+                else -> { // even if the token is illegal, it's parent decoders' responsibility to throw the exception
+                    tokenStream.reuseToken(token)
+                    return READ_DONE
+                }
+                /*
                 else -> throw contextualDecodingException(
                     "Expected ${Token.MULTILINE_LIST_FLAG.value}, but found $token on decoding multiline list for '${descriptor.serialName}'"
-                )
+                )*/
             }
         }
     }

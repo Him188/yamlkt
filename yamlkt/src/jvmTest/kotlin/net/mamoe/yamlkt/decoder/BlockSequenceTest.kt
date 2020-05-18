@@ -153,4 +153,39 @@ internal class BlockSequenceTest {
             )
         )
     }
+
+    @Test
+    fun testMixedNestingList() {
+        @Serializable
+        data class NestedTestData(val item1: String, val item2: String)
+
+        @Serializable
+        data class TestData(val list: List<List<NestedTestData>>)
+
+        assertEquals(
+            TestData(
+                listOf(
+                    listOf(
+                        NestedTestData("1", "A"),
+                        NestedTestData("2", "B")
+                    ),
+                    listOf(
+                        NestedTestData("3", "C")
+                    ),
+                    listOf(
+                        NestedTestData("1", "A")
+                    )
+                )
+            ),
+            Yaml.default.parse(
+                TestData.serializer(), """
+                    list:
+                    - [ {item1: 1, item2: A}, { item1: 2, item2: B} ]
+                    - - item1: 3
+                        item2: C
+                    - [{item1: 1, item2: A}]
+                """.trimIndent()
+            )
+        )
+    }
 }
