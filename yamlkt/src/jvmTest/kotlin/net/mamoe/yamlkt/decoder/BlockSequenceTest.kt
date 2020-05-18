@@ -128,6 +128,16 @@ internal class BlockSequenceTest {
         @Serializable
         data class TestData(val list: List<List<NestedTestData>>)
 
+        val yaml = """
+            list:
+            - - item1: 1
+                item2: A
+              - item1: 2
+                item2: B
+            - - item1: 3
+                item2: C
+        """
+
         assertEquals(
             TestData(
                 listOf(
@@ -140,17 +150,23 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.parse(
-                TestData.serializer(), """
-                    list:
-                    - - item1: 1
-                        item2: A
-                      - item1: 2
-                        item2: B
-                    - - item1: 3
-                        item2: C
-                """.trimIndent()
-            )
+            Yaml.default.parse(TestData.serializer(), yaml)
+        )
+
+        // contextual
+        assertEquals(
+            mapOf<String?, Any?>(
+                "list" to listOf(
+                    listOf(
+                        mapOf("item1" to "1", "item2" to "A"),
+                        mapOf("item1" to "2", "item2" to "B")
+                    ),
+                    listOf(
+                        mapOf("item1" to "3", "item2" to "C")
+                    )
+                )
+            ).toString(),
+            Yaml.default.parseMap(yaml).toString()
         )
     }
 
@@ -161,6 +177,14 @@ internal class BlockSequenceTest {
 
         @Serializable
         data class TestData(val list: List<List<NestedTestData>>)
+
+        val yaml = """
+                    list:
+                    - [ {item1: 1, item2: A}, { item1: 2, item2: B} ]
+                    - - item1: 3
+                        item2: C
+                    - [{item1: 1, item2: A}]
+        """
 
         assertEquals(
             TestData(
@@ -177,15 +201,25 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.parse(
-                TestData.serializer(), """
-                    list:
-                    - [ {item1: 1, item2: A}, { item1: 2, item2: B} ]
-                    - - item1: 3
-                        item2: C
-                    - [{item1: 1, item2: A}]
-                """.trimIndent()
-            )
+            Yaml.default.parse(TestData.serializer(), yaml)
+        )
+
+        assertEquals(
+            mapOf<String?, Any?>(
+                "list" to listOf(
+                    listOf(
+                        mapOf("item1" to "1", "item2" to "A"),
+                        mapOf("item1" to "2", "item2" to "B")
+                    ),
+                    listOf(
+                        mapOf("item1" to "3", "item2" to "C")
+                    ),
+                    listOf(
+                        mapOf("item1" to "1", "item2" to "A")
+                    )
+                )
+            ).toString(),
+            Yaml.default.parseMap(yaml).toString()
         )
     }
 }
