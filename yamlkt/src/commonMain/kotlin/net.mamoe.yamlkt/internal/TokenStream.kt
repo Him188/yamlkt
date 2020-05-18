@@ -70,12 +70,12 @@ internal open class StringBufHolder {
     /**
      * Only for internal use
      */
-    protected var _stringBuf: CharArray = CharArray(32)
+    private var _stringBuf: CharArray = CharArray(32)
 
     @Suppress("PropertyName")
     protected var _stringLength: Int = 0
 
-    protected fun incStringBuf() {
+    private fun incStringBuf() {
         _stringBuf = _stringBuf.copyOf(_stringBuf.size + _stringBuf.size.ushr(1))
     }
 
@@ -84,6 +84,16 @@ internal open class StringBufHolder {
             _stringLength = 0
             // println(it)
         }
+    }
+
+    fun takeStringBufTrimEnd(): String {
+        for (i in _stringLength - 1 downTo 0) {
+            if (_stringBuf[i] != ' ') {
+                _stringLength = 0
+                return String(_stringBuf, 0, i + 1)
+            }
+        }
+        return ""
     }
 
     fun append(c: Char) {
@@ -145,8 +155,8 @@ internal class TokenStream(
     var escapeCount = 0
 
 
-    fun subStringBufTrimEnd(offset: Int, endIndex: Int): String {
-        for (i in endIndex downTo 0) {
+    fun subSourceTrimEnd(offset: Int, endIndex: Int): String {
+        for (i in endIndex - 1 downTo offset) {
             if (source[i] != ' ') {
                 return source.substring(offset, i + 1)
             }
@@ -198,7 +208,7 @@ internal class TokenStream(
      *
      * If [Token.STRING] is returned, [strBuff] will also be updated
      */
-    fun nextToken(): Token? {
+    fun nextToken(stopOnComma: Boolean): Token? {
         val reuse = reuseTokenStack.popOrNull()
         if (reuse != null) {
             return if (reuse is String) {
@@ -252,7 +262,7 @@ internal class TokenStream(
                     currentIndent = 0
                 }
                 else -> {
-                    val str = prepareStringAndNextToken(char) ?: return Token.STRING_NULL
+                    val str = prepareStringAndNextToken(stopOnComma, char) ?: return Token.STRING_NULL
                     this.strBuff = str
                     return Token.STRING
                 }
@@ -267,7 +277,7 @@ internal class TokenStream(
      *
      * Always read a next token after the string being read, and adds to [reuseTokenStack]
      */
-    private fun prepareStringAndNextToken(begin: Char) = when (begin) {
+    private fun prepareStringAndNextToken(stopOnComma: Boolean, begin: Char) = when (begin) {
         SINGLE_QUOTATION_CHAR -> {
             quoted = true
             readSingleQuotedString()
@@ -278,12 +288,10 @@ internal class TokenStream(
         }
         else -> { // unquoted
             quoted = false
-            readUnquotedString(begin).optimizeNull()
+            readUnquotedString(stopOnComma, begin).optimizeNull()
         }
     }
 }
-
-internal fun String.asTokenStream(): TokenStream = TokenStream(this)
 
 internal const val SINGLE_QUOTATION_CHAR = '\''
 internal const val DOUBLE_QUOTATION_CHAR = '"'
@@ -314,6 +322,25 @@ internal inline fun TokenStream.skipIf(crossinline block: (char: Char) -> Boolea
             break
         }
     }
+}
+
+/**
+ * Move [TokenStream.cur] to the last unsatisfying point
+ */
+@OptIn(ExperimentalContracts::class)
+internal inline fun TokenStream.countSkipIf(crossinline block: (char: Char) -> Boolean): Int {
+    contract {
+        callsInPlace(block, InvocationKind.UNKNOWN)
+    }
+    val start = cur
+    while (!endOfInput) {
+        if (block(source[cur])) {// don't change
+            cur++
+        } else {
+            break
+        }
+    }
+    return cur - start
 }
 
 @OptIn(ExperimentalContracts::class)

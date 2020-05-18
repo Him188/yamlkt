@@ -127,62 +127,116 @@ internal fun TokenStream.readSingleQuotedString(): String {
 }
 
 @OptIn(ExperimentalStdlibApi::class)
-internal fun TokenStream.readUnquotedString(begin: Char): String {
-    val startCur = cur - 1
+internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): String {
+    val startingIndent = currentIndent
 
+    var startCur = cur - 1
+
+    var escapedOnce = false
+
+    countSkipIf { it == ' ' }
     /*
-    skipIf { it == ' ' }
-    if (source[cur].isLineSeparator()) {
-        cur++
-        escapedOnce = true
-        runNewLineSkippingAndEscaping()
-        startCur = cur
-    } // else, cur isn't moved back because it doesn't matter startCur
+         if (source[cur].isLineSeparator()) {
+             cur++
+             escapedOnce = true
+             runNewLineSkippingAndEscaping()
+             startCur = cur
+         } // else, cur isn't moved back because it doesn't matter startCur
 
-     */
+          */
+// { bob: 2 }
+    fun doEnd(): String {
+        if (!escapedOnce) {
+            return subSourceTrimEnd(startCur, cur - 1)
+        }
+        append(source, startCur, cur - 2)
+        return takeStringBufTrimEnd()
+    }
 
     whileNotEOFWithBegin(begin) { char ->
-        when (char) {
+
+        if (char.isLineSeparator()) {
+            currentIndent = 0
+            append(source, startCur, cur - 2)
+            escapedOnce = true
+            if (!runNewLineSkippingAndEscapingForUnquoted(startingIndent)) {
+                return takeStringBufTrimEnd()
+            }
+            startCur = cur
+        } else when (char) {
             ':' -> {
                 reuseToken(Token.COLON)
-                return subStringBufTrimEnd(startCur, cur - 2)
-            }
-            '\n', '\r' -> {
-                currentIndent = 0
-                // no reuse.
-                return subStringBufTrimEnd(startCur, cur - 2)
+                return doEnd()
             }
             ',' -> {
-                reuseToken(Token.COMMA)
-                return subStringBufTrimEnd(startCur, cur - 2)
+                if (stopOnComma) {
+                    reuseToken(Token.COMMA)
+                    return doEnd()
+                }
             }
             '|' -> TODO("MULTILINE STRING")
+            '>' -> TODO("MULTILINE STRING")
             '[' -> {
                 reuseToken(Token.LIST_BEGIN)
-                return subStringBufTrimEnd(startCur, cur - 2)
+                return doEnd()
             }
             ']' -> {
                 reuseToken(Token.LIST_END)
-                return subStringBufTrimEnd(startCur, cur - 2)
+                return doEnd()
             }
             '{' -> {
                 reuseToken(Token.MAP_BEGIN)
-                return subStringBufTrimEnd(startCur, cur - 2)
+                return doEnd()
             }
             '}' -> {
                 reuseToken(Token.MAP_END)
-                return subStringBufTrimEnd(startCur, cur - 2)
+                return doEnd()
             }
             '#' -> {
-                val cur = cur - 2
+                val toString = kotlin.run {
+                    if (!escapedOnce) {
+                        subSourceTrimEnd(startCur, cur - 1)
+                    } else {
+                        append(source, startCur, cur - 2)
+                        takeStringBufTrimEnd()
+                    }
+                }
                 this.skipLine()
                 this.cur--
                 currentIndent = 0
-                return subStringBufTrimEnd(startCur, cur)
+                return toString
             }
         }
     }
-    return subStringBufTrimEnd(startCur, cur - 1)
+
+    // include the last char
+    if (!escapedOnce) {
+        return subSourceTrimEnd(startCur, cur)
+    }
+    append(source, startCur, cur - 1)
+    return takeStringBufTrimEnd()
+}
+
+private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initialIntent: Int, addCaret: Boolean = true): Boolean {
+    if (endOfInput) return true
+    val newIntent = countSkipIf { it == ' ' }
+    if (newIntent <= initialIntent) {
+        cur -= newIntent // for not breaking later strings
+        return false
+    }
+    if (endOfInput) return true
+    val next = source[cur]
+    return when {
+        next.isLineSeparator() -> { // blank line
+            cur++
+            append('\n')
+            runNewLineSkippingAndEscapingForUnquoted(initialIntent, false)
+        }
+        else -> {
+            if (addCaret) append(' ')
+            true
+        }
+    }
 }
 
 internal inline fun TokenStream.ensureNotEOF() {
@@ -192,6 +246,7 @@ internal inline fun TokenStream.ensureNotEOF() {
 private tailrec fun TokenStream.runNewLineSkippingAndEscaping(addCaret: Boolean = true) {
     ensureNotEOF()
     skipIf { it == ' ' }
+    ensureNotEOF()
     val next = source[cur]
     when {
         next.isLineSeparator() -> { // blank line

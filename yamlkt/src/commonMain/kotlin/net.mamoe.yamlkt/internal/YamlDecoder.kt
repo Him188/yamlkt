@@ -27,11 +27,11 @@ internal class YamlDecoder(
     /**
      * @return can be [String] if a YAML string is not null, [Token.STRING_NULL] if a YAML string is null, `null` if EOF.
      */
-    private fun nextString(): Any? {
-        val token = tokenStream.nextToken() ?: return null
+    private fun nextString(stopOnComma: Boolean): Any? {
+        val token = tokenStream.nextToken(stopOnComma) ?: return null
         return when (token) {
             Token.MULTILINE_LIST_FLAG -> {
-                "-" + nextString()
+                "-" + nextString(stopOnComma)
             }
             Token.STRING_NULL -> {
                 return token
@@ -63,6 +63,7 @@ internal class YamlDecoder(
          */
         @JvmField val name: String
     ) : CompositeDecoder, Decoder {
+
         abstract val kind: Kind
 
         internal val parentYamlDecoder: YamlDecoder get() = this@YamlDecoder
@@ -77,13 +78,15 @@ internal class YamlDecoder(
         @JvmField
         internal var dontWrapNextStructure: Boolean = false
 
+        fun TokenStream.nextToken(): Token? = nextToken(stopOnComma)
+        protected abstract val stopOnComma: Boolean
 
         final override val context: SerialModule
             get() = this@YamlDecoder.context
         final override val updateMode: UpdateMode get() = this@YamlDecoder.updateMode
 
         protected open fun nextStringOrNull(): String? {
-            return this@YamlDecoder.nextStringOrNull()
+            return this@YamlDecoder.nextStringOrNull(stopOnComma)
         }
 
         // region CompositeDecoder primitives override
@@ -194,6 +197,9 @@ internal class YamlDecoder(
         override val kind: Kind
             get() = Kind.EMPTY_CLASS
 
+        override val stopOnComma: Boolean
+            get() = error("shouldn't be called")
+
         override fun decodeNotNullMark(): Boolean = false
         override fun decodeSequentially(): Boolean = false
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int = READ_DONE
@@ -208,6 +214,7 @@ internal class YamlDecoder(
     inner class BlockClassDecoder(
         baseIndent: Int
     ) : IndentedDecoder(baseIndent, "Yaml Block Class") {
+        override val stopOnComma: Boolean get() = false
 
         override fun decodeSequentially(): Boolean = false
         override val kind: Kind
@@ -255,6 +262,7 @@ internal class YamlDecoder(
     inner class BlockMapDecoder(
         baseIndent: Int
     ) : IndentedDecoder(baseIndent, "Yaml Block Map") {
+        override val stopOnComma: Boolean get() = false
         private var index = 0
         override val kind: Kind
             get() = Kind.BLOCK_MAP
@@ -316,6 +324,7 @@ internal class YamlDecoder(
      * Result: `{ name: 'Bob', age: null }`
      */
     inner class FlowMapDecoder : AbstractDecoder("Yaml Flow Map") {
+        override val stopOnComma: Boolean get() = true
 
         override val kind: Kind
             get() = Kind.FLOW_MAP
@@ -410,6 +419,7 @@ internal class YamlDecoder(
      * Example: `{test: value}`
      */
     inner class FlowClassDecoder : AbstractDecoder("Yaml Flow Class") {
+        override val stopOnComma: Boolean get() = true
 
         private var index = -5
         private var firstValueDecoded = false
@@ -497,6 +507,7 @@ internal class YamlDecoder(
      * Example: `[foo, bar]`
      */
     inner class FlowSequenceDecoder : AbstractDecoder("Yaml Flow Sequence") {
+        override val stopOnComma: Boolean get() = true
         private var index = 0
         override fun decodeSequentially(): Boolean = false
         override val kind: Kind
@@ -572,6 +583,7 @@ internal class YamlDecoder(
     inner class BlockSequenceDecoder(
         baseIndent: Int
     ) : IndentedDecoder(baseIndent, "Yaml Block Sequence") {
+        override val stopOnComma: Boolean get() = false
         override fun decodeSequentially(): Boolean = false
         private var index: Int = 0
         override val kind: Kind
@@ -620,6 +632,7 @@ internal class YamlDecoder(
     private val yamlNullStringDecoder = YamlNullStringDecoder()
 
     inner class YamlStringDecoder : AbstractDecoder("Yaml Literal") {
+        override val stopOnComma: Boolean get() = false
         override val kind: Kind
             get() = Kind.STRING
 
@@ -631,13 +644,15 @@ internal class YamlDecoder(
 
         override val kind: Kind
             get() = Kind.NULL_STRING
+        override val stopOnComma: Boolean
+            get() = error("shouldn't be called")
 
         override fun decodeNotNullMark(): Boolean = false
     }
 
 
     override fun decodeNotNullMark(): Boolean {
-        return when (val token = tokenStream.nextToken()) {
+        return when (val token = tokenStream.nextToken(false)) {
             END_OF_FILE -> false
             Token.STRING_NULL -> false
             else -> {
@@ -657,9 +672,11 @@ internal class YamlDecoder(
     ): CompositeDecoder {
         Debugging.beginStructure(descriptor, parentDecoder)
 
+        fun nextToken() = parentDecoder?.run { tokenStream.nextToken() } ?: tokenStream.nextToken(false)
+
         when (descriptor.kind) {
             StructureKind.LIST -> {
-                return when (val token = tokenStream.nextToken()) {
+                return when (val token = tokenStream.nextToken(false)) {
                     null -> throw contextualDecodingException("Early EOF")
                     Token.LIST_BEGIN -> {
                         //   tokenStream.reuseToken(token)
@@ -673,7 +690,7 @@ internal class YamlDecoder(
                 }
             }
             StructureKind.CLASS -> {
-                return when (val token = tokenStream.nextToken()) {
+                return when (val token = nextToken()) {
                     END_OF_FILE -> {
                         emptyClassDecoder
                     }
@@ -689,7 +706,7 @@ internal class YamlDecoder(
                 }
             }
             StructureKind.MAP -> {
-                return when (val token = tokenStream.nextToken()) {
+                return when (val token = nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
                         // tokenStream.reuseToken(token)
@@ -703,7 +720,7 @@ internal class YamlDecoder(
                 }
             }
             UnionKind.CONTEXTUAL -> {
-                return when (val token = tokenStream.nextToken()) {
+                return when (val token = nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
                         // tokenStream.reuseToken(token)
@@ -725,7 +742,7 @@ internal class YamlDecoder(
                         val beforeIndent = tokenStream.currentIndent
                         val stringValue = tokenStream.strBuff!!
 
-                        return when (val next = tokenStream.nextToken()) { // coz we are detecting whether it is a yaml-like map
+                        return when (val next = nextToken()) { // coz we are detecting whether it is a yaml-like map
                             END_OF_FILE -> {
                                 yamlStringDecoder
                             }
@@ -788,8 +805,8 @@ internal class YamlDecoder(
     /**
      * Null represents the value is null, instead of EOF.
      */
-    private fun nextStringOrNull(): String? {
-        return nextString()?.let { value ->
+    private fun nextStringOrNull(stopOnComma: Boolean = false): String? {
+        return nextString(stopOnComma)?.let { value ->
             if (value == Token.STRING_NULL) {
                 return null
             }

@@ -15,8 +15,18 @@ internal class BasicEncoderTest {
         val anotherData: Data? = null
     )
 
+    @Serializable
+    data class Data2(
+        val map: Map<String, String> = mapOf("bob" to "2")
+    )
+
     @Test
     fun testDescriptorBased() {
+        allFlow.testDynamic(mapOf("bob" to "2"))
+        // exitProcess(1)
+
+        allFlow.testDescriptorBased(Data2.serializer(), Data2())
+
         allFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
         blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
     }

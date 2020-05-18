@@ -31,7 +31,7 @@ $dump
     )
 
     kotlin.runCatching {
-        assertEquals(value, this.parse(serializer, dump))
+        assertEquals(value.toString(), this.parse(serializer, dump).toString())
     }.getOrElse {
         throw AssertionError("Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=$value", it)
     }
