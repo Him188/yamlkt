@@ -220,6 +220,19 @@ internal class YamlDecoder(
         override val kind: Kind
             get() = Kind.BLOCK_CLASS
 
+        @Suppress("DuplicatedCode")
+        override fun decodeNotNullMark(): Boolean {
+            val indent = tokenStream.currentIndent
+            return when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> false
+                Token.STRING_NULL -> false
+                else -> {
+                    tokenStream.reuseToken(token)
+                    tokenStream.currentIndent > indent
+                }
+            }
+        }
+
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             when (val token = tokenStream.nextToken()) {
                 null -> return READ_DONE
@@ -266,6 +279,19 @@ internal class YamlDecoder(
         private var index = 0
         override val kind: Kind
             get() = Kind.BLOCK_MAP
+
+        @Suppress("DuplicatedCode")
+        override fun decodeNotNullMark(): Boolean {
+            val indent = tokenStream.currentIndent
+            return when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> false
+                Token.STRING_NULL -> false
+                else -> {
+                    tokenStream.reuseToken(token)
+                    tokenStream.currentIndent > indent
+                }
+            }
+        }
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index.isOdd()) {

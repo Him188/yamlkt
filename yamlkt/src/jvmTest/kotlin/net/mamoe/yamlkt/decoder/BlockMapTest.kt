@@ -5,6 +5,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.Yaml.Companion.default
 import net.mamoe.yamlkt.toContentMap
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -157,6 +158,29 @@ t:
                     )
                 )
             ), map
+        )
+    }
+
+    // from https://github.com/Him188/yamlkt/issues/3
+    @Test
+    fun testNullValue() {
+        @Serializable
+        data class TestData(
+            val nullable: String?,
+            val nonnull: String,
+            val nullableMap: Map<String, String>?,
+            val nullableList: List<String>?,
+        )
+
+        assertEquals(
+            TestData(null, "value", null, null), default.parse(
+                TestData.serializer(), """
+                nullable:
+                nonnull: value
+                nullableMap:
+                nullableList: 
+            """.trimIndent()
+            )
         )
     }
 }
