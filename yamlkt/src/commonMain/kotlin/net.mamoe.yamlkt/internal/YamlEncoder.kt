@@ -96,6 +96,16 @@ internal class YamlEncoder(
         }
     }
 
+
+    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
+        if (collectionSize == 0) {
+            if (descriptor.kind == StructureKind.LIST) {
+                return EmptySequenceEncoder(false)
+            }
+        }
+        return super.beginCollection(descriptor, collectionSize, *typeSerializers)
+    }
+
     override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
         return beginStructureImpl(null, descriptor, typeSerializers)
     }
@@ -202,6 +212,15 @@ internal class YamlEncoder(
         }
 
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
+    }
+
+    internal inner class EmptySequenceEncoder(linebreakAfterFinish: Boolean) : FlowEncoder(linebreakAfterFinish) {
+        override fun encodeValue(value: Char) = error("EmptySequenceEncoder.encodeValue shouldn't be called")
+        override fun encodeValue(value: String) = error("EmptySequenceEncoder.encodeValue shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("EmptySequenceEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("EmptySequenceEncoder.encodeElement shouldn't be called")
+        override fun endStructure0(descriptor: SerialDescriptor) = writer.write("[]")
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = error("EmptySequenceEncoder.writeValueHead shouldn't be called")
     }
 
     internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean, private val increaseBackLevel: Boolean) :
@@ -403,6 +422,15 @@ internal class YamlEncoder(
             encodeSerializableElement0(descriptor, index, serializer, value)
             writeValueTail(descriptor, index)
             return
+        }
+
+        override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
+            if (collectionSize == 0) {
+                if (descriptor.kind == StructureKind.LIST) {
+                    return EmptySequenceEncoder(linebreakAfterFinish)
+                }
+            }
+            return super.beginCollection(descriptor, collectionSize, *typeSerializers)
         }
 
         override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
