@@ -1,5 +1,5 @@
 object Versions {
-    const val version = "0.3.0"
+    const val version = "0.3.1"
 
     object Kotlin {
         const val stdlib = "1.3.72"
@@ -10,6 +10,3 @@ object Versions {
         const val bintray = "1.8.5"
     }
 }
-
-@Suppress("unused")
-fun kotlinx(id: String, version: String) = "org.jetbrains.kotlinx:kotlinx-$id:$version"
