@@ -48,6 +48,7 @@ kotlin {
 
 
         val commonTest by getting {
+            languageSettings.languageVersion = "1.4"
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(kotlin("test-common"))
@@ -56,6 +57,7 @@ kotlin {
         }
 
         val jvmTest by getting {
+            languageSettings.languageVersion = "1.4"
             dependencies {
                 dependsOn(commonTest)
                 implementation(kotlin("stdlib"))
@@ -67,6 +69,7 @@ kotlin {
         }
 
         val jsTest by getting {
+            languageSettings.languageVersion = "1.4"
             dependencies {
                 dependsOn(commonTest)
                 implementation(kotlin("stdlib-js"))

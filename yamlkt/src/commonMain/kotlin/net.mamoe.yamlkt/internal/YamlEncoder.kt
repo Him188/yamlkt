@@ -105,7 +105,7 @@ internal class YamlEncoder(
         linebreakAfterFinish: Boolean
     ) : FlowEncoder(linebreakAfterFinish) {
         init {
-            writer.write("{ ")
+            writer.write("{")
         }
 
         private var justStarted: Boolean = true
@@ -116,9 +116,10 @@ internal class YamlEncoder(
         private inline fun structuredKeyValue(block: YamlWriter.() -> Unit) {
             val isKey = isKey.also { isKey = !isKey }
             if (isKey) {
+                writer.write(' ')
                 if (justStarted) {
                     justStarted = false
-                } else writer.write(", ")
+                } else writer.write(',')
 
                 writer.block()
                 writer.write(": ")
@@ -145,7 +146,11 @@ internal class YamlEncoder(
         }
 
         override fun endStructure0(descriptor: SerialDescriptor) {
-            writer.write(" }")
+            if (!justStarted) {
+                writer.write(" }")
+            } else {
+                writer.write("}")
+            }
         }
 
         override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
@@ -161,8 +166,9 @@ internal class YamlEncoder(
             if (descriptor.kind == StructureKind.LIST) return
 
             if (justStarted) justStarted = false
-            else writer.write(", ")
+            else writer.write(',')
 
+            writer.write(' ')
             writer.write(descriptor.getElementName(index))
             writer.write(": ")
         }
@@ -295,7 +301,11 @@ internal class YamlEncoder(
         }
         // endregion
 
-        override fun endStructure0(descriptor: SerialDescriptor) = Unit
+        override fun endStructure0(descriptor: SerialDescriptor) {
+            if (justStarted) {
+                writer.writeln("{}")
+            }
+        }
 
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
             if (descriptor.kind == StructureKind.MAP) return
