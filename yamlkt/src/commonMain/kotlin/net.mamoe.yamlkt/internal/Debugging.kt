@@ -11,7 +11,8 @@ import kotlin.jvm.JvmStatic
 
 @Suppress("ConstantConditionIf")
 internal object Debugging {
-    internal const val enabled: Boolean = false
+    @JvmStatic
+    internal var enabled: Boolean = false
 
     @JvmStatic
     var logIndent = 0

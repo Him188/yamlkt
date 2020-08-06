@@ -100,8 +100,15 @@ class Yaml @JvmOverloads constructor(
      */
     override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
         val sb = StringBuilder()
-        serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
-        return sb.toString()
+        kotlin.runCatching {
+            serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
+        }.fold(
+            onSuccess = { return sb.toString() },
+            onFailure = {
+                Debugging.logCustom { "[Debugging] Printed:\n\n$sb" }
+                throw it
+            }
+        )
     }
 
     /**

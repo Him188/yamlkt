@@ -6,7 +6,6 @@
 package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.*
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.modules.SerialModule
 import net.mamoe.yamlkt.Comment
 import net.mamoe.yamlkt.Yaml
@@ -306,6 +305,7 @@ internal class YamlEncoder(
         // region for class
         // fast way
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
+            justStarted = false
             writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
@@ -313,6 +313,7 @@ internal class YamlEncoder(
         }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            justStarted = false
             writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
@@ -471,7 +472,7 @@ internal class YamlEncoder(
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
-                encodeSerializableElement(descriptor, index, String.serializer(), configuration.nullSerialization.value)
+                encodeStringElement(descriptor, index, configuration.nullSerialization.value)
             } else encodeSerializableElement(descriptor, index, serializer, value)
         }
 

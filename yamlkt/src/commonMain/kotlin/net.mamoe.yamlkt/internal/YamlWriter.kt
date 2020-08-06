@@ -52,6 +52,7 @@ internal class YamlWriter(
         write(this)
     }
 
+    @JvmField
     internal val escapeBuf: StringBufHolder = StringBufHolder()
 }
 
