@@ -2,7 +2,7 @@
 
 plugins {
     kotlin("multiplatform")
-    id("kotlinx-serialization")
+    kotlin("plugin.serialization")
     `maven-publish`
     id("com.jfrog.bintray")
 }
@@ -16,7 +16,7 @@ kotlin {
     }
 
     sourceSets {
-        val serializationVersion: String = Versions.Kotlin.serialization
+        val serializationVersion: String = Versions.serialization
 
         fun kotlinx(name: String, version: String): String = "org.jetbrains.kotlinx:kotlinx-$name:$version"
 
