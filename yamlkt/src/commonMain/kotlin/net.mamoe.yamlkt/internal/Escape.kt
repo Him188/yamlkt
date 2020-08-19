@@ -9,6 +9,7 @@ import net.mamoe.yamlkt.YamlConfiguration.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
+import kotlin.native.concurrent.ThreadLocal
 
 
 // region EscapeCharMappings
@@ -28,6 +29,7 @@ private object EscapeCharMappings {
     @JvmStatic
     val ESCAPE_2_CHAR = CharArray(ESC2C_MAX)
 
+    @ThreadLocal
     @JvmStatic
     var REPLACEMENT_CHARS: Array<String?> = arrayOfNulls(128)
 

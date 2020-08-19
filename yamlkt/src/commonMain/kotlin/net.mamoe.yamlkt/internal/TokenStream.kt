@@ -9,6 +9,7 @@ import kotlin.contracts.contract
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+import kotlin.native.concurrent.ThreadLocal
 
 @Suppress("ClassName", "PropertyName")
 internal enum class Token(val value: Char) {
@@ -29,6 +30,7 @@ internal enum class Token(val value: Char) {
 
     companion object {
         // char-TokenClass mapping
+        @ThreadLocal
         @JvmField
         var values: Array<Token?>? = null
 

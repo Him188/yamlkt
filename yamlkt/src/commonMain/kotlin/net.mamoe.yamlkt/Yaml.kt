@@ -2,18 +2,13 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.yamlkt.internal.*
-import kotlin.collections.LinkedHashMap
-import kotlin.collections.List
-import kotlin.collections.Map
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.forEach
 import kotlin.collections.set
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
@@ -60,7 +55,7 @@ public class Yaml @JvmOverloads constructor(
     /**
      * The context
      *
-     * Use [YamlDynamicSerializer] as default to deserialize and serialize `Any` types marked with annotation [ContextualSerialization]
+     * Use [YamlDynamicSerializer] as default to deserialize and serialize `Any` types marked with annotation [Contextual]
      */
     public override val serializersModule: SerializersModule = SerializersModule {
         contextual(Any::class, YamlDynamicSerializer)

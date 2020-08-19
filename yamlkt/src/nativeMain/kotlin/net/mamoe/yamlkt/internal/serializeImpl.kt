@@ -1,3 +1,5 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.InternalSerializationApi
