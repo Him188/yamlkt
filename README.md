@@ -4,7 +4,7 @@
 
 Fast multi-platform YAML with comments support for kotlinx.serialization
 
-This project is experimental.
+This project is in alpha state.
 
 ## Setup
 
@@ -12,7 +12,8 @@ Dependency requirements:
 
 | yamlkt | Required Kotlin | Using kotlinx.serialization |
 |:-------|:----------------|:-------------------------------|
-| 0.x    | 1.3.70+          | 0.20.0                         |
+| 0.3.3  | 1.3.70+          | 0.20.0                         |
+| 0.4.0  | 1.4.0+          | 1.0.0-RC |
 
 #### Gradle
 
@@ -25,10 +26,9 @@ repositories {
 Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 ```kotlin
 // choose one of them depending on your platform
-implementation("net.mamoe.yamlkt:yamlkt:<version>") // JVM
-implementation("net.mamoe.yamlkt:yamlkt-common:<version>") // MPP common
-implementation("net.mamoe.yamlkt:yamlkt-js:<version>") // JS
+implementation("net.mamoe.yamlkt:yamlkt:<version>")
 ```
+If your project is multiplatform, you need only to add this dependency for commonMain.
 
 
 #### Maven
@@ -54,7 +54,7 @@ Replace `$version` with the newest version here: [![Download](https://api.bintra
 ## Overview
 This library supports:
 - fast deserializing YAML text to a structured object
-- contextual deserializing: `@ContextualSerialization`
+- contextual deserializing: `@Contextual`
 - dynamic types: `YamlDynamicSerializer` which can serialize and deserialize `Any`
 - `YamlElement` wrapper classes, allowing `YamlMap.getInt`, `YamlMap.getLong`
 - comments encoding (Using annotation `Comment`)
@@ -121,7 +121,7 @@ val map: Map<String?, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [
 #### `YamlElement`
 `YamlElement` is a type-safe way to deserialize without descriptors.
 ```kotlin
-val map: YamlMap = Yaml.default.parseYamlMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
+val map: YamlMap = Yaml.default.decodeYamlMapFromString("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
 #### Comments

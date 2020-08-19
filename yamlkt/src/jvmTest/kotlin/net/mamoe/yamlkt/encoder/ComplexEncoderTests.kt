@@ -1,10 +1,8 @@
 package net.mamoe.yamlkt.encoder
 
-import kotlinx.serialization.ImplicitReflectionSerializer
 import org.junit.Test
 
 
-@OptIn(ImplicitReflectionSerializer::class)
 internal class ComplexEncoderTests {
     @Test
     fun testNestedList() {

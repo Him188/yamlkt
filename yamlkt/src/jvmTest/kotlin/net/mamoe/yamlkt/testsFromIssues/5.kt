@@ -15,7 +15,7 @@ internal class Issue5 {
         )
 
         Debugging.enabled = true
-        val result = Yaml.default.stringify(Config.serializer(), Config())
+        val result = Yaml.default.encodeToString(Config.serializer(), Config())
         assertEquals("tt: null", result.trim(), "Result: $result")
     }
 }

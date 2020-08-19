@@ -27,7 +27,7 @@ internal class TestMissingStructure {
                     "default"
                 )
             ),
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Data.serializer(), ""
             )
         )
@@ -41,7 +41,7 @@ internal class TestMissingStructure {
                     "default"
                 )
             ),
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Data.serializer(), """unknown: s"""
             )
         )
@@ -55,7 +55,7 @@ internal class TestMissingStructure {
                     "default"
                 )
             ),
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Data.serializer(), "{}"
             )
         )
@@ -69,7 +69,7 @@ internal class TestMissingStructure {
                     "default"
                 )
             ),
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Data.serializer(), """{unknown: s}"""
             )
         )

@@ -52,7 +52,7 @@ internal val __init = run {
     )
 
     Token.values = arrayOfNulls<Token>(
-        all.map { it.value.toInt() }.max()!! + 1
+        all.map { it.value.toInt() }.maxOrNull()!! + 1
     ).apply {
         for (tokenClass in all) {
             set(tokenClass.value.toInt(), tokenClass)
@@ -80,7 +80,7 @@ internal open class StringBufHolder {
     }
 
     fun takeStringBuf(): String {
-        return String(this._stringBuf, 0, _stringLength).also {
+        return this._stringBuf.concatToString(0, 0 + _stringLength).also {
             _stringLength = 0
             // println(it)
         }
@@ -90,7 +90,7 @@ internal open class StringBufHolder {
         for (i in _stringLength - 1 downTo 0) {
             if (_stringBuf[i] != ' ') {
                 _stringLength = 0
-                return String(_stringBuf, 0, i + 1)
+                return _stringBuf.concatToString(0, 0 + (i + 1))
             }
         }
         return ""

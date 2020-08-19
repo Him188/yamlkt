@@ -1,7 +1,7 @@
 package net.mamoe.yamlkt.decoder
 
 import net.mamoe.yamlkt.Yaml.Companion.default
-import net.mamoe.yamlkt.internal.YamlDecodingException
+import net.mamoe.yamlkt.YamlDecodingException
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -21,7 +21,7 @@ internal class DecoderEscapeTest {
         mappings.forEach { (t, u) ->
             assertEquals(
                 t,
-                default.parseAny(u)
+                default.decodeAnyFromString(u)
             )
         }
     }
@@ -30,22 +30,22 @@ internal class DecoderEscapeTest {
     fun escape16bit() {
         assertEquals(
             "\u0002",
-            default.parseAny(
+            default.decodeAnyFromString(
                 """"\x02""""
             )
         )
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\x0"""" // missing one digit
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\x"""" // missing two digits
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\xg"""" // illegal digit
             )
         }
@@ -55,22 +55,22 @@ internal class DecoderEscapeTest {
     fun escape32bit() {
         assertEquals(
             "\u2002",
-            default.parseAny(
+            default.decodeAnyFromString(
                 """"\u2002""""
             )
         )
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\u200"""" // missing one digit
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\u"""" // missing four digits
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\ug"""" // illegal digit
             )
         }
@@ -80,22 +80,22 @@ internal class DecoderEscapeTest {
     fun escape64bit() {
         assertEquals(
             "\u2002\u2002",
-            default.parseAny(
+            default.decodeAnyFromString(
                 """"\U20022002""""
             )
         )
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\U2002200"""" // missing one digit
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\U"""" // missing eight digits
             )
         }
         assertFailsWith<YamlDecodingException> {
-            default.parseAny(
+            default.decodeAnyFromString(
                 """s: "\Un"""" // illegal digit
             )
         }

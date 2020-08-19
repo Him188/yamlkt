@@ -3,8 +3,14 @@
 
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.CompositeDecoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.yamlkt.YamlConfiguration
 import net.mamoe.yamlkt.YamlDynamicSerializer
 import net.mamoe.yamlkt.YamlElement
@@ -13,7 +19,7 @@ import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-private inline val READ_DONE: Int get() = CompositeDecoder.READ_DONE
+private inline val READ_DONE: Int get() = CompositeDecoder.DECODE_DONE
 
 /**
  * The parser that provides [YamlElement]s from [TokenStream]
@@ -21,8 +27,7 @@ private inline val READ_DONE: Int get() = CompositeDecoder.READ_DONE
 internal class YamlDecoder(
     private val configuration: YamlConfiguration,
     internal val tokenStream: TokenStream,
-    override val context: SerialModule,
-    override val updateMode: UpdateMode
+    override val serializersModule: SerializersModule,
 ) : Decoder {
     /**
      * @return can be [String] if a YAML string is not null, [Token.STRING_NULL] if a YAML string is null, `null` if EOF.
@@ -64,6 +69,10 @@ internal class YamlDecoder(
         @JvmField val name: String
     ) : CompositeDecoder, Decoder {
 
+        @Suppress("OverridingDeprecatedMember", "DEPRECATION")
+        override val updateMode: kotlinx.serialization.UpdateMode
+            get() = kotlinx.serialization.UpdateMode.OVERWRITE
+
         abstract val kind: Kind
 
         internal val parentYamlDecoder: YamlDecoder get() = this@YamlDecoder
@@ -81,9 +90,8 @@ internal class YamlDecoder(
         fun TokenStream.nextToken(): Token? = nextToken(stopOnComma)
         protected abstract val stopOnComma: Boolean
 
-        final override val context: SerialModule
-            get() = this@YamlDecoder.context
-        final override val updateMode: UpdateMode get() = this@YamlDecoder.updateMode
+        final override val serializersModule: SerializersModule
+            get() = this@YamlDecoder.serializersModule
 
         protected open fun nextStringOrNull(): String? {
             return this@YamlDecoder.nextStringOrNull(stopOnComma)
@@ -99,13 +107,11 @@ internal class YamlDecoder(
         final override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long = nextStringOrNull().decodeLongElementImpl(descriptor, index)
         final override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short = nextStringOrNull().decodeShortElementImpl(descriptor, index)
         final override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String = nextStringOrNull().decodeStringElementImpl(descriptor, index)
-        final override fun decodeUnitElement(descriptor: SerialDescriptor, index: Int) = nextStringOrNull().decodeUnitElementImpl(descriptor, index)
         // endregion
 
         // region Decoder primitives override
         final override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, -1)
         final override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, -1)
-        final override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, -1)
         final override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, -1)
         final override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, -1)
         final override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
@@ -127,7 +133,7 @@ internal class YamlDecoder(
         override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing?  // TODO: 2020/4/19 decode null
         // endregion
 
-        final override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
+        final override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
             if (dontWrapNextStructure) {
                 dontWrapNextStructure = false
                 return this
@@ -139,7 +145,10 @@ internal class YamlDecoder(
             Debugging.endStructure()
         }
 
-        final override fun <T : Any> decodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>): T? {
+        final override fun <T : Any> decodeNullableSerializableElement(
+            descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>,
+            previousValue: T?
+        ): T? {
             return kotlin.runCatching {
                 if (decodeNotNullMark()) {
                     deserializer.deserialize(this)
@@ -151,21 +160,15 @@ internal class YamlDecoder(
             }
         }
 
-        // these two are not the same
-        final override fun <T> decodeSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T>): T {
+        final override fun <T> decodeSerializableElement(
+            descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T>,
+            previousValue: T?
+        ): T {
             return kotlin.runCatching {
                 deserializer.deserialize(this)
             }.getOrElse {
                 throw contextualDecodingException("deserializing nested class", descriptor, index, it)
             }
-        }
-
-        final override fun <T : Any> updateNullableSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T?>, old: T?): T? {
-            return decodeNullableSerializableElement(descriptor, index, deserializer)
-        }
-
-        final override fun <T> updateSerializableElement(descriptor: SerialDescriptor, index: Int, deserializer: DeserializationStrategy<T>, old: T): T {
-            return decodeSerializableElement(descriptor, index, deserializer)
         }
     }
 
@@ -688,7 +691,7 @@ internal class YamlDecoder(
         }
     }
 
-    override fun beginStructure(descriptor: SerialDescriptor, vararg typeParams: KSerializer<*>): CompositeDecoder {
+    override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
         return beginStructureImpl(null, descriptor)
     }
 
@@ -745,7 +748,7 @@ internal class YamlDecoder(
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")
                 }
             }
-            UnionKind.CONTEXTUAL -> {
+            SerialKind.CONTEXTUAL -> {
                 return when (val token = nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
                     Token.MAP_BEGIN -> {
@@ -816,7 +819,6 @@ internal class YamlDecoder(
     // region Decoder primitives override
     override fun decodeShort(): Short = nextStringOrNull().decodeShortElementImpl(null, -1)
     override fun decodeString(): String = nextStringOrNull().decodeStringElementImpl(null, -1)
-    override fun decodeUnit() = nextStringOrNull().decodeUnitElementImpl(null, -1)
     override fun decodeBoolean(): Boolean = nextStringOrNull().decodeBooleanElementImpl(null, -1)
     override fun decodeByte(): Byte = nextStringOrNull().decodeByteElementImpl(null, -1)
     override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
@@ -874,14 +876,6 @@ internal class YamlDecoder(
         this.debuggingLogDecoder(descriptor, index)
             ?: checkNonStrictNullability(descriptor, index)
             ?: ""
-
-    private fun String?.decodeUnitElementImpl(descriptor: SerialDescriptor?, index: Int) {
-        val value = (this.debuggingLogDecoder(descriptor, index)
-            ?: checkNonStrictNullability(descriptor, index))
-            ?: return
-
-        check(value == "kotlin.Unit") { "value is not 'kotlin.Unit' for kotlin.Unit" }
-    }
 
     private fun String?.decodeBooleanElementImpl(descriptor: SerialDescriptor?, index: Int): Boolean {
         return this.debuggingLogDecoder(descriptor, index)?.let { value ->
@@ -1019,4 +1013,11 @@ internal class YamlDecoder(
 @Suppress("NOTHING_TO_INLINE")
 internal inline fun Int.isOdd(): Boolean {
     return this and 0b1 != 0
+}
+
+internal fun SerialDescriptor.getElementIndexOrThrow(name: String): Int {
+    val index = getElementIndex(name)
+    if (index == CompositeDecoder.UNKNOWN_NAME)
+        throw SerializationException("$serialName does not contain element with name '$name'")
+    return index
 }

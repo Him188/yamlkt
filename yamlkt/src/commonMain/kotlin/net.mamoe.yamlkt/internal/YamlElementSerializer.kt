@@ -3,10 +3,17 @@
 
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.*
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.buildSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
 import net.mamoe.yamlkt.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -21,7 +28,8 @@ internal object YamlElementListSerializer : KSerializer<List<YamlElement>> by Li
  * The serializer for [YamlElement]. Can be obtained by [YamlElement.serializer]
  */
 internal object YamlElementSerializer : KSerializer<YamlElement> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlElement", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlElement", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlElement = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -57,7 +65,8 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
  * The serializer for [YamlPrimitive]. Can be obtained by [YamlPrimitive.serializer]
  */
 internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlPrimitive", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlPrimitive", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlPrimitive = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -81,7 +90,8 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
  * The serializer for [YamlLiteral]. Can be obtained by [YamlLiteral.serializer]
  */
 internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlLiteral", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlLiteral", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlLiteral = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -106,7 +116,8 @@ internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
  * The serializer for [YamlNull]. Can be obtained by [YamlNull.serializer]
  */
 internal object YamlNullSerializer : KSerializer<YamlNull> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlNull", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlNull", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlNull = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -129,7 +140,8 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
  * The serializer for [YamlMap]. Can be obtained by [YamlMap.serializer]
  */
 internal object YamlMapSerializer : KSerializer<YamlMap> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlMap", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlMap", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlMap = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -156,7 +168,8 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
  * The serializer for [YamlList]. Can be obtained by [YamlList.serializer]
  */
 internal object YamlListSerializer : KSerializer<YamlList> {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlList", UnionKind.CONTEXTUAL)
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlList", SerialKind.CONTEXTUAL)
 
     override fun deserialize(decoder: Decoder): YamlList = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {

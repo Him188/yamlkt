@@ -27,14 +27,14 @@ internal class FlowListTest {
             TestData(
                 listOf(Item("Open"), Item("OpenNew", "Open New"), null)
             ),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-list: [
-  {"id": "Open"},
-  {"id": "OpenNew", "label": "Open New"},
-  null,
-]   
-"""
+        list: [
+          {"id": "Open"},
+          {"id": "OpenNew", "label": "Open New"},
+          null,
+        ]   
+        """
             )
         )
     }
@@ -46,10 +46,10 @@ list: [
             val list: List<List<String>>
         )
 
-        default.parse(
+        default.decodeFromString(
             TestData.serializer(), """
-list: [[test, test, test, ]] 
-"""
+    list: [[test, test, test, ]] 
+    """
         )
     }
 

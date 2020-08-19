@@ -19,6 +19,6 @@ class FlowMapTest {
             }
         }
 
-        assertEquals("{}", allFlow.stringify(Empty()).trim())
+        assertEquals("{}", allFlow.encodeToString(Empty()).trim())
     }
 }

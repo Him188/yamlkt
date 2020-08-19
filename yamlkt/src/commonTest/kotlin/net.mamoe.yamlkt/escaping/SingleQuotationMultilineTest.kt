@@ -14,7 +14,7 @@ internal class SingleQuotationMultilineTest {
     private infix fun String.from(@Language("yaml") actual: String) {
         assertEquals(
             this,
-            Yaml.default.parseAny(
+            Yaml.default.decodeAnyFromString(
                 actual.trimIndent()
             ).toString()
         )

@@ -33,7 +33,7 @@ import kotlinx.serialization.SerialInfo
  */
 @SerialInfo
 @Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY)
-annotation class Comment(
+public annotation class Comment(
     /**
      * Lines of comments. It is converted by [String.trimIndent] and then separated by '\n'.
      *
@@ -56,5 +56,5 @@ annotation class Comment(
      *
      * @suppress **WARNING**: This is experimental. [lines] might be changed to `vararg` if issue#836 from kotlinx.serialization is fixed.
      */
-    val lines: String
+    public val lines: String
 ) //https://github.com/Kotlin/kotlinx.serialization/issues/836

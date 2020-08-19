@@ -48,13 +48,13 @@ internal class DecoderTest {
                     )
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 NestedTestData.serializer(), """
-                outer: 
-                  inner:
-                    map: 
-                      foo: bar
-            """.trimIndent()
+                        outer: 
+                          inner:
+                            map: 
+                              foo: bar
+                    """.trimIndent()
             )
         )
     }
@@ -74,19 +74,19 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(123),
-            nonStrict.parse(
+            nonStrict.decodeFromString(
                 TestData.serializer(), """
-                byte: 123.8
-            """.trimIndent()
+                        byte: 123.8
+                    """.trimIndent()
             )
         )
 
         assertEquals(
             TestData(123),
-            nonStrict.parse(
+            nonStrict.decodeFromString(
                 TestData.serializer(), """
-                byte: 123.0
-            """.trimIndent()
+                        byte: 123.0
+                    """.trimIndent()
             )
         )
 
@@ -97,10 +97,10 @@ internal class DecoderTest {
         )
 
         assertFails {
-            strict.parse(
+            strict.decodeFromString(
                 TestData.serializer(), """
-                byte: 123.0
-            """.trimIndent()
+                        byte: 123.0
+                    """.trimIndent()
             )
         }
     }
@@ -120,19 +120,19 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(0),
-            yaml.parse(
+            yaml.decodeFromString(
                 TestData.serializer(), """
-                byte: null
-            """.trimIndent()
+                        byte: null
+                    """.trimIndent()
             )
         )
 
         assertEquals(
             TestData(123),
-            nonStrictNumber.parse(
+            nonStrictNumber.decodeFromString(
                 TestData.serializer(), """
-                byte: 123.0
-            """.trimIndent()
+                        byte: 123.0
+                    """.trimIndent()
             )
         )
     }
@@ -151,7 +151,7 @@ internal class DecoderTest {
             kotlin.runCatching {
                 assertEquals(
                     TestData(expect),
-                    parse(TestData.serializer(), """bool: $str""")
+                    decodeFromString(TestData.serializer(), """bool: $str""")
                 )
             }.exceptionOrNull()?.let { e ->
                 throw IllegalStateException("error when testing $str", e)
@@ -177,10 +177,10 @@ internal class DecoderTest {
 
         assertEquals(
             TestData("value"),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-                    key: value
-                """.trimIndent()
+                            key: value
+                        """.trimIndent()
             )
         )
     }
@@ -195,25 +195,25 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(listOf(1, 2, 3)),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-                    list:
-                    - 1
-                    - 2
-                    - 3
-                """.trimIndent()
+                            list:
+                            - 1
+                            - 2
+                            - 3
+                        """.trimIndent()
             )
         )
 
         assertEquals(
             TestData(listOf(1, 2, 3)),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-                    list:
-                      - 1
-                      - 2
-                      - 3
-                """.trimIndent()
+                            list:
+                              - 1
+                              - 2
+                              - 3
+                        """.trimIndent()
             )
         )
     }
@@ -232,10 +232,10 @@ internal class DecoderTest {
                     "test" to "ok"
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-            map: {foo: bar, test: ok}
-        """.trimIndent()
+                    map: {foo: bar, test: ok}
+                """.trimIndent()
             )
         )
     }
@@ -254,12 +254,12 @@ internal class DecoderTest {
                     "test" to "ok"
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-            |map: 
-            |  foo: bar
-            |  test: ok
-        """.trimMargin()
+                    |map: 
+                    |  foo: bar
+                    |  test: ok
+                """.trimMargin()
             )
         )
     }
@@ -273,10 +273,10 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(listOf("foo", "bar")),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-            list: [foo, bar]
-        """.trimIndent()
+                    list: [foo, bar]
+                """.trimIndent()
             )
         )
     }
@@ -314,23 +314,22 @@ internal class DecoderTest {
                 "string",
                 "123"
             ),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-            negative: -1
-            int: 123
-            short: 123
-            byte: 123
-            long: 123
-            boolean: true
-            float: 123
-            double: 123
-            char: s
-            string: string
-            quotedString: 123
-        """.trimIndent()
+                    negative: -1
+                    int: 123
+                    short: 123
+                    byte: 123
+                    long: 123
+                    boolean: true
+                    float: 123
+                    double: 123
+                    char: s
+                    string: string
+                    quotedString: 123
+                """.trimIndent()
                 //
                 //          negative: -1
-
             )
         )
     }

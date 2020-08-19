@@ -1,14 +1,14 @@
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializerOrNull
 
 
+@OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
-@OptIn(ImplicitReflectionSerializer::class)
 internal actual fun IYamlDynamicSerializer.serializeImpl(
     encoder: Encoder,
     value: Any
@@ -35,7 +35,7 @@ internal actual fun IYamlDynamicSerializer.serializeImpl(
     Pair::class.js -> encoder.encodeSerializableValue(YamlDynamicPairSerializer, value as Pair<Any?, Any?>)
     Triple::class.js -> encoder.encodeSerializableValue(YamlDynamicTripleSerializer, value as Triple<Any?, Any?, Any?>)
 
-    Array<Any>::class.js -> encoder.encodeSerializableValue(AnyTypedArraySerializer, value as Array<Any?>)
+    Array::class.js -> encoder.encodeSerializableValue(AnyTypedArraySerializer, value as Array<Any?>)
 
     else -> when (value) {
         is Map<*, *> -> encoder.encodeSerializableValue(YamlDynamicMapSerializer, value as Map<Any?, Any?>)

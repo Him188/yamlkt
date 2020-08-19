@@ -38,7 +38,7 @@ internal class FlowMapTest {
     fun testFlowMap1() {
         assertEquals(
             TestData("Bob"),
-            default.parse(TestData.serializer(), """{ name: Bob }""")
+            default.decodeFromString(TestData.serializer(), """{ name: Bob }""")
         )
     }
 
@@ -46,18 +46,18 @@ internal class FlowMapTest {
     fun testFlowClassWithTrailingComma() {
         assertEquals(
             TestData("Bob"),
-            default.parse(TestData.serializer(), """{ name: Bob, }""")
+            default.decodeFromString(TestData.serializer(), """{ name: Bob, }""")
         )
     }
 
     @Test
     fun testFlowMapWithTrailingComma() {
-        println(default.parseMap("""{ name: Bob, }"""))
+        println(default.decodeMapFromString("""{ name: Bob, }"""))
     }
 
     @Test
     fun testFlowMapWithTwoTrailingComma() {
-        val map = default.parseYamlMap("""{ name: Bob , , }""")
+        val map = default.decodeYamlMapFromString("""{ name: Bob , , }""")
         // should give  `{ name: 'Bob', null: null }`
         assertEquals(2, map.size)
         assertEquals("name", map.entries.first().key.content)
@@ -68,7 +68,7 @@ internal class FlowMapTest {
 
     @Test
     fun testFlowYamlMapWithTwoBeginning() {
-        val map = default.parseYamlMap("""{  , , name: Bob }""")
+        val map = default.decodeYamlMapFromString("""{  , , name: Bob }""")
         // should give  `{ null: null, name: 'Bob' }`
         println(map)
         assertEquals(2, map.size)
@@ -83,7 +83,7 @@ internal class FlowMapTest {
      */
     @Test
     fun testFullJson() {
-        val json = default.parseYamlMap(
+        val json = default.decodeYamlMapFromString(
             """
 {
     "glossary": {
@@ -114,7 +114,7 @@ internal class FlowMapTest {
 
     @Test
     fun testNestedJson() {
-        val json = default.parseYamlMap(
+        val json = default.decodeYamlMapFromString(
             """
 {"menu": {
     "header": "SVG Viewer",
@@ -154,7 +154,7 @@ internal class FlowMapTest {
     fun `test flow map missing value`() {
         assertEquals(
             mapOf<String?, String?>("test" to null),
-            default.parseMap(
+            default.decodeMapFromString(
                 """{test}"""
             )
         )
@@ -163,6 +163,6 @@ internal class FlowMapTest {
 
     @Test
     fun ttt() {
-        println(default.parseMap("'123456789': 123456789"))
+        println(default.decodeMapFromString("'123456789': 123456789"))
     }
 }

@@ -3,13 +3,11 @@
 
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.SerialDescriptor
-import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.SerialDescriptor
+import net.mamoe.yamlkt.YamlDecodingException
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
-
-class YamlDecodingException(message: String, cause: Throwable? = null) : SerializationException(message, cause)
 
 @kotlin.internal.InlineOnly // not shown in stacktrace
 @Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
@@ -175,4 +173,4 @@ internal fun String.limitFirst(length: Int): String {
 }
 
 @Suppress("NOTHING_TO_INLINE")
-inline fun Char.isLineSeparator() = this == '\n' || this == '\r'
+internal inline fun Char.isLineSeparator() = this == '\n' || this == '\r'

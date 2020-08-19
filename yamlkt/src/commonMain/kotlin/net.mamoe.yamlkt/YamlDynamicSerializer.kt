@@ -1,6 +1,11 @@
 package net.mamoe.yamlkt
 
 import kotlinx.serialization.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.buildSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import net.mamoe.yamlkt.internal.IYamlDynamicSerializer
 import net.mamoe.yamlkt.internal.contextualDecodingException
 import net.mamoe.yamlkt.internal.serializeImpl
@@ -36,16 +41,17 @@ import net.mamoe.yamlkt.internal.serializeImpl
  *
  * A best usage of this serializer is to deserialize [YamlElement]
  */
-object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlDynamic", UnionKind.CONTEXTUAL)
+public object YamlDynamicSerializer : KSerializer<Any>, IYamlDynamicSerializer {
+    @OptIn(InternalSerializationApi::class)
+    public override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlDynamic", SerialKind.CONTEXTUAL)
 
     /**
      * @return can be [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
      */
-    override fun deserialize(decoder: Decoder): Any =
+    public override fun deserialize(decoder: Decoder): Any =
         YamlNullableDynamicSerializer.decode(decoder,
             whenNull = { throw this.contextualDecodingException("Unexpected null") }
         )!!
 
-    override fun serialize(encoder: Encoder, value: Any) = serializeImpl(encoder, value)
+    public override fun serialize(encoder: Encoder, value: Any): Unit = serializeImpl(encoder, value)
 }

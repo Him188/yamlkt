@@ -7,7 +7,7 @@ internal class FullYamlTest {
 
     @Test
     fun testFullYaml() {
-        val map = default.parseMap(
+        val map = default.decodeMapFromString(
             """
 receipt:     Oz-Ware Purchase Invoice
 date:        2012-08-06

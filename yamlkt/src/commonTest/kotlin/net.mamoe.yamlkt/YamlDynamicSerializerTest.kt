@@ -1,6 +1,6 @@
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.ContextualSerialization
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Yaml.Companion.default
 import kotlin.test.Test
@@ -15,21 +15,21 @@ internal class YamlDynamicSerializerTest {
     fun testDynamicAsMultilineList() {
         @Serializable
         data class TestData(
-            val v: @ContextualSerialization Any
+            val v: @Contextual Any
         )
 
         assertEquals(
             TestData(
                 listOf("test, set, tet, tes")
             ).toString(),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-                    v: 
-                    - test
-                    - set
-                    - tet
-                    - tes
-                """.trimIndent()
+                            v: 
+                            - test
+                            - set
+                            - tet
+                            - tes
+                        """.trimIndent()
             ).toString()
         )
     }
@@ -38,17 +38,17 @@ internal class YamlDynamicSerializerTest {
     fun testDynamicAsList() {
         @Serializable
         data class TestData(
-            val v: @ContextualSerialization Any
+            val v: @Contextual Any
         )
 
         assertEquals(
             TestData(
                 listOf("test, set, tet, tes")
             ).toString(),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-                    v: [test, set, tet, tes]
-                """.trimIndent()
+                            v: [test, set, tet, tes]
+                        """.trimIndent()
             ).toString()
         )
     }
@@ -57,7 +57,7 @@ internal class YamlDynamicSerializerTest {
     fun testDynamicAsMap() {
         @Serializable
         data class TestData(
-            val v: @ContextualSerialization Any
+            val v: @Contextual Any
         )
 
         assertEquals(
@@ -67,12 +67,12 @@ internal class YamlDynamicSerializerTest {
                     "fooBar" to "v2"
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 TestData.serializer(), """
-            v:
-              foo: v1
-              fooBar: v2
-        """.trimIndent()
+                    v:
+                      foo: v1
+                      fooBar: v2
+                """.trimIndent()
             )
         )
     }
@@ -86,12 +86,12 @@ internal class YamlDynamicSerializerTest {
                     "fooBar" to "v2"
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 YamlDynamicSerializer, """
-            v:
-              foo: v1
-              fooBar: v2
-        """.trimIndent()
+                    v:
+                      foo: v1
+                      fooBar: v2
+                """.trimIndent()
             )
         )
     }

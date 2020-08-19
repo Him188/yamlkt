@@ -14,13 +14,13 @@ internal class BlockSequenceTest {
 
     @Test
     fun `simple descriptor block sequence`() {
-        val map = Yaml.default.parse(
+        val map = Yaml.default.decodeFromString(
             ListSerializer(YamlElement.serializer()),
             """
-                        - part_nox
-                        - test
-                        - pp
-                        """
+                            - part_nox
+                            - test
+                            - pp
+                            """
         )
 
         println(map)
@@ -29,7 +29,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `simple dynamic block sequence`() {
-        val map = Yaml.default.parseYamlList(
+        val map = Yaml.default.decodeYamlListFromString(
             """
 - part_nox
 - test
@@ -43,13 +43,13 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested descriptor block sequence`() {
-        val map = Yaml.default.parse(
+        val map = Yaml.default.decodeFromString(
             ListSerializer(ListSerializer(String.serializer())),
             """
-                        - [part_nox]
-                        - [test]
-                        - [pp]
-                        """
+                            - [part_nox]
+                            - [test]
+                            - [pp]
+                            """
         )
 
         println(map)
@@ -58,17 +58,17 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested descriptor block sequence2`() {
-        val list = Yaml.default.parse(
+        val list = Yaml.default.decodeFromString(
             ListSerializer(MapSerializer(String.serializer(), String.serializer())),
             """
-- pp: s
-  ss: p
-
--
-  pp: s
-  ss: p
-
-"""
+    - pp: s
+      ss: p
+    
+    -
+      pp: s
+      ss: p
+    
+    """
         )
 
         println(list)
@@ -77,7 +77,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested dynamic block sequence2`() {
-        val list = Yaml.default.parseList(
+        val list = Yaml.default.decodeListFromString(
             """
 - pp: s
   ss: p
@@ -105,7 +105,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested dynamic block sequence`() {
-        val map = Yaml.default.parseYamlList(
+        val map = Yaml.default.decodeYamlListFromString(
             """
                         - part_nox
                         - test
@@ -150,7 +150,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.parse(TestData.serializer(), yaml)
+            Yaml.default.decodeFromString(TestData.serializer(), yaml)
         )
 
         // contextual
@@ -166,7 +166,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ).toString(),
-            Yaml.default.parseMap(yaml).toString()
+            Yaml.default.decodeMapFromString(yaml).toString()
         )
     }
 
@@ -201,7 +201,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.parse(TestData.serializer(), yaml)
+            Yaml.default.decodeFromString(TestData.serializer(), yaml)
         )
 
         assertEquals(
@@ -219,7 +219,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ).toString(),
-            Yaml.default.parseMap(yaml).toString()
+            Yaml.default.decodeMapFromString(yaml).toString()
         )
     }
 }

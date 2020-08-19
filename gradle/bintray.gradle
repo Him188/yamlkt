@@ -1,0 +1,12 @@
+publishing {
+    repositories {
+        maven {
+            url = "https://api.bintray.com/maven/mamoe/yamlkt/yamlkt/;publish=0"
+
+            credentials {
+                username = Bintray.getUser(project)
+                password = Bintray.getKey(project)
+            }
+        }
+    }
+}

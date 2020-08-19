@@ -5,8 +5,13 @@
 
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.yamlkt.Comment
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlConfiguration
@@ -39,7 +44,7 @@ import kotlin.jvm.JvmName
  */
 internal class YamlEncoder(
     private val configuration: YamlConfiguration,
-    override val context: SerialModule,
+    override val serializersModule: SerializersModule,
     private val writer: YamlWriter
 ) : Encoder {
 
@@ -49,7 +54,7 @@ internal class YamlEncoder(
      *
      * 'override' by [FlowEncoder.beginStructure] as only flow child is allowed in a flow.
      */
-    private fun beginStructureImpl(parent: AbstractEncoder?, descriptor: SerialDescriptor, typeSerializers: Array<out KSerializer<*>>): CompositeEncoder {
+    private fun beginStructureImpl(parent: AbstractEncoder?, descriptor: SerialDescriptor): CompositeEncoder {
         writer.levelIncrease()
         return when (descriptor.kind) {
             StructureKind.CLASS
@@ -85,9 +90,11 @@ internal class YamlEncoder(
                         } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
                     YamlConfiguration.ListSerialization.AUTO -> {
-                        if (typeSerializers[0].descriptor is PrimitiveKind) {
-                            FlowSequenceEncoder(parent is BlockEncoder)
-                        } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
+                        //if (typeSerializers[0].descriptor is PrimitiveKind) {
+                        // TODO: 2020/8/19 this typeSerializers is removed in serialization 1.0.0
+                        //    FlowSequenceEncoder(parent is BlockEncoder)
+                        //} else
+                        BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
                 }
             }
@@ -96,17 +103,17 @@ internal class YamlEncoder(
     }
 
 
-    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
+    override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
         if (collectionSize == 0) {
             if (descriptor.kind == StructureKind.LIST) {
                 return EmptySequenceEncoder(false)
             }
         }
-        return super.beginCollection(descriptor, collectionSize, *typeSerializers)
+        return super.beginCollection(descriptor, collectionSize)
     }
 
-    override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
-        return beginStructureImpl(null, descriptor, typeSerializers)
+    override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
+        return beginStructureImpl(null, descriptor)
     }
 
 
@@ -349,7 +356,6 @@ internal class YamlEncoder(
     override fun encodeShort(value: Short) = writer.write(value.toString())
     override fun encodeString(value: String) = writer.write(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
     override fun encodeNull() = writer.write(configuration.nullSerialization.value)
-    override fun encodeUnit() = error("Unit isn't supported")
 
     /**
      * Called by contextual
@@ -363,7 +369,7 @@ internal class YamlEncoder(
         /**
          * [BlockEncoder] is not allowed in [FlowEncoder].
          */
-        final override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
+        final override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
             writer.levelIncrease()
             return when (descriptor.kind) {
                 StructureKind.CLASS -> FlowMapOrClassEncoder(false)
@@ -425,17 +431,17 @@ internal class YamlEncoder(
             return
         }
 
-        override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
+        override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
             if (collectionSize == 0) {
                 if (descriptor.kind == StructureKind.LIST) {
                     return EmptySequenceEncoder(linebreakAfterFinish)
                 }
             }
-            return super.beginCollection(descriptor, collectionSize, *typeSerializers)
+            return super.beginCollection(descriptor, collectionSize)
         }
 
-        override fun beginStructure(descriptor: SerialDescriptor, vararg typeSerializers: KSerializer<*>): CompositeEncoder {
-            return this@YamlEncoder.beginStructureImpl(this, descriptor, typeSerializers)
+        override fun beginStructure(descriptor: SerialDescriptor): CompositeEncoder {
+            return this@YamlEncoder.beginStructureImpl(this, descriptor)
         }
 
         final override fun encodeCharElement(descriptor: SerialDescriptor, index: Int, value: Char) =
@@ -465,10 +471,6 @@ internal class YamlEncoder(
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
             encodeElement(descriptor, index, value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
-        final override fun encodeUnitElement(descriptor: SerialDescriptor, index: Int) {
-            error("Unit isn't supported")
-//            encodeElement(descriptor, index, "!!kotlin.Unit", false)
-        }
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
@@ -488,11 +490,10 @@ internal class YamlEncoder(
         final override fun encodeLong(value: Long) = encodeValue(value.toString())
         final override fun encodeNull() = encodeValue(configuration.nullSerialization.value)
         final override fun encodeShort(value: Short) = encodeValue(value.toString())
-        final override fun encodeUnit(): Unit = error("Unit isn't supported")
         final override fun encodeString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
         final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaultValues
-        final override val context: SerialModule get() = this@YamlEncoder.context
+        final override val serializersModule: SerializersModule get() = this@YamlEncoder.serializersModule
     }
 }
 

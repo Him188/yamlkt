@@ -8,11 +8,21 @@ plugins {
 }
 
 kotlin {
+    explicitApi()
+
     targets {
         jvm()
-        js()
-
-        // TODO native targets
+        js {
+            useCommonJs()
+        }
+        val hostOs = System.getProperty("os.name")
+        val isMingwX64 = hostOs.startsWith("Windows")
+        val nativeTarget = when {
+            hostOs == "Mac OS X" -> macosX64("native")
+            hostOs == "Linux" -> linuxX64("native")
+            isMingwX64 -> mingwX64("native")
+            else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
+        }
     }
 
     sourceSets {
@@ -22,57 +32,47 @@ kotlin {
 
         all {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
+            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
             languageSettings.progressiveMode = true
         }
 
         val commonMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-common"))
-                api(kotlinx("serialization-runtime-common", serializationVersion))
+                api(kotlinx("serialization-core", serializationVersion))
             }
         }
 
         val jvmMain by getting {
             dependencies {
-                implementation(kotlin("stdlib"))
-                api(kotlinx("serialization-runtime", serializationVersion))
             }
         }
 
         val jsMain by getting {
             dependencies {
-                implementation(kotlin("stdlib-js"))
-                api(kotlinx("serialization-runtime-js", serializationVersion))
             }
         }
 
 
         val commonTest by getting {
-            languageSettings.languageVersion = "1.4"
             dependencies {
-                implementation(kotlin("stdlib-common"))
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
         }
 
         val jvmTest by getting {
-            languageSettings.languageVersion = "1.4"
             dependencies {
                 dependsOn(commonTest)
-                implementation(kotlin("stdlib"))
                 implementation(kotlin("test"))
                 implementation(kotlin("test-junit"))
-                implementation("com.charleskorn.kaml:kaml:0.17.0")
+                implementation("com.charleskorn.kaml:kaml:0.19.0")
                 implementation("org.yaml:snakeyaml:1.26")
             }
         }
 
         val jsTest by getting {
-            languageSettings.languageVersion = "1.4"
             dependencies {
                 dependsOn(commonTest)
-                implementation(kotlin("stdlib-js"))
                 implementation(kotlin("test-js"))
             }
         }

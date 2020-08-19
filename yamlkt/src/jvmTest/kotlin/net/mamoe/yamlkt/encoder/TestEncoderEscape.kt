@@ -1,6 +1,6 @@
 package net.mamoe.yamlkt.encoder
 
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.encodeToString
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlConfiguration
 import org.junit.Test
@@ -28,14 +28,13 @@ private val best = Yaml(
 )
 
 
-@OptIn(ImplicitReflectionSerializer::class)
 internal class TestEncoderEscape {
     @Test
     fun testNewLineEscape() {
-        assertEquals("\"\\n\"", double.stringify("\n"))
-        assertEquals("\'\n\'", single.stringify("\n"))
-        assertEquals("\'\n\'", none.stringify("\n")) // will adjust to single
-        assertEquals("\'\n\'", best.stringify("\n")) // will adjust to single
+        assertEquals("\"\\n\"", double.encodeToString<String>("\n"))
+        assertEquals("\'\n\'", single.encodeToString<String>("\n"))
+        assertEquals("\'\n\'", none.encodeToString<String>("\n")) // will adjust to single
+        assertEquals("\'\n\'", best.encodeToString<String>("\n")) // will adjust to single
     }
 
     @Test
@@ -43,17 +42,17 @@ internal class TestEncoderEscape {
         assertEquals(
             """
             "\\"
-        """.trimIndent(), double.stringify("\\")
+        """.trimIndent(), double.encodeToString<String>("\\")
         )
         assertEquals(
             """
             "\""
-        """.trimIndent(), double.stringify("\"")
+        """.trimIndent(), double.encodeToString<String>("\"")
         )
         assertEquals(
             """
             "'"
-        """.trimIndent(), double.stringify("'")
+        """.trimIndent(), double.encodeToString<String>("'")
         )
     }
 }

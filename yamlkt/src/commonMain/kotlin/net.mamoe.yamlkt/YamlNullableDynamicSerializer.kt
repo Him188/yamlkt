@@ -1,10 +1,20 @@
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.*
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import net.mamoe.yamlkt.internal.*
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.SerialKind
+import kotlinx.serialization.descriptors.buildSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.encoding.decodeStructure
+import net.mamoe.yamlkt.internal.IYamlDynamicSerializer
+import net.mamoe.yamlkt.internal.YamlDecoder
+import net.mamoe.yamlkt.internal.adjustDynamicString
+import net.mamoe.yamlkt.internal.serializeImpl
 import kotlin.jvm.JvmStatic
 
 /**
@@ -17,8 +27,9 @@ import kotlin.jvm.JvmStatic
  *
  * @see YamlDynamicSerializer the non-null serializer
  */
-object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer {
-    override val descriptor: SerialDescriptor = SerialDescriptor("YamlNullableDynamic", UnionKind.CONTEXTUAL)
+public object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer {
+    @OptIn(InternalSerializationApi::class)
+    override val descriptor: SerialDescriptor = buildSerialDescriptor("YamlNullableDynamic", SerialKind.CONTEXTUAL)
 
     @JvmStatic
     internal val listSerializer = ListSerializer(this)
@@ -29,7 +40,7 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
     /**
      * @return can be `null`, [Int], [Long], [Boolean], [Double], [String], [List] or [Map] only.
      */
-    override fun deserialize(decoder: Decoder): Any? = decode(decoder)
+    public override fun deserialize(decoder: Decoder): Any? = decode(decoder)
 
     internal inline fun decode(decoder: Decoder, crossinline whenNull: YamlDecoder.AbstractDecoder. () -> Unit = {}): Any? = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
@@ -56,7 +67,7 @@ object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSerializer
         }
     }
 
-    override fun serialize(encoder: Encoder, value: Any?) {
+    public override fun serialize(encoder: Encoder, value: Any?) {
         @Suppress("UNCHECKED_CAST")
         if (value == null) {
             encoder.encodeNullableSerializableValue(String.serializer(), value)

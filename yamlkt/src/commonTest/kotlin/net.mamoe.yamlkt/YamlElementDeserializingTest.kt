@@ -1,7 +1,6 @@
 package net.mamoe.yamlkt
 
 import net.mamoe.yamlkt.Yaml.Companion.default
-import net.mamoe.yamlkt.internal.YamlDecodingException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -16,10 +15,10 @@ internal class YamlElementDeserializingTest {
                     "test" to "sss"
                 )
             ),
-            default.parse(
+            default.decodeFromString(
                 YamlMap.serializer(), """
-                test: sss
-            """.trimIndent()
+                        test: sss
+                    """.trimIndent()
             )
         )
     }
@@ -29,10 +28,10 @@ internal class YamlElementDeserializingTest {
     fun testYamlListSerializer() {
         assertEquals(
             yamlListOf("banana", "apple", "raspberry"),
-            default.parse(
+            default.decodeFromString(
                 YamlList.serializer(), """
-                [banana, apple, raspberry]
-            """.trimIndent()
+                        [banana, apple, raspberry]
+                    """.trimIndent()
             )
         )
     }
@@ -43,30 +42,30 @@ internal class YamlElementDeserializingTest {
             YamlLiteral(
                 "banana"
             ),
-            default.parse(
+            default.decodeFromString(
                 YamlLiteral.serializer(), """
-                banana
-            """.trimIndent()
+                        banana
+                    """.trimIndent()
             )
         )
         assertEquals(
             YamlLiteral(
                 "null"
             ),
-            default.parse(
+            default.decodeFromString(
                 YamlLiteral.serializer(), """
-                "null"
-            """.trimIndent()
+                        "null"
+                    """.trimIndent()
             )
         )
         assertEquals(
             YamlLiteral(
                 "~"
             ),
-            default.parse(
+            default.decodeFromString(
                 YamlLiteral.serializer(), """
-                "~"
-            """.trimIndent()
+                        "~"
+                    """.trimIndent()
             )
         )
     }
@@ -75,14 +74,14 @@ internal class YamlElementDeserializingTest {
     fun testYamlLiteralSerializerWhenNull() {
         assertFailsWith<YamlDecodingException> {
             println(
-                default.parse(
+                default.decodeFromString(
                     YamlLiteral.serializer(), "~"
                 )
             )
         }
 
         assertFailsWith<YamlDecodingException> {
-            default.parse(
+            default.decodeFromString(
                 YamlLiteral.serializer(), "null"
             )
         }
@@ -92,30 +91,30 @@ internal class YamlElementDeserializingTest {
     fun testYamlNullSerializer() {
         assertEquals(
             YamlNull,
-            default.parse(
+            default.decodeFromString(
                 YamlNull.serializer(), "~"
             )
         )
         assertEquals(
             YamlNull,
-            default.parse(
+            default.decodeFromString(
                 YamlNull.serializer(), "null"
             )
         )
 
         assertFailsWith<YamlDecodingException> {
-            default.parse(
+            default.decodeFromString(
                 YamlNull.serializer(), """
-                        foo
-                    """.trimIndent()
+                                foo
+                            """.trimIndent()
             )
         }
 
         assertFailsWith<YamlDecodingException> {
-            default.parse(
+            default.decodeFromString(
                 YamlNull.serializer(), """
-                        "~"
-                    """.trimIndent()
+                                "~"
+                            """.trimIndent()
             )
         }
     }

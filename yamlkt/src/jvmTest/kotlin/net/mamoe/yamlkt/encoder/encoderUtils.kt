@@ -17,7 +17,7 @@ fun <T> Yaml.testDescriptorBased(
     print: Boolean = false
 ) {
     val dump = kotlin.runCatching {
-        this.stringify(serializer, value)
+        this.encodeToString(serializer, value)
     }.getOrElse {
         throw AssertionError("Filed dump. value=$value", it)
     }
@@ -31,7 +31,7 @@ $dump
     )
 
     kotlin.runCatching {
-        assertEquals(value.toString(), this.parse(serializer, dump).toString())
+        assertEquals(value.toString(), this.decodeFromString(serializer, dump).toString())
     }.getOrElse {
         throw AssertionError("Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=$value", it)
     }

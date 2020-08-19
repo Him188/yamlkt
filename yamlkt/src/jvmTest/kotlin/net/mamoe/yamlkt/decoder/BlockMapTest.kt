@@ -25,14 +25,14 @@ internal class BlockMapTest {
     @Test
     fun `test descriptor block map`() {
         println(
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Config.serializer(), """
-bot:
-  account: 12345678910
-  password: "=w==w==w="
-owner:
-  account: 12345678910
-"""
+        bot:
+          account: 12345678910
+          password: "=w==w==w="
+        owner:
+          account: 12345678910
+        """
             )
         )
     }
@@ -40,7 +40,7 @@ owner:
 
     @Test
     fun `test dynamic block map null`() {
-        val map = Yaml.default.parseYamlMap(
+        val map = Yaml.default.decodeYamlMapFromString(
             """
      #test
 part_no:   A4786    #test
@@ -63,7 +63,7 @@ quantity:  null   #test
 
     @Test
     fun `test dynamic block map`() {
-        val map = Yaml.default.parseYamlMap(
+        val map = Yaml.default.decodeYamlMapFromString(
             """
 part_no:   A4786
 descrip:   Water Bucket (Filled)
@@ -84,7 +84,7 @@ quantity:  4
 
     @Test
     fun `test dynamic block map nested 1`() {
-        val map = Yaml.default.parseYamlMap(
+        val map = Yaml.default.decodeYamlMapFromString(
             """
 t:
   part_no:   A4786
@@ -109,7 +109,7 @@ t:
 
     @Test
     fun `test dynamic block map nested 2`() {
-        val map = Yaml.default.parseYamlMap(
+        val map = Yaml.default.decodeYamlMapFromString(
             """
 t:
 - part_no:   A4786
@@ -136,15 +136,15 @@ t:
 
     @Test
     fun `test descriptor block map nested 2`() {
-        val map = Yaml.default.parse(
+        val map = Yaml.default.decodeFromString(
             MapSerializer(String.serializer(), ListSerializer(MapSerializer(String.serializer(), String.serializer()))),
             """
-t:
-  - part_no:   A4786
-    descrip:   Water Bucket (Filled)
-    price:     1.47
-    quantity:  4
-    """
+    t:
+      - part_no:   A4786
+        descrip:   Water Bucket (Filled)
+        price:     1.47
+        quantity:  4
+        """
         )
 
         assertEquals(
@@ -173,13 +173,13 @@ t:
         )
 
         assertEquals(
-            TestData(null, "value", null, null), default.parse(
+            TestData(null, "value", null, null), default.decodeFromString(
                 TestData.serializer(), """
-                nullable:
-                nonnull: value
-                nullableMap:
-                nullableList: 
-            """.trimIndent()
+                        nullable:
+                        nonnull: value
+                        nullableMap:
+                        nullableList: 
+                    """.trimIndent()
             )
         )
     }

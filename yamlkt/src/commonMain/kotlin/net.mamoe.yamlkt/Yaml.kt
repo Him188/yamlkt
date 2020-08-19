@@ -2,10 +2,19 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.SerialModule
+import kotlinx.serialization.ContextualSerialization
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.yamlkt.internal.*
+import kotlin.collections.LinkedHashMap
+import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.forEach
+import kotlin.collections.set
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -34,7 +43,7 @@ import kotlin.jvm.JvmStatic
  * val string = yaml.stringify(User.serializer())
  *
  * // parsing YamlMap without specific descriptors
- * val map: YamlMap = yaml.parseYamlMap("{name: Bob, age: 20}")
+ * val map: YamlMap = yaml.decodeYamlMapFromString("{name: Bob, age: 20}")
  * val name = map["name"].toString()
  *
  * // parsing Map without specific descriptors
@@ -45,25 +54,24 @@ import kotlin.jvm.JvmStatic
  * @see Yaml.default The instance using default configurations.
  * @see Yaml.nonStrict The instance using all non-strict configurations.
  */
-class Yaml @JvmOverloads constructor(
-    val configuration: YamlConfiguration = YamlConfiguration(),
+public class Yaml @JvmOverloads constructor(
+    public val configuration: YamlConfiguration = YamlConfiguration(),
 
     /**
      * The context
      *
      * Use [YamlDynamicSerializer] as default to deserialize and serialize `Any` types marked with annotation [ContextualSerialization]
      */
-    override val context: SerialModule = SerializersModule {
+    public override val serializersModule: SerializersModule = SerializersModule {
         contextual(Any::class, YamlDynamicSerializer)
-    },
-    private val updateMode: UpdateMode = UpdateMode.BANNED
+    }
 ) : StringFormat {
-    companion object {
+    public companion object {
         /**
          * The [Yaml] using all default configurations
          */
         @JvmStatic
-        val default: Yaml = Yaml()
+        public val default: Yaml = Yaml()
 
         /**
          * The [Yaml] using all non-strict configurations.
@@ -72,7 +80,7 @@ class Yaml @JvmOverloads constructor(
          * It's not encouraged to use this.
          */
         @JvmStatic
-        val nonStrict: Yaml = Yaml(
+        public val nonStrict: Yaml = Yaml(
             configuration = YamlConfiguration(
                 nonStrictNumber = true,
                 nonStrictNullability = true
@@ -98,10 +106,10 @@ class Yaml @JvmOverloads constructor(
      * // """
      * ```
      */
-    override fun <T> stringify(serializer: SerializationStrategy<T>, value: T): String {
+    public override fun <T> encodeToString(serializer: SerializationStrategy<T>, value: T): String {
         val sb = StringBuilder()
         kotlin.runCatching {
-            serializer.serialize(YamlEncoder(configuration, context, YamlWriter(sb)), value)
+            serializer.serialize(YamlEncoder(configuration, serializersModule, YamlWriter(sb)), value)
         }.fold(
             onSuccess = { return sb.toString() },
             onFailure = {
@@ -117,8 +125,8 @@ class Yaml @JvmOverloads constructor(
      * **WARNING**: This approach is slow and may not work as expected on JS or native,
      * see [YamlDynamicSerializer] for more information
      */ // not annotated with @ImplicitReflectionSerializer as mostly config isn't supposed to have best performance.
-    fun stringify(value: Any?): String {
-        return stringify(YamlNullableDynamicSerializer, value)
+    public fun encodeToString(value: Any?): String {
+        return encodeToString(YamlNullableDynamicSerializer, value)
     }
 
     // endregion
@@ -140,7 +148,7 @@ class Yaml @JvmOverloads constructor(
      * """.trimIndent())
      * ```
      */
-    override fun <T> parse(
+    public override fun <T> decodeFromString(
         deserializer: DeserializationStrategy<T>,
         @Language("yaml") string: String
     ): T {
@@ -148,8 +156,7 @@ class Yaml @JvmOverloads constructor(
             YamlDecoder(
                 configuration,
                 TokenStream(string),
-                context,
-                updateMode
+                serializersModule
             )
         )
     }
@@ -157,22 +164,22 @@ class Yaml @JvmOverloads constructor(
     /**
      * Parse a [YamlElement] from [yamlContent].
      */
-    fun parseYaml(@Language("yaml") yamlContent: String): YamlElement {
-        return parse(YamlElement.serializer(), yamlContent)
+    public fun decodeYamlFromString(@Language("yaml") yamlContent: String): YamlElement {
+        return decodeFromString(YamlElement.serializer(), yamlContent)
     }
 
     /**
      * Parse a [YamlMap] from [yamlContent] safely
      */
-    fun parseYamlMap(@Language("yaml") yamlContent: String): YamlMap {
-        return parse(YamlMap.serializer(), yamlContent)
+    public fun decodeYamlMapFromString(@Language("yaml") yamlContent: String): YamlMap {
+        return decodeFromString(YamlMap.serializer(), yamlContent)
     }
 
     /**
      * Parse a [YamlList] from [yamlContent] safely
      */
-    fun parseYamlList(@Language("yaml") yamlContent: String): YamlList {
-        return parse(YamlList.serializer(), yamlContent)
+    public fun decodeYamlListFromString(@Language("yaml") yamlContent: String): YamlList {
+        return decodeFromString(YamlList.serializer(), yamlContent)
     }
 
 
@@ -183,7 +190,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml map
      */
-    fun parseMap(@Language("yaml") yamlContent: String): Map<String?, Any?> {
+    public fun decodeMapFromString(@Language("yaml") yamlContent: String): Map<String?, Any?> {
         @Suppress("IMPLICIT_CAST_TO_ANY", "USELESS_IS_CHECK", "UNCHECKED_CAST")
         return when (val v = parseMapOrNullImpl(yamlContent)) {
             null -> throw IllegalArgumentException("Cannot cast `null` to Map<String, Any?>")
@@ -199,7 +206,7 @@ class Yaml @JvmOverloads constructor(
      *
      * @return the [Map] if succeed, `null` otherwise.
      */
-    fun parseMapOrNull(@Language("yaml") yamlContent: String): Map<String?, Any?>? {
+    public fun decodeMapOrNullFromString(@Language("yaml") yamlContent: String): Map<String?, Any?>? {
         @Suppress("UNCHECKED_CAST")
         return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
     }
@@ -209,8 +216,8 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseList(@Language("yaml") yamlContent: String): List<Any?> {
-        when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+    public fun decodeListFromString(@Language("yaml") yamlContent: String): List<Any?> {
+        when (val v = decodeFromString(YamlNullableDynamicSerializer, yamlContent)) {
             is List<*> -> return v
             else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
         }
@@ -221,8 +228,8 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseListOrNull(@Language("yaml") yamlContent: String): List<Any?> {
-        when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+    public fun decodeListOrNullFromString(@Language("yaml") yamlContent: String): List<Any?> {
+        when (val v = decodeFromString(YamlNullableDynamicSerializer, yamlContent)) {
             is List<*> -> return v
             else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
         }
@@ -235,8 +242,8 @@ class Yaml @JvmOverloads constructor(
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
-    fun parseAny(@Language("yaml") yamlContent: String): Any? {
-        return parse(YamlNullableDynamicSerializer, yamlContent)
+    public fun decodeAnyFromString(@Language("yaml") yamlContent: String): Any? {
+        return decodeFromString(YamlNullableDynamicSerializer, yamlContent)
     }
 
     // endregion
@@ -245,7 +252,7 @@ class Yaml @JvmOverloads constructor(
 // internal
 
 internal fun Yaml.parseMapOrNullImpl(@Language("yaml") yamlContent: String): Any? {
-    return when (val v = parse(YamlNullableDynamicSerializer, yamlContent)) {
+    return when (val v = decodeFromString(YamlNullableDynamicSerializer, yamlContent)) {
         is Map<*, *> -> {
             val result = LinkedHashMap<String?, Any?>(v.size)
 

@@ -2,9 +2,9 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.PrimitiveKind
-import kotlinx.serialization.StructureKind
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.StructureKind
+import kotlinx.serialization.encoding.CompositeEncoder
 import net.mamoe.yamlkt.YamlConfiguration.MapSerialization
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
@@ -13,20 +13,20 @@ import kotlin.jvm.JvmName
  * Configurations to [Yaml]
  */
 @Suppress("ClassName")
-data class YamlConfiguration(
+public data class YamlConfiguration(
 
     // decoding
 
     /**
      * Recognize `null` as `0`, `0.0`, `0f`, "", '', or `false`
      */
-    @JvmField val nonStrictNullability: Boolean = false,
+    @JvmField public val nonStrictNullability: Boolean = false,
     /**
      * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int].
      *
      * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
      */
-    @JvmField val nonStrictNumber: Boolean = false,
+    @JvmField public val nonStrictNumber: Boolean = false,
 
     // encoding
 
@@ -34,42 +34,42 @@ data class YamlConfiguration(
      * Whether the format should encode values that are equal to the default values.
      * @see CompositeEncoder.shouldEncodeElementDefault for more information
      */
-    @JvmField val encodeDefaultValues: Boolean = true,
+    @JvmField public val encodeDefaultValues: Boolean = true,
     /**
      * Encode all strings with quotation.
      */
-    @JvmField val stringSerialization: StringSerialization = StringSerialization.NONE,
+    @JvmField public val stringSerialization: StringSerialization = StringSerialization.NONE,
     /**
      * The value set for [Boolean] serialization.
      * Default: serialize [Boolean] as "on" or "off"
      */
-    @JvmField val booleanSerialization: BooleanSerialization = BooleanSerialization.TRUE_FALSE,
+    @JvmField public val booleanSerialization: BooleanSerialization = BooleanSerialization.TRUE_FALSE,
     /**
      * The value set for `null` serialization.
      * Default: serialize `null` as "null"
      */
-    @JvmField val nullSerialization: NullSerialization = NullSerialization.NULL,
+    @JvmField public val nullSerialization: NullSerialization = NullSerialization.NULL,
     /**
      * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
      */
-    @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
+    @JvmField public val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     /**
      * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s.
      *
      * Comments are supported only when this is set to [MapSerialization.BLOCK_MAP]
      */
-    @JvmField val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
+    @JvmField public val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     /**
      * The format for [StructureKind.LIST]s
      */
-    @JvmField val listSerialization: ListSerialization = ListSerialization.AUTO
+    @JvmField public val listSerialization: ListSerialization = ListSerialization.AUTO
 ) {
     /**
      * The suggested format for [String] serialization.
      *
      * [String] isn't always serialized in this format, depending on the content.
      */
-    enum class StringSerialization {
+    public enum class StringSerialization {
         /**
          * Quote all [String]s with `'`
          *
@@ -112,50 +112,50 @@ data class YamlConfiguration(
     /**
      * The value set for [Boolean] serialization
      */
-    abstract class BooleanSerialization(
-        val trueValue: String,
-        val falseValue: String
+    public abstract class BooleanSerialization(
+        public val trueValue: String,
+        public val falseValue: String
     ) {
         /**
          * Serialize [Boolean] as "true" or "false"
          */
-        object TRUE_FALSE : BooleanSerialization("true", "false")
+        public object TRUE_FALSE : BooleanSerialization("true", "false")
 
         /**
          * Serialize [Boolean] as "TRUE" or "FALSE"
          */
-        object TRUE_FALSE_UPPERCASE : BooleanSerialization("TRUE", "FALSE")
+        public object TRUE_FALSE_UPPERCASE : BooleanSerialization("TRUE", "FALSE")
 
         @JvmName("getValue")
-        operator fun get(value: Boolean): String = if (value) trueValue else falseValue
+        public operator fun get(value: Boolean): String = if (value) trueValue else falseValue
     }
 
     /**
      * The value set for `null` serialization
      */
-    abstract class NullSerialization(
-        val value: String
+    public abstract class NullSerialization(
+        public val value: String
     ) {
         /**
          * Serialize `null` as "~"
          */
-        object TILDE : NullSerialization("~")
+        public object TILDE : NullSerialization("~")
 
         /**
          * Serialize `null` as "null"
          */
-        object NULL : NullSerialization("null")
+        public object NULL : NullSerialization("null")
 
         /**
          * Serialize `null` as "NULL"
          */
-        object NULL_UPPERCASE : NullSerialization("NULL")
+        public object NULL_UPPERCASE : NullSerialization("NULL")
     }
 
     /**
      * The serial format for [StructureKind.MAP]s and [StructureKind.CLASS]s
      */
-    enum class MapSerialization {
+    public enum class MapSerialization {
         /**
          * Serialize [StructureKind.MAP]s and [StructureKind.CLASS]s as block maps.
          *
@@ -183,7 +183,7 @@ data class YamlConfiguration(
     /**
      * The serial format for [StructureKind.LIST]s.
      */
-    enum class ListSerialization {
+    public enum class ListSerialization {
         /**
          * Force serialize [StructureKind.LIST]s as block(multiline) sequences
          *

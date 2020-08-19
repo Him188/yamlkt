@@ -1,11 +1,4 @@
-@file:JvmMultifileClass
-@file:JvmName("YamlUtils")
-
 package net.mamoe.yamlkt.internal
-
-import kotlin.jvm.JvmMultifileClass
-import kotlin.jvm.JvmName
-
 
 /**
  * Mapping to `org.intellij.lang.annotations.Language` on JVM.
@@ -18,8 +11,8 @@ import kotlin.jvm.JvmName
     AnnotationTarget.LOCAL_VARIABLE,
     AnnotationTarget.ANNOTATION_CLASS
 )
-internal expect annotation class Language(
-    val value: String,
-    val prefix: String = "",
-    val suffix: String = ""
+internal actual annotation class Language actual constructor(
+    actual val value: String,
+    actual val prefix: String,
+    actual val suffix: String
 )

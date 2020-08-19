@@ -29,10 +29,10 @@ internal class BlockMapTest {
  """
 
 
-        val old = Yaml.default.parse(MyData.serializer(), yaml)
-        println(allFlow.stringify(old))
-        val out = Yaml.default.stringify(old)
-        val new = Yaml.default.parse(MyData.serializer(), out)
+        val old = Yaml.default.decodeFromString(MyData.serializer(), yaml)
+        println(allFlow.encodeToString(old))
+        val out = Yaml.default.encodeToString(old)
+        val new = Yaml.default.decodeFromString(MyData.serializer(), out)
 
         assertEquals(old, new)
     }
@@ -50,6 +50,6 @@ internal class BlockMapTest {
             }
         }
 
-        assertEquals("{}", allBlock.stringify(Empty()).trim())
+        assertEquals("{}", allBlock.encodeToString(Empty()).trim())
     }
 }

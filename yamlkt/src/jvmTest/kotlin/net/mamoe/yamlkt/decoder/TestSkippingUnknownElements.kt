@@ -14,15 +14,15 @@ internal class TestSkippingUnknownElements {
             val useful: Int
         )
         assertEquals(
-            Data(1), Yaml.default.parse(
+            Data(1), Yaml.default.decodeFromString(
                 Data.serializer(), """
-unknown1: test
-unknown2: sss
-complex: 
-  - test
-  - sss
-useful: 1
-"""
+        unknown1: test
+        unknown2: sss
+        complex: 
+          - test
+          - sss
+        useful: 1
+        """
             )
         )
     }
@@ -34,15 +34,15 @@ useful: 1
             val useful: Int
         )
         assertEquals(
-            Data(1), Yaml.default.parse(
+            Data(1), Yaml.default.decodeFromString(
                 Data.serializer(), """
-{
-unknown1: test,
-unknown2: sss,
-complex: {test},
-useful: 1
-}
-"""
+        {
+        unknown1: test,
+        unknown2: sss,
+        complex: {test},
+        useful: 1
+        }
+        """
             )
         )
     }

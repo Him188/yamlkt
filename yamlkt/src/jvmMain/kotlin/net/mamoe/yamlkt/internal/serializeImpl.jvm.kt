@@ -1,13 +1,13 @@
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.ImplicitReflectionSerializer
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.serializerOrNull
 
+@OptIn(InternalSerializationApi::class)
 @Suppress("UNCHECKED_CAST")
-@OptIn(ImplicitReflectionSerializer::class)
 internal actual fun IYamlDynamicSerializer.serializeImpl(
     encoder: Encoder,
     value: Any

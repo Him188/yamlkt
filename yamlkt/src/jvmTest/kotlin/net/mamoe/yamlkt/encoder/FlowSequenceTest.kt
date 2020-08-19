@@ -6,6 +6,6 @@ import kotlin.test.assertEquals
 internal class FlowSequenceTest {
     @Test
     fun `test empty list`() {
-        assertEquals("[]", allFlow.stringify(listOf<String>()))
+        assertEquals("[]", allFlow.encodeToString(listOf<String>()))
     }
 }

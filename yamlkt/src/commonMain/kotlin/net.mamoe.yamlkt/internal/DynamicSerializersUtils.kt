@@ -3,9 +3,9 @@
 
 package net.mamoe.yamlkt.internal
 
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.*
+import kotlinx.serialization.encoding.Encoder
 import net.mamoe.yamlkt.YamlNullableDynamicSerializer
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName

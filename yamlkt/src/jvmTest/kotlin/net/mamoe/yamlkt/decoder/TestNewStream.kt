@@ -14,10 +14,10 @@ internal class TestNewStream {
         )
 
         println(
-            Yaml.default.parse(
+            Yaml.default.decodeFromString(
                 Data.serializer(), """
-        s: test 
-        """
+                s: test 
+                """
             )
         )
     }

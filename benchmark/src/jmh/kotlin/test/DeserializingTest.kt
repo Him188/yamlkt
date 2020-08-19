@@ -3,7 +3,6 @@ package test
 import com.google.gson.Gson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import net.mamoe.yamlkt.Yaml
 import org.openjdk.jmh.annotations.*
 import test.Constants.content
@@ -61,7 +60,7 @@ object Constants {
 }}
 """
 
-    val kotlinJson = Json(JsonConfiguration.Stable)
+    val kotlinJson = Json { allowStructuredMapKeys = true }
     val yamlkt = Yaml.default
     val gson = Gson()
 
@@ -94,24 +93,24 @@ open class DeserializingTest {
 
     @Benchmark
     fun yamlktWithDescriptor() {
-        yamlkt.parse(Data.serializer(), content)
+        yamlkt.decodeFromString(Data.serializer(), content)
     }
 
     @Benchmark
     fun yamlktContextual() {
-        yamlkt.parseYamlMap(content)
+        yamlkt.decodeYamlMapFromString(content)
     }
 
     private val snakeYaml = org.yaml.snakeyaml.Yaml()
 
     @Benchmark
     fun kotlinJsonWithDescriptor() {
-        kotlinJson.parse(Data.serializer(), content)
+        kotlinJson.decodeFromString(Data.serializer(), content)
     }
 
     @Benchmark
     fun kotlinContextual() {
-        kotlinJson.parseJson(content)
+        kotlinJson.parseToJsonElement(content)
     }
 
     @Benchmark
