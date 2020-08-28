@@ -9,7 +9,7 @@ import net.mamoe.yamlkt.YamlConfiguration.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-import kotlin.native.concurrent.ThreadLocal
+import kotlin.native.concurrent.SharedImmutable
 
 
 // region EscapeCharMappings
@@ -25,30 +25,26 @@ internal const val STRING_ESC = '\\'
 internal const val INVALID = 0.toChar()
 internal const val UNICODE_ESC = 'u'
 
+@SharedImmutable
+internal val REPLACEMENT_CHARS: Array<String?> = arrayOfNulls<String?>(128).apply {
+    for (i in 0..0xf) {
+        this[i] = "\\u000$i"
+    }
+    for (i in 0x10..0x1f) {
+        this[i] = "\\u00$i"
+    }
+    this['"'.toInt()] = "\\\""
+    this['\\'.toInt()] = "\\\\"
+    this['\t'.toInt()] = "\\t"
+    this['\b'.toInt()] = "\\b"
+    this['\n'.toInt()] = "\\n"
+    this['\r'.toInt()] = "\\r"
+    this[12] = "\\f"
+}
+
 private object EscapeCharMappings {
     @JvmStatic
     val ESCAPE_2_CHAR = CharArray(ESC2C_MAX)
-
-    @ThreadLocal
-    @JvmStatic
-    var REPLACEMENT_CHARS: Array<String?> = arrayOfNulls(128)
-
-    init {
-        for (i in 0..0xf) {
-            REPLACEMENT_CHARS[i] = "\\u000$i"
-        }
-        for (i in 0x10..0x1f) {
-            REPLACEMENT_CHARS[i] = "\\u00$i"
-        }
-        REPLACEMENT_CHARS['"'.toInt()] = "\\\""
-        REPLACEMENT_CHARS['\\'.toInt()] = "\\\\"
-        REPLACEMENT_CHARS['\t'.toInt()] = "\\t"
-        REPLACEMENT_CHARS['\b'.toInt()] = "\\b"
-        REPLACEMENT_CHARS['\n'.toInt()] = "\\n"
-        REPLACEMENT_CHARS['\r'.toInt()] = "\\r"
-        REPLACEMENT_CHARS[12] = "\\f"
-    }
-
 
     init {
         for (i in 0x00..0x1f) {
@@ -373,7 +369,7 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
 private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
     append('\"')
     for (ch in this@toDoubleQuotedString) {
-        val es = EscapeCharMappings.REPLACEMENT_CHARS[ch.toInt()]
+        val es = REPLACEMENT_CHARS[ch.toInt()]
         if (es != null) {
             append(es, 0, es.length - 1)
         } else append(ch)
@@ -411,7 +407,7 @@ internal fun String.getQuotationAvailability(): Int {
                 doubleWithoutEscape = false
                 canBeUnquoted = false
             }
-            doubleWithoutEscape && EscapeCharMappings.REPLACEMENT_CHARS[c.toInt()] != null -> {
+            doubleWithoutEscape && REPLACEMENT_CHARS[c.toInt()] != null -> {
                 doubleWithoutEscape = false
             }
             c == '\'' -> canBeSingleQuoted = false

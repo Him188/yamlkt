@@ -7,16 +7,13 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-import kotlin.native.concurrent.ThreadLocal
 
 
 @Suppress("ConstantConditionIf")
 internal object Debugging {
-    @ThreadLocal
     @JvmStatic
     internal var enabled: Boolean = false
 
-    @ThreadLocal
     @JvmStatic
     var logIndent = 0
 

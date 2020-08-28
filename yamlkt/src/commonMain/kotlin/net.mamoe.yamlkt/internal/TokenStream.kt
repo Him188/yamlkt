@@ -9,7 +9,7 @@ import kotlin.contracts.contract
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
-import kotlin.native.concurrent.ThreadLocal
+import kotlin.native.concurrent.SharedImmutable
 
 @Suppress("ClassName", "PropertyName")
 internal enum class Token(val value: Char) {
@@ -30,9 +30,8 @@ internal enum class Token(val value: Char) {
 
     companion object {
         // char-TokenClass mapping
-        @ThreadLocal
         @JvmField
-        var values: Array<Token?>? = null
+        val values: Array<Token?>? = __values__init
 
         private const val valuesLastIndex: Char = 125.toChar()
 
@@ -44,7 +43,8 @@ internal enum class Token(val value: Char) {
 
 // https://youtrack.jetbrains.com/issue/KT-38383
 @Suppress("ObjectPropertyName")
-internal val __init = run {
+@SharedImmutable
+private val __values__init: Array<Token?>? = run {
     val all = arrayOf(
         Token.COMMA,
         Token.COLON,
@@ -53,7 +53,7 @@ internal val __init = run {
         Token.MULTILINE_LIST_FLAG
     )
 
-    Token.values = arrayOfNulls<Token>(
+    arrayOfNulls<Token>(
         all.map { it.value.toInt() }.maxOrNull()!! + 1
     ).apply {
         for (tokenClass in all) {
@@ -131,10 +131,6 @@ internal class TokenStream(
 ) : StringBufHolder() {
     @JvmField
     var cur: Int = 0
-
-    init {
-        __init
-    }
 
     @JvmField
     var currentIndent: Int = 0
