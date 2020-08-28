@@ -22,8 +22,8 @@ jobs:
                 run: ./gradlew build # if test's failed, don't publish
             -   name: Check keys
                 run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :yamlkt:bintrayUpload
-                run: ./gradlew :yamlkt:bintrayUpload -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+            -   name: Gradle :yamlkt:publish
+                run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
     build-on-windows:
         runs-on: windows-latest
         steps:
@@ -40,8 +40,8 @@ jobs:
                 run: ./gradlew build # if test's failed, don't publish
             -   name: Check keys
                 run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :yamlkt:bintrayUpload
-                run: ./gradlew :yamlkt:bintrayUpload -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+            -   name: Gradle :yamlkt:publish
+                run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
     build-on-macos:
         runs-on: macos-latest
         steps:
@@ -58,5 +58,5 @@ jobs:
                 run: ./gradlew build # if test's failed, don't publish
             -   name: Check keys
                 run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :yamlkt:bintrayUpload
-                run: ./gradlew :yamlkt:bintrayUpload -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+            -   name: Gradle :yamlkt:publish
+                run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
