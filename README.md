@@ -25,10 +25,9 @@ repositories {
 
 Replace `<version>` with the newest version here: [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 ```kotlin
-// choose one of them depending on your platform
 implementation("net.mamoe.yamlkt:yamlkt:<version>")
 ```
-If your project is multiplatform, you need only to add this dependency for commonMain.
+**If your project is multiplatform, you need only to add this dependency for commonMain.**  
 
 
 #### Maven
