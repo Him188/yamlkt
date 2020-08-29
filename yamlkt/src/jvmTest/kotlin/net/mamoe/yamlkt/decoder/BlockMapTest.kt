@@ -183,4 +183,18 @@ t:
             )
         )
     }
+
+    /*
+    @Test
+    fun testForceSpaceAfterColon() {
+        assertFailsWith<YamlDecodingException> {
+            allBlock.decodeMapFromString(
+                """
+                nonnull: value
+                s:v
+                foo: bar
+                """
+            )
+        }
+    }*/
 }
