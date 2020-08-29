@@ -2,6 +2,7 @@
 
 package net.mamoe.yamlkt
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.StringFormat
@@ -86,7 +87,7 @@ public class Yaml @JvmOverloads constructor(
     // region stringify
 
     /**
-     * Stringify [value] to [String] in YAML format using [serializer]
+     * Encode [value] to [String] in YAML format using [serializer]
      *
      * Example:
      * ```
@@ -115,7 +116,7 @@ public class Yaml @JvmOverloads constructor(
     }
 
     /**
-     * Stringify [value] to [String] in YAML format using [YamlNullableDynamicSerializer]
+     * Encode [value] to [String] in YAML format using [YamlNullableDynamicSerializer]
      *
      * **WARNING**: This approach is slow and may not work as expected on JS or native,
      * see [YamlDynamicSerializer] for more information
@@ -130,7 +131,7 @@ public class Yaml @JvmOverloads constructor(
     // region parse
 
     /**
-     * Parse [string] to a [T] using [deserializer]
+     * Decode [string] to a [T] using [deserializer]
      *
      * Example:
      * ```
