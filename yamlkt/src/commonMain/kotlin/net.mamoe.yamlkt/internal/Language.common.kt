@@ -1,5 +1,6 @@
 @file:JvmMultifileClass
 @file:JvmName("YamlUtils")
+@file:OptIn(ExperimentalMultiplatform::class)
 
 package net.mamoe.yamlkt.internal
 
@@ -18,6 +19,7 @@ import kotlin.jvm.JvmName
     AnnotationTarget.LOCAL_VARIABLE,
     AnnotationTarget.ANNOTATION_CLASS
 )
+@OptionalExpectation
 internal expect annotation class Language(
     val value: String,
     val prefix: String = "",
