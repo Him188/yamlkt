@@ -1,8 +1,11 @@
 package net.mamoe.yamlkt.testsFromIssues
 
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.encoder.allBlock
+import net.mamoe.yamlkt.encoder.allFlow
+import net.mamoe.yamlkt.internal.Debugging
 import org.junit.Test
+import kotlin.test.assertEquals
 
 internal class Issue6 {
 
@@ -14,8 +17,12 @@ internal class Issue6 {
     )
 
     @Test
-    fun test() {
-        val result = Yaml.default.encodeToString(Config.serializer(), Config())
-        println(result)
+    fun testEnum() {
+        Debugging.enabled = true
+        var result = allBlock.encodeToString(Config.serializer(), Config())
+        assertEquals("musicApi: QQ", result.trim())
+
+        result = allFlow.encodeToString(Config.serializer(), Config())
+        assertEquals("{ musicApi: QQ }", result.trim())
     }
 }

@@ -144,8 +144,15 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeValue(value: Char) = writer.write(value)
-        override fun encodeValue(value: String) = writer.write(value)
+        override fun encodeValue(value: Char) {
+            justStarted = false
+            writer.write(value)
+        }
+
+        override fun encodeValue(value: String) {
+            justStarted = false
+            writer.write(value)
+        }
         // endregion
 
         // region for class
@@ -203,8 +210,15 @@ internal class YamlEncoder(
             writer.write(" ]")
         }
 
-        override fun encodeValue(value: Char) = writer.write(value)
-        override fun encodeValue(value: String) = writer.write(value)
+        override fun encodeValue(value: Char) {
+            justStarted = false
+            writer.write(value)
+        }
+
+        override fun encodeValue(value: String) {
+            justStarted = false
+            writer.write(value)
+        }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
@@ -237,8 +251,15 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeValue(value: Char) = writer.write(value)
-        override fun encodeValue(value: String) = writer.write(value)
+        override fun encodeValue(value: Char) {
+            justStarted = false
+            writer.write(value)
+        }
+
+        override fun encodeValue(value: String) {
+            justStarted = false
+            writer.write(value)
+        }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
@@ -286,8 +307,15 @@ internal class YamlEncoder(
             }
         }
 
-        override fun encodeValue(value: Char) = writer.write(value)
-        override fun encodeValue(value: String) = writer.write(value)
+        override fun encodeValue(value: Char) {
+            justStarted = false
+            writer.write(value)
+        }
+
+        override fun encodeValue(value: String) {
+            justStarted = false
+            writer.write(value)
+        }
 
         override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             if (descriptor.kind == StructureKind.CLASS) {
