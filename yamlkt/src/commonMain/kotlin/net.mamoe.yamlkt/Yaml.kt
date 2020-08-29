@@ -196,35 +196,11 @@ public class Yaml @JvmOverloads constructor(
     }
 
     /**
-     * Parse a [Map] from [yamlContent].
-     *
-     * Non-literal keys are mapped using [Any.toString]
-     *
-     * @return the [Map] if succeed, `null` otherwise.
-     */
-    public fun decodeMapOrNullFromString(@Language("yaml") yamlContent: String): Map<String?, Any?>? {
-        @Suppress("UNCHECKED_CAST")
-        return parseMapOrNullImpl(yamlContent) as? Map<String?, Any?>
-    }
-
-    /**
      * Parse a [List] from [yamlContent].
      *
      * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
      */
     public fun decodeListFromString(@Language("yaml") yamlContent: String): List<Any?> {
-        when (val v = decodeFromString(YamlNullableDynamicSerializer, yamlContent)) {
-            is List<*> -> return v
-            else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
-        }
-    }
-
-    /**
-     * Parse a [List] from [yamlContent].
-     *
-     * @throws IllegalArgumentException if the [yamlContent] isn't a yaml list(sequence)
-     */
-    public fun decodeListOrNullFromString(@Language("yaml") yamlContent: String): List<Any?> {
         when (val v = decodeFromString(YamlNullableDynamicSerializer, yamlContent)) {
             is List<*> -> return v
             else -> throw IllegalArgumentException("Cannot cast ${v?.classSimpleName()} to List<Any?>")
