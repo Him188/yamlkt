@@ -467,6 +467,7 @@ internal class YamlEncoder(
         override fun beginCollection(descriptor: SerialDescriptor, collectionSize: Int): CompositeEncoder {
             if (collectionSize == 0) {
                 if (descriptor.kind == StructureKind.LIST) {
+                    writer.levelIncrease()
                     return EmptySequenceEncoder(linebreakAfterFinish)
                 }
             }
@@ -484,25 +485,25 @@ internal class YamlEncoder(
             encodeSerializableElement(descriptor, index, Boolean.serializer(), value)
 
         final override fun encodeByteElement(descriptor: SerialDescriptor, index: Int, value: Byte) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Byte.serializer(), value)
 
         final override fun encodeDoubleElement(descriptor: SerialDescriptor, index: Int, value: Double) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Double.serializer(), value)
 
         final override fun encodeFloatElement(descriptor: SerialDescriptor, index: Int, value: Float) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Float.serializer(), value)
 
         final override fun encodeIntElement(descriptor: SerialDescriptor, index: Int, value: Int) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Int.serializer(), value)
 
         final override fun encodeLongElement(descriptor: SerialDescriptor, index: Int, value: Long) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Long.serializer(), value)
 
         final override fun encodeShortElement(descriptor: SerialDescriptor, index: Int, value: Short) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
+            encodeSerializableElement(descriptor, index, Short.serializer(), value)
 
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
-            encodeSerializableElement(descriptor, index, String.serializer(), value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
+            encodeSerializableElement(descriptor, index, String.serializer(), value)
 
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
