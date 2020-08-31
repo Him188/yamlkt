@@ -109,7 +109,7 @@ public class Yaml @JvmOverloads constructor(
         }.fold(
             onSuccess = { return sb.toString() },
             onFailure = {
-                Debugging.logCustom { "[Debugging] Printed:\n\n$sb" }
+                Debugging.logCustom { "[Debugging] Printed:\n\n```\n$sb\n```" }
                 throw it
             }
         )
