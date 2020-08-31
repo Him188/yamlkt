@@ -95,11 +95,11 @@ YamlKt provides a contextual serializer `YamlDynamicSerializer` for `Any`
 and `YamlNullDynamicSerializer` for `Any?`
 
 By default, `YamlDynamicSerializer` is installed to `Any`.  
-You can start by using `@ContextualSerialization`:
+You can start by using `@Contextual`:
 ```kotlin
 @Serializable
 data class Test(
-    val any: @ContextualSerialization Any
+    val any: @Contextual Any
 )
 
 Yaml.default.parse(Test.serializer(), yamlText)
