@@ -7,6 +7,7 @@ package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
@@ -294,7 +295,7 @@ internal class YamlEncoder(
 
         private var isKey: Boolean = true
         private inline fun structuredKeyValue(block: YamlWriter.() -> Unit) {
-            val isKey = isKey.also { isKey = !isKey }
+            val isKey = isKey.also { isKey = !it }
             if (isKey) {
                 if (justStarted) justStarted = false
                 else writer.writeln()
@@ -308,19 +309,20 @@ internal class YamlEncoder(
         }
 
         override fun encodeValue(value: Char) {
+            Debugging.logCustom { "encodeValue, $value" }
             justStarted = false
             writer.write(value)
         }
 
         override fun encodeValue(value: String) {
+            Debugging.logCustom { "encodeValue, $value" }
             justStarted = false
             writer.write(value)
         }
 
         override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
-            if (descriptor.kind == StructureKind.CLASS) {
-                super.encodeSerializableElement0(descriptor, index, serializer, value)
-            } else structuredKeyValue {
+            Debugging.logCustom { "encodeSerializableElement0, elementName=${descriptor.getElementName(index)}" }
+            structuredKeyValue {
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
             }
         }
@@ -337,17 +339,20 @@ internal class YamlEncoder(
             }
         }
 
-        // region for class
+        // region for primitive values in class
         // fast way
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) {
-            justStarted = false
-            writer.writeComments(descriptor, index)
-            writer.writeIndentedSmart(descriptor.getElementName(index))
-            writer.write(": ")
-            writer.writeln(value)
+            Debugging.logCustom { "encodeElement, elementName=${descriptor.getElementName(index)}" }
+            structuredKeyValue {
+                writer.write(descriptor.getElementName(index))
+            }
+            structuredKeyValue {
+                writer.writeln(value)
+            }
         }
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            Debugging.logCustom { "encodeElement, elementName=${descriptor.getElementName(index)}" }
             justStarted = false
             writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
@@ -357,19 +362,19 @@ internal class YamlEncoder(
         // endregion
 
         override fun endStructure0(descriptor: SerialDescriptor) {
+            Debugging.logCustom { "endStructure0" }
             if (justStarted) {
                 writer.writeln("{}")
             }
         }
 
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
-            if (descriptor.kind == StructureKind.MAP) return
+            Debugging.logCustom { "writeValueHead, elementName=${descriptor.getElementName(index)}" }
+            if (descriptor.kind == StructureKind.MAP) return // keys and values are serialized separately.
             if (descriptor.kind == StructureKind.LIST) return
-            // structuredKeyValue {
-            writer.writeComments(descriptor, index)
-            writer.writeIndentedSmart(descriptor.getElementName(index))
-            writer.write(": ")
-            //  }
+            structuredKeyValue {
+                writer.write(descriptor.getElementName(index))
+            }
         }
     }
 
@@ -473,31 +478,31 @@ internal class YamlEncoder(
         }
 
         final override fun encodeCharElement(descriptor: SerialDescriptor, index: Int, value: Char) =
-            encodeElement(descriptor, index, value)
+            encodeSerializableElement(descriptor, index, Char.serializer(), value)
 
         final override fun encodeBooleanElement(descriptor: SerialDescriptor, index: Int, value: Boolean) =
-            encodeElement(descriptor, index, configuration.booleanSerialization.run { if (value) trueValue else falseValue })
+            encodeSerializableElement(descriptor, index, Boolean.serializer(), value)
 
         final override fun encodeByteElement(descriptor: SerialDescriptor, index: Int, value: Byte) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeDoubleElement(descriptor: SerialDescriptor, index: Int, value: Double) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeFloatElement(descriptor: SerialDescriptor, index: Int, value: Float) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeIntElement(descriptor: SerialDescriptor, index: Int, value: Int) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeLongElement(descriptor: SerialDescriptor, index: Int, value: Long) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeShortElement(descriptor: SerialDescriptor, index: Int, value: Short) =
-            encodeElement(descriptor, index, value.toString())
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toString())
 
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
-            encodeElement(descriptor, index, value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
+            encodeSerializableElement(descriptor, index, String.serializer(), value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {

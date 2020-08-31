@@ -33,10 +33,16 @@ internal class Issue6 {
     @Test
     fun testClass() {
         Debugging.enabled = true
-        var result = allBlock.encodeToString(TestClass.serializer(), TestClass(MusicApi.QQ, "1"))
-        assertEquals("musicApi: QQ", result.trim())
 
-        result = allFlow.encodeToString(Config.serializer(), Config())
-        assertEquals("{ musicApi: QQ }", result.trim())
+        var result = allBlock.encodeToString(TestClass.serializer(), TestClass(MusicApi.QQ, "1"))
+        assertEquals(
+            """
+            musicApi: QQ
+            testString: 1
+        """.trimIndent(), result.trim()
+        )
+
+        result = allFlow.encodeToString(TestClass.serializer(), TestClass(MusicApi.QQ, "1"))
+        assertEquals("{ musicApi: QQ, testString: 1 }", result.trim())
     }
 }
