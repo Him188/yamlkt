@@ -25,4 +25,18 @@ internal class Issue6 {
         result = allFlow.encodeToString(Config.serializer(), Config())
         assertEquals("{ musicApi: QQ }", result.trim())
     }
+
+
+    @Serializable
+    data class TestClass(var musicApi: MusicApi, var testString: String)
+
+    @Test
+    fun testClass() {
+        Debugging.enabled = true
+        var result = allBlock.encodeToString(TestClass.serializer(), TestClass(MusicApi.QQ, "1"))
+        assertEquals("musicApi: QQ", result.trim())
+
+        result = allFlow.encodeToString(Config.serializer(), Config())
+        assertEquals("{ musicApi: QQ }", result.trim())
+    }
 }
