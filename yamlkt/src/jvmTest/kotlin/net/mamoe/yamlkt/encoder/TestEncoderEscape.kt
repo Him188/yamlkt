@@ -38,6 +38,30 @@ internal class TestEncoderEscape {
     }
 
     @Test
+    fun colonEscape() {
+        assertEquals("\":\"", double.encodeToString<String>(":"))
+        assertEquals("\':\'", single.encodeToString<String>(":"))
+        assertEquals("\':\'", none.encodeToString<String>(":"))
+        assertEquals("\':\'", best.encodeToString<String>(":"))
+    }
+
+    @Test
+    fun colonEscapeWithChinese() {
+        assertEquals("\":好\"", double.encodeToString<String>(":好"))
+        assertEquals("\':好\'", single.encodeToString<String>(":好"))
+        assertEquals("\':好\'", none.encodeToString<String>(":好"))
+        assertEquals("\':好\'", best.encodeToString<String>(":好"))
+    }
+
+    @Test
+    fun spaceEscape() {
+        assertEquals("\" \"", double.encodeToString<String>(" "))
+        assertEquals("\' \'", single.encodeToString<String>(" "))
+        assertEquals("\' \'", none.encodeToString<String>(" "))
+        assertEquals("\' \'", best.encodeToString<String>(" "))
+    }
+
+    @Test
     fun testUnicodeEscape() {
         assertEquals(
             """

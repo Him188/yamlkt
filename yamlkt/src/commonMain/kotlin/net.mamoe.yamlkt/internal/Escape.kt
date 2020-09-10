@@ -407,7 +407,7 @@ internal fun String.getQuotationAvailability(): Int {
                 doubleWithoutEscape = false
                 canBeUnquoted = false
             }
-            doubleWithoutEscape && REPLACEMENT_CHARS[c.toInt()] != null -> {
+            doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.toInt()) != null -> {
                 doubleWithoutEscape = false
             }
             c == '\'' -> canBeSingleQuoted = false

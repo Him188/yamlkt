@@ -10,6 +10,16 @@ import kotlin.test.assertFailsWith
 internal class DecoderEscapeTest {
 
     @Test
+    fun escapeColon() {
+        assertEquals(
+            ":",
+            default.decodeAnyFromString(
+                """":""""
+            )
+        )
+    }
+
+    @Test
     fun escapeMapping() {
         val mappings: Map<String, String> = mapOf(
             "\"" to """   "\""   """.trim(),
