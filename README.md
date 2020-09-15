@@ -11,9 +11,9 @@ This project is in alpha state.
 Dependency requirements:
 
 | yamlkt | Required Kotlin | Using kotlinx.serialization |
-|:-------|:----------------|:-------------------------------|
+|:-------:|:----------------:|:-------------------------------:|
 | 0.3.3  | 1.3.70+          | 0.20.0                         |
-| 0.4.0+  | 1.4.0+          | 1.0.0-RC |
+| 0.4.0 or higher  | 1.4.0+          | 1.0.0-RC |
 
 #### Gradle
 
