@@ -284,21 +284,17 @@ internal class YamlEncoder(
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
     }
 
-    internal inner class BlockMapOrClassEncoder(parent: AbstractEncoder?) : BlockEncoder(false) {
-        init {
-            if (parent is BlockMapOrClassEncoder) {
-                writer.writeln()
-            }
-        }
-
+    internal inner class BlockMapOrClassEncoder(private val parent: AbstractEncoder?) : BlockEncoder(false) {
         private var justStarted = true
 
         private var isKey: Boolean = true
         private inline fun structuredKeyValue(block: YamlWriter.() -> Unit) {
             val isKey = isKey.also { isKey = !it }
             if (isKey) {
-                if (justStarted) justStarted = false
-                else writer.writeln()
+                if (justStarted) {
+                    if (parent is BlockMapOrClassEncoder) writer.writeln()
+                    justStarted = false
+                } else writer.writeln()
 
                 writer.writeIndentSmart()
                 writer.block()
@@ -310,13 +306,20 @@ internal class YamlEncoder(
 
         override fun encodeValue(value: Char) {
             Debugging.logCustom { "encodeValue, $value" }
-            justStarted = false
+            writelnIfJustStartedAndParentIsBlockMap()
             writer.write(value)
+        }
+
+        private fun writelnIfJustStartedAndParentIsBlockMap() {
+            if (justStarted) {
+                if (parent is BlockMapOrClassEncoder) writer.writeln()
+                justStarted = false
+            }
         }
 
         override fun encodeValue(value: String) {
             Debugging.logCustom { "encodeValue, $value" }
-            justStarted = false
+            writelnIfJustStartedAndParentIsBlockMap()
             writer.write(value)
         }
 
@@ -353,7 +356,7 @@ internal class YamlEncoder(
 
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) {
             Debugging.logCustom { "encodeElement, elementName=${descriptor.getElementName(index)}" }
-            justStarted = false
+            writelnIfJustStartedAndParentIsBlockMap()
             writer.writeComments(descriptor, index)
             writer.writeIndentedSmart(descriptor.getElementName(index))
             writer.write(": ")
@@ -364,6 +367,7 @@ internal class YamlEncoder(
         override fun endStructure0(descriptor: SerialDescriptor) {
             Debugging.logCustom { "endStructure0" }
             if (justStarted) {
+                // no empty line wrote.
                 writer.writeln("{}")
             }
         }
