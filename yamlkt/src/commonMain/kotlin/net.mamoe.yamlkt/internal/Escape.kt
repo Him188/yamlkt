@@ -412,6 +412,7 @@ internal fun String.getQuotationAvailability(): Int {
             }
             c == '\'' -> canBeSingleQuoted = false
             c == '\"' -> doubleWithoutEscape = false
+            c == '#' -> canBeUnquoted = false
             c == ':' -> lastIsColon = true
             c == ' ' && lastIsColon -> canBeUnquoted = false
         }
