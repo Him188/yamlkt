@@ -10,11 +10,12 @@ This project is in alpha state.
 
 Dependency requirements:
 
-| yamlkt | Required Kotlin | Using kotlinx.serialization |
-|:-------:|:----------------:|:-------------------------------:|
-| 0.3.3  | 1.3.70+          | 0.20.0                         |
-| 0.4.0~0.5.3  | 1.4.0          | 1.0.0-RC |
-| 0.6.0 or higher  | 1.4.10          | 1.0.0-RC2 |
+| yamlkt | Kotlin  | kotlinx.serialization |
+|:------:|:-------:|:---------------------:|
+| 0.3.3  | 1.3.70+ |        0.20.0         |
+| 0.5.3  |  1.4.0  |       1.0.0-RC        |
+| 0.6.0  | 1.4.10  |       1.0.0-RC2       |
+| 0.7.0  | 1.4.10  |         1.0.1         |
 
 #### Gradle
 
@@ -59,7 +60,7 @@ This library supports:
 - `YamlElement` wrapper classes, allowing `YamlMap.getInt`, `YamlMap.getLong`
 - comments encoding (Using annotation `Comment`)
 
-The features that are't yet supported:
+The features that aren't yet supported:
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|`, `>`, `\`)
@@ -68,7 +69,7 @@ The features that are't yet supported:
 ## Learn to use
 
 #### Serialize / deserialize with compiled serializers
-This approach is the most fast and recommended way as the type is already provided.
+This approach is fastest and recommended way as the type is already provided.
 ```kotlin
 @Serializable
 data class Test(
