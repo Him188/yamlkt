@@ -9,15 +9,15 @@ internal class DecoderTest {
     private val default = Yaml()
     private val nonStrictNullability =
         Yaml(
-            configuration = YamlConfiguration(
+            configuration = YamlConfiguration {
                 nonStrictNullability = true
-            )
+            }
         )
     private val nonStrictNumber =
         Yaml(
-            configuration = YamlConfiguration(
+            configuration = YamlConfiguration {
                 nonStrictNumber = true
-            )
+            }
         )
 
 
@@ -67,9 +67,9 @@ internal class DecoderTest {
         )
 
         val nonStrict = Yaml(
-            configuration = YamlConfiguration(
+            configuration = YamlConfiguration{
                 nonStrictNumber = true
-            )
+            }
         )
 
         assertEquals(
@@ -91,9 +91,9 @@ internal class DecoderTest {
         )
 
         val strict = Yaml(
-            configuration = YamlConfiguration(
+            configuration = YamlConfiguration {
                 nonStrictNumber = false
-            )
+            }
         )
 
         assertFails {
@@ -113,9 +113,9 @@ internal class DecoderTest {
         )
 
         val yaml = Yaml(
-            configuration = YamlConfiguration(
+            configuration = YamlConfiguration {
                 nonStrictNullability = true
-            )
+            }
         )
 
         assertEquals(

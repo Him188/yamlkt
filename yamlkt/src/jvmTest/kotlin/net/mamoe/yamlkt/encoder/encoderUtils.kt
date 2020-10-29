@@ -44,25 +44,25 @@ inline fun Yaml.testDynamic(
 ) = testDescriptorBased(YamlDynamicSerializer, value, print)
 
 val allFlow = Yaml(
-    configuration = YamlConfiguration(
-        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP,
-        classSerialization = YamlConfiguration.MapSerialization.FLOW_MAP,
+    configuration = YamlConfiguration {
+        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
+        classSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
         listSerialization = YamlConfiguration.ListSerialization.FLOW_SEQUENCE
-    )
+    }
 )
 
 val blockClassOtherFlow = Yaml(
-    configuration = YamlConfiguration(
-        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP,
-        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP,
+    configuration = YamlConfiguration {
+        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
+        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
         listSerialization = YamlConfiguration.ListSerialization.FLOW_SEQUENCE
-    )
+    }
 )
 
 val allBlock = Yaml(
-    configuration = YamlConfiguration(
-        mapSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP,
-        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP,
+    configuration = YamlConfiguration {
+        mapSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
+        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
         listSerialization = YamlConfiguration.ListSerialization.BLOCK_SEQUENCE
-    )
+    }
 )

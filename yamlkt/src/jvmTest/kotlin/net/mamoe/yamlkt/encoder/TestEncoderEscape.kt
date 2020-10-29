@@ -7,24 +7,24 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 private val single = Yaml(
-    configuration = YamlConfiguration(
+    configuration = YamlConfiguration {
         stringSerialization = YamlConfiguration.StringSerialization.SINGLE_QUOTATION
-    )
+    }
 )
 private val double = Yaml(
-    configuration = YamlConfiguration(
+    configuration = YamlConfiguration {
         stringSerialization = YamlConfiguration.StringSerialization.DOUBLE_QUOTATION
-    )
+    }
 )
 private val none = Yaml(
-    configuration = YamlConfiguration(
+    configuration = YamlConfiguration {
         stringSerialization = YamlConfiguration.StringSerialization.NONE
-    )
+    }
 )
 private val best = Yaml(
-    configuration = YamlConfiguration(
+    configuration = YamlConfiguration {
         stringSerialization = YamlConfiguration.StringSerialization.BEST_PERFORMANCE
-    )
+    }
 )
 
 
