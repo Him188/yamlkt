@@ -69,10 +69,6 @@ internal class YamlDecoder(
         @JvmField val name: String
     ) : CompositeDecoder, Decoder {
 
-        @Suppress("OverridingDeprecatedMember", "DEPRECATION", "DEPRECATION_ERROR")
-        override val updateMode: kotlinx.serialization.UpdateMode
-            get() = super<CompositeDecoder>.updateMode
-
         abstract val kind: Kind
 
         internal val parentYamlDecoder: YamlDecoder get() = this@YamlDecoder

@@ -2,15 +2,15 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.StringFormat
+import kotlinx.serialization.*
+import kotlinx.serialization.modules.EmptySerializersModule
 import kotlinx.serialization.modules.SerializersModule
 import net.mamoe.yamlkt.internal.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 
@@ -51,7 +51,7 @@ import kotlin.jvm.JvmStatic
  * @see Yaml.nonStrict The instance using all non-strict configurations.
  */
 public class Yaml @JvmOverloads constructor(
-    public val configuration: YamlConfiguration = YamlConfiguration(),
+    public val configuration: YamlConfiguration = YamlConfiguration.Default,
 
     /**
      * The context
@@ -77,10 +77,10 @@ public class Yaml @JvmOverloads constructor(
          */
         @JvmStatic
         public val nonStrict: Yaml = Yaml(
-            configuration = YamlConfiguration(
-                nonStrictNumber = true,
+            configuration = YamlConfiguration {
+                nonStrictNumber = true
                 nonStrictNullability = true
-            )
+            }
         )
     }
 
@@ -219,6 +219,23 @@ public class Yaml @JvmOverloads constructor(
     }
 
     // endregion
+}
+
+/**
+ * Creates a [Yaml] instance using the configuration [configuration]
+ */
+@ExperimentalSerializationApi
+public inline fun Yaml(serializersModule: SerializersModule, configuration: YamlConfigurationBuilder.() -> Unit): Yaml {
+    contract { callsInPlace(configuration, InvocationKind.EXACTLY_ONCE) }
+    return Yaml(YamlConfigurationBuilder().apply(configuration).build(), serializersModule)
+}
+
+/**
+ * Creates a [Yaml] instance using the configuration [configuration]
+ */
+public inline fun Yaml(configuration: YamlConfigurationBuilder.() -> Unit): Yaml {
+    contract { callsInPlace(configuration, InvocationKind.EXACTLY_ONCE) }
+    return Yaml(YamlConfigurationBuilder().apply(configuration).build(), EmptySerializersModule)
 }
 
 // internal

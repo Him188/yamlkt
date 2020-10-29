@@ -36,6 +36,7 @@ kotlin {
         all {
             languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
             languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
+            languageSettings.useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
             languageSettings.progressiveMode = true
         }
 

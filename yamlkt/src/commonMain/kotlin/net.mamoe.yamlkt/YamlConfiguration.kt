@@ -6,14 +6,117 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
 import net.mamoe.yamlkt.YamlConfiguration.MapSerialization
+import kotlin.DeprecationLevel.ERROR
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmName
+import kotlin.jvm.JvmStatic
+
+/**
+ * The builder for [YamlConfiguration].
+ */
+public class YamlConfigurationBuilder {
+
+    // decoding
+
+    /**
+     * Recognize `null` as `0`, `0.0`, `0f`, "", '', or `false`
+     */
+    @JvmField
+    public var nonStrictNullability: Boolean = false
+
+    /**
+     * Allows to perform number casting that may lose precision, e.g. from a [Double] to a [Int].
+     *
+     * This will also affect boolean casting, e.g. `1.0` can be converted to `true`, and `0.0` can be converted to `false`
+     */
+    @JvmField
+    public var nonStrictNumber: Boolean = false
+
+    // encoding
+
+    /**
+     * Whether the format should encode values that are equal to the default values.
+     * @see CompositeEncoder.shouldEncodeElementDefault for more information
+     */
+    @JvmField
+    public var encodeDefaultValues: Boolean = true
+
+    /**
+     * Encode all strings with quotation.
+     */
+    @JvmField
+    public var stringSerialization: YamlConfiguration.StringSerialization = YamlConfiguration.StringSerialization.NONE
+
+    /**
+     * The value set for [Boolean] serialization.
+     * Default: serialize [Boolean] as "on" or "off"
+     */
+    @JvmField
+    public var booleanSerialization: YamlConfiguration.BooleanSerialization = YamlConfiguration.BooleanSerialization.TRUE_FALSE
+
+    /**
+     * The value set for `null` serialization.
+     * Default: serialize `null` as "null"
+     */
+    @JvmField
+    public var nullSerialization: YamlConfiguration.NullSerialization = YamlConfiguration.NullSerialization.NULL
+
+    /**
+     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s
+     */
+    @JvmField
+    public var mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP
+
+    /**
+     * The format for [StructureKind.MAP]s and [StructureKind.CLASS]s.
+     *
+     * Comments are supported only when this is set to [MapSerialization.BLOCK_MAP]
+     */
+    @JvmField
+    public var classSerialization: MapSerialization = MapSerialization.BLOCK_MAP
+
+    /**
+     * The format for [StructureKind.LIST]s
+     */
+    @JvmField
+    public var listSerialization: YamlConfiguration.ListSerialization = YamlConfiguration.ListSerialization.AUTO
+
+    /**
+     * Builds a [YamlConfiguration].
+     */
+    @Suppress("DEPRECATION_ERROR")
+    public fun build(): YamlConfiguration = YamlConfiguration(
+        nonStrictNullability,
+        nonStrictNumber,
+        encodeDefaultValues,
+        stringSerialization,
+        booleanSerialization,
+        nullSerialization,
+        mapSerialization,
+        classSerialization,
+        listSerialization
+    )
+}
+
+/**
+ * Builds a [YamlConfiguration] with [YamlConfigurationBuilder]
+ */
+public inline fun YamlConfiguration(apply: YamlConfigurationBuilder.() -> Unit): YamlConfiguration {
+    contract { callsInPlace(apply, InvocationKind.EXACTLY_ONCE) }
+    return YamlConfigurationBuilder().apply(apply).build()
+}
 
 /**
  * Configurations to [Yaml]
+ *
+ * @see YamlConfigurationBuilder
  */
 @Suppress("ClassName")
-public data class YamlConfiguration(
+public data class YamlConfiguration
+@Deprecated("Please use YamlConfiguration builder dsl instead.", level = ERROR, replaceWith = ReplaceWith("YamlConfiguration {}"))
+constructor(
 
     // decoding
 
@@ -117,12 +220,12 @@ public data class YamlConfiguration(
         public val falseValue: String
     ) {
         /**
-         * Serialize [Boolean] as "true" or "false"
+         * Serialize [Boolean] as `true` or `false`
          */
         public object TRUE_FALSE : BooleanSerialization("true", "false")
 
         /**
-         * Serialize [Boolean] as "TRUE" or "FALSE"
+         * Serialize [Boolean] as `TRUE` or `FALSE`
          */
         public object TRUE_FALSE_UPPERCASE : BooleanSerialization("TRUE", "FALSE")
 
@@ -137,17 +240,17 @@ public data class YamlConfiguration(
         public val value: String
     ) {
         /**
-         * Serialize `null` as "~"
+         * Serialize `null` as `~`
          */
         public object TILDE : NullSerialization("~")
 
         /**
-         * Serialize `null` as "null"
+         * Serialize `null` as `null`
          */
         public object NULL : NullSerialization("null")
 
         /**
-         * Serialize `null` as "NULL"
+         * Serialize `null` as `NULL`
          */
         public object NULL_UPPERCASE : NullSerialization("NULL")
     }
@@ -219,6 +322,14 @@ public data class YamlConfiguration(
          * ```
          */
         AUTO
+    }
+
+    public companion object {
+        /**
+         * The [YamlConfiguration] instance using all default values.
+         */
+        @JvmStatic
+        public val Default: YamlConfiguration = @Suppress("DEPRECATION_ERROR") YamlConfiguration()
     }
 }
 
