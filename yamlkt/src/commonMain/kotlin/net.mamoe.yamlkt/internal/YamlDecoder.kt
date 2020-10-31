@@ -219,6 +219,10 @@ internal class YamlDecoder(
         override val kind: Kind
             get() = Kind.BLOCK_CLASS
 
+        /**
+         * Peek next token, check if it is null.
+         * @return `true` if not null, `false` if null.
+         */
         @Suppress("DuplicatedCode")
         override fun decodeNotNullMark(): Boolean {
             val indent = tokenStream.currentIndent
@@ -227,7 +231,20 @@ internal class YamlDecoder(
                 Token.STRING_NULL -> false
                 else -> {
                     tokenStream.reuseToken(token)
-                    tokenStream.currentIndent > indent
+                    if (tokenStream.currentIndent > indent)
+                        return true
+
+                    if (token == Token.STRING) {
+                        /*
+                        name: cssxsh
+                        mailAddress: cssxsh@gmail.com
+                         */
+                        return !(tokenStream.currentIndent == indent
+                            && !tokenStream.quoted
+                            && (tokenStream.newLined || tokenStream.strBuff!!.isBlank()))
+                    }
+
+                    false
                 }
             }
         }

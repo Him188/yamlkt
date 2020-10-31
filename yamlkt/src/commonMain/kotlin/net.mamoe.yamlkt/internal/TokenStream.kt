@@ -147,6 +147,12 @@ internal class TokenStream(
     @JvmField
     var quoted: Boolean = false
 
+    /**
+     * Whether the current string is decoded after a newline.
+     */
+    @JvmField
+    var newLined: Boolean = false
+
     inline val endOfInput: Boolean get() = cur == source.length
 
     @JvmField
@@ -218,6 +224,7 @@ internal class TokenStream(
             }
         }
 
+        newLined = false
         //currentIndent = 0
         whileNotEOF { char ->
             when (char) {
@@ -229,6 +236,7 @@ internal class TokenStream(
                     return Token.COLON
                 }
                 '\n', '\r' -> {
+                    newLined = true
                     currentIndent = 0
                 }
                 ',' -> {
