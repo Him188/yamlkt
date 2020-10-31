@@ -20,6 +20,18 @@ internal class DecoderEscapeTest {
     }
 
     @Test
+    fun escapeNewlineDoubleQuoted() {
+        assertEquals(
+            "\n",
+            default.decodeAnyFromString(
+                """
+            "\n"
+            """
+            )
+        )
+    }
+
+    @Test
     fun escapeMapping() {
         val mappings: Map<String, String> = mapOf(
             "\"" to """   "\""   """.trim(),

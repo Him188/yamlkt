@@ -403,9 +403,10 @@ internal fun String.getQuotationAvailability(): Int {
         when {
             !doubleWithoutEscape && !canBeSingleQuoted && !canBeUnquoted -> return 0
             c.isLineSeparator() -> {
-                if (!canBeSingleQuoted) return 0 // fast path
-                doubleWithoutEscape = false
-                canBeUnquoted = false
+                return 0 // if contain line separator, use double quotation.
+                // if (!canBeSingleQuoted) return 0 // fast path
+                // doubleWithoutEscape = false
+                // canBeUnquoted = false
             }
             doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.toInt()) != null -> {
                 doubleWithoutEscape = false

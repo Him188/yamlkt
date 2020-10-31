@@ -31,10 +31,12 @@ private val best = Yaml(
 internal class TestEncoderEscape {
     @Test
     fun testNewLineEscape() {
+        // if contains \n, always double quote.
+
         assertEquals("\"\\n\"", double.encodeToString<String>("\n"))
-        assertEquals("\'\n\'", single.encodeToString<String>("\n"))
-        assertEquals("\'\n\'", none.encodeToString<String>("\n")) // will adjust to single
-        assertEquals("\'\n\'", best.encodeToString<String>("\n")) // will adjust to single
+        assertEquals("\"\\n\"", single.encodeToString<String>("\n"))
+        assertEquals("\"\\n\"", none.encodeToString<String>("\n"))
+        assertEquals("\"\\n\"", best.encodeToString<String>("\n"))
     }
 
     @Test

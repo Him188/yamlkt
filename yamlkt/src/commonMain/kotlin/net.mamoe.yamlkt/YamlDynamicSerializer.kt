@@ -37,7 +37,7 @@ import net.mamoe.yamlkt.internal.serializeImpl
  * - [Map], [List], [Set] with supported generic types
  * - types (typically annotated with [Serializable]) that has a compiled serializer on its `Companion`
  *
- * It's suggested to use specified serializers (use [Yaml.parse]/[Yaml.stringify] with a known serializer/deserializer)
+ * It's suggested to use specified serializers (use [Yaml.decodeFromString]/[Yaml.encodeToString] with a known serializer/deserializer)
  *
  * A best usage of this serializer is to deserialize [YamlElement]
  */
