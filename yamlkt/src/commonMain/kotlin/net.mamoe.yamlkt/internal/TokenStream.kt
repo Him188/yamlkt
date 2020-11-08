@@ -31,20 +31,20 @@ internal enum class Token(val value: Char) {
     companion object {
         // char-TokenClass mapping
         @JvmField
-        val values: Array<Token?>? = __values__init
+        val values: Array<Token?> = __values__init
 
         private const val valuesLastIndex: Char = 125.toChar()
 
         @Suppress("NOTHING_TO_INLINE")
         inline operator fun get(char: Char): Token? =
-            if (char > valuesLastIndex) null else values!![char.toInt()]
+            if (char > valuesLastIndex) null else values[char.toInt()]
     }
 }
 
 // https://youtrack.jetbrains.com/issue/KT-38383
 @Suppress("ObjectPropertyName")
 @SharedImmutable
-private val __values__init: Array<Token?>? = run {
+private val __values__init: Array<Token?> = run {
     val all = arrayOf(
         Token.COMMA,
         Token.COLON,

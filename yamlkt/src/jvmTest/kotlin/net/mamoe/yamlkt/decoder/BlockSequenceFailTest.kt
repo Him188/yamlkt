@@ -6,7 +6,6 @@ import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlDecodingException
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFails
 import kotlin.test.assertFailsWith
 
 
@@ -44,7 +43,7 @@ internal class BlockSequenceFailTest {
         )
         assertEquals(listOf(listOf("sss", "ss"), listOf("sss", "ss")), list)
     }
-
+/*
     @Test
     fun `nested descriptor block sequence5`() {
         assertEquals(
@@ -75,7 +74,7 @@ internal class BlockSequenceFailTest {
             )
         }
     }
-
+*/
     @Test
     fun `nested descriptor block sequence7`() {
         assertEquals(
@@ -85,7 +84,7 @@ internal class BlockSequenceFailTest {
                 """
         - 
           - sss
-            - ss
+             - ss
         
         """
             )

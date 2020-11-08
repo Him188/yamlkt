@@ -179,7 +179,7 @@ internal class YamlDecoder(
 
         internal open fun checkIndent(newIndent: Int): Boolean {
             if (newIndent > baseIndent) {
-                //    throw contextualDecodingException("bad indentation, baseIndent=$baseIndent, newIndent=$newIndent")
+                throw contextualDecodingException("bad indentation, baseIndent=$baseIndent, newIndent=$newIndent")
             }
             return baseIndent <= newIndent
         }
@@ -643,6 +643,10 @@ internal class YamlDecoder(
         override val kind: Kind
             get() = Kind.BLOCK_SEQUENCE
 
+        override fun checkIndent(newIndent: Int): Boolean {
+            // TODO: 2020/11/8 not sure
+            return baseIndent <= newIndent
+        }
 
         override fun decodeElementIndex(descriptor: SerialDescriptor): Int {
             if (index == 0) {
