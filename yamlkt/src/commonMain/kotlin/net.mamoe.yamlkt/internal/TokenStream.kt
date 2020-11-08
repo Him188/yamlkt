@@ -132,8 +132,17 @@ internal class TokenStream(
     @JvmField
     var cur: Int = 0
 
+    /**
+     * Syntactical indent
+     */
     @JvmField
     var currentIndent: Int = 0
+
+    /**
+     * Explicit leading space
+     */
+    @JvmField
+    var leadingSpace: Int = 0
 
     /**
      * The buffer for prepared [String] values
@@ -225,12 +234,13 @@ internal class TokenStream(
         }
 
         newLined = false
+        leadingSpace = 0
         //currentIndent = 0
         whileNotEOF { char ->
-            when (char) {
-                ' ' -> {
-                    currentIndent++
-                }
+            if (char == ' ') {
+                currentIndent++
+                leadingSpace++
+            } else when (char) {
                 ':' -> {
                     currentIndent++
                     return Token.COLON
@@ -238,6 +248,7 @@ internal class TokenStream(
                 '\n', '\r' -> {
                     newLined = true
                     currentIndent = 0
+                    leadingSpace = 0
                 }
                 ',' -> {
                     currentIndent++

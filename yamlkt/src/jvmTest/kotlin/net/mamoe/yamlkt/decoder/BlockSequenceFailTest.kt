@@ -47,7 +47,8 @@ internal class BlockSequenceFailTest {
 
     @Test
     fun `nested descriptor block sequence5`() {
-        assertFails {
+        assertEquals(
+            listOf(listOf("sss - ss")),
             Yaml.default.decodeFromString(
                 ListSerializer(ListSerializer(String.serializer())),
                 """
@@ -57,7 +58,7 @@ internal class BlockSequenceFailTest {
         
         """
             )
-        }
+        )
     }
 
     @Test
@@ -77,7 +78,8 @@ internal class BlockSequenceFailTest {
 
     @Test
     fun `nested descriptor block sequence7`() {
-        assertFails {
+        assertEquals(
+            listOf(listOf("sss - ss")),
             Yaml.default.decodeFromString(
                 ListSerializer(ListSerializer(String.serializer())),
                 """
@@ -87,7 +89,7 @@ internal class BlockSequenceFailTest {
         
         """
             )
-        }
+        )
     }
 
 }

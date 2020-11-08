@@ -177,11 +177,11 @@ internal class YamlDecoder(
             }
         }
 
-        internal fun checkIndent(newIndent: Int): Boolean {
+        internal open fun checkIndent(newIndent: Int): Boolean {
             if (newIndent > baseIndent) {
-                throw contextualDecodingException("bad indentation, baseIndent=$baseIndent, newIndent=$newIndent")
+                //    throw contextualDecodingException("bad indentation, baseIndent=$baseIndent, newIndent=$newIndent")
             }
-            return baseIndent == newIndent
+            return baseIndent <= newIndent
         }
 
     }
@@ -226,18 +226,30 @@ internal class YamlDecoder(
         @Suppress("DuplicatedCode")
         override fun decodeNotNullMark(): Boolean {
             val indent = tokenStream.currentIndent
+            val leadingSpace = tokenStream.leadingSpace
             return when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> false
                 Token.STRING_NULL -> false
                 else -> {
                     tokenStream.reuseToken(token)
-                    if (tokenStream.currentIndent > indent)
+                    if (tokenStream.currentIndent > indent) {
                         return true
+                    }
+
+                    if (tokenStream.leadingSpace > leadingSpace && !tokenStream.quoted) {
+
+                        /*
+                         * name: cssxsh
+                         * mailAddress:
+                         *  cssxsh@gmail.com
+                         */
+                        return true
+                    }
 
                     if (token == Token.STRING) {
                         /*
-                        name: cssxsh
-                        mailAddress: cssxsh@gmail.com
+                         * name: cssxsh
+                         * mailAddress: cssxsh@gmail.com
                          */
                         return !(tokenStream.currentIndent == indent
                             && !tokenStream.quoted

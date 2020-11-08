@@ -24,7 +24,6 @@ internal class NullabilityTest {
         val name: String,
     )
 
-    /*
     @Test
     fun testNullable() {
         Yaml.default.decodeFromString(
@@ -34,7 +33,7 @@ mailAddress:
  cssxsh@gmail.com
 """
         )
-    }*/
+    }
 
     @Test
     fun testNullable2() {

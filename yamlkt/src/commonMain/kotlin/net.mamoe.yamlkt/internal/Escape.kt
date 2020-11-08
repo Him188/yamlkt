@@ -132,7 +132,7 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
 
     var escapedOnce = false
 
-    countSkipIf { it == ' ' }
+    leadingSpace += countSkipIf { it == ' ' }
     /*
          if (source[cur].isLineSeparator()) {
              cur++
