@@ -377,6 +377,7 @@ internal class YamlEncoder(
             if (descriptor.kind == StructureKind.MAP) return // keys and values are serialized separately.
             if (descriptor.kind == StructureKind.LIST) return
             structuredKeyValue {
+                writer.writeComments(descriptor, index)
                 writer.write(descriptor.getElementName(index))
             }
         }
