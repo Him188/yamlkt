@@ -378,7 +378,7 @@ internal class YamlEncoder(
             if (descriptor.kind == StructureKind.LIST) return
             structuredKeyValue {
                 writer.writeComments(descriptor, index)
-                writer.write(descriptor.getElementName(index))
+                writer.writeIndentedSmart(descriptor.getElementName(index))
             }
         }
     }
