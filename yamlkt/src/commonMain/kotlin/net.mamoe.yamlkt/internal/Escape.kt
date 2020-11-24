@@ -369,7 +369,7 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
 private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
     append('\"')
     for (ch in this@toDoubleQuotedString) {
-        val es = REPLACEMENT_CHARS[ch.toInt()]
+        val es = REPLACEMENT_CHARS.getOrNull(ch.toInt())
         if (es != null) {
             append(es, 0, es.length - 1)
         } else append(ch)
