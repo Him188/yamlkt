@@ -394,7 +394,7 @@ internal fun String.getQuotationAvailability(): Int {
     var canBeUnquoted = true
     var doubleWithoutEscape = true
 
-    if (this.startsWith(' ') || this.endsWith(' ')) {
+    if (this.first().isWhitespace() || this.last().isWhitespace()) {
         canBeUnquoted = false
     }
 
@@ -411,11 +411,23 @@ internal fun String.getQuotationAvailability(): Int {
             doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.toInt()) != null -> {
                 doubleWithoutEscape = false
             }
-            c == '\'' -> canBeSingleQuoted = false
-            c == '\"' -> doubleWithoutEscape = false
+            c == '\'' -> {
+                canBeSingleQuoted = false
+                canBeUnquoted = false
+            }
+            c == '\"' -> {
+                doubleWithoutEscape = false
+                canBeUnquoted = false
+            }
+
             c == '#' -> canBeUnquoted = false
             c == ':' -> lastIsColon = true
             c == ' ' && lastIsColon -> canBeUnquoted = false
+            c in """
+                []{}"'$^*|>-?/~
+                """.trimIndent() -> { // less mistakes
+                canBeUnquoted = false
+            }
         }
     }
     if (lastIsColon) canBeUnquoted = false
