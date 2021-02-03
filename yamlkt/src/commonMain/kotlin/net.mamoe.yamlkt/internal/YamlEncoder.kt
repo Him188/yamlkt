@@ -8,6 +8,7 @@ package net.mamoe.yamlkt.internal
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
@@ -55,7 +56,7 @@ internal class YamlEncoder(
     private fun beginStructureImpl(parent: AbstractEncoder?, descriptor: SerialDescriptor): CompositeEncoder {
         writer.levelIncrease()
         return when (descriptor.kind) {
-            StructureKind.CLASS
+            StructureKind.CLASS, is PolymorphicKind
             -> {
                 when (configuration.classSerialization) {
                     YamlBuilder.MapSerialization.BLOCK_MAP -> {

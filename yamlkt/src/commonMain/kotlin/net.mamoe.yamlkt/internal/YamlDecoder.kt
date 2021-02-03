@@ -5,6 +5,7 @@ package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.PolymorphicKind
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.SerialKind
 import kotlinx.serialization.descriptors.StructureKind
@@ -747,6 +748,7 @@ internal class YamlDecoder(
                     else -> throw contextualDecodingException("expected list(sequence), but found $token")
                 }
             }
+            is PolymorphicKind,
             StructureKind.CLASS -> {
                 return when (val token = nextToken()) {
                     END_OF_FILE -> {
