@@ -53,8 +53,8 @@ Only JVM is available for Maven.
 ## Overview
 This library supports:
 - fast deserializing YAML text to a structured object
-- contextual deserializing: `@Contextual`
-- dynamic types: `YamlDynamicSerializer` which can serialize and deserialize `Any`
+- contextual and polymorphic serialization: `@Contextual`, `@Polymorphic`
+- dynamic types: `YamlDynamicSerializer` which works on `Any`
 - `YamlElement` wrapper classes, allowing `YamlMap.getInt`, `YamlMap.getLong`
 - comments encoding (Using annotation `Comment`)
 
@@ -62,7 +62,6 @@ The features that aren't yet supported:
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|`, `>`, `\`)
-- Polymorphic
 
 ## Learn to use
 
