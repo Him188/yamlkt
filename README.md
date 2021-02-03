@@ -15,7 +15,7 @@ Dependency requirements:
 | 0.3.3  | 1.3.70+ |        0.20.0         |
 | 0.5.3  |  1.4.0  |       1.0.0-RC        |
 | 0.6.0  | 1.4.10  |       1.0.0-RC2       |
-| 0.7.6  | 1.4.10  |         1.0.1         |
+| 0.8.0  | 1.4.10  |         1.0.1         |
 
 #### Gradle
 
@@ -26,7 +26,7 @@ repositories {
 ```
 
 ```kotlin
-implementation("net.mamoe.yamlkt:yamlkt:0.7.6")
+implementation("net.mamoe.yamlkt:yamlkt:0.8.0")
 ```
 **If your project is multiplatform, you need only to add this dependency for commonMain.**  
 
@@ -46,7 +46,7 @@ Only JVM is available for Maven.
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
     <artifactId>yamlkt</artifactId>
-    <version>0.7.6</version>
+    <version>0.8.0</version>
 </dependency>
 ```
 
