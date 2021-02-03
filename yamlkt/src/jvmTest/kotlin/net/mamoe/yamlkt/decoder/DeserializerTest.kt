@@ -30,7 +30,7 @@ internal class DeserializerTest {
 
         val data = TestData(1, 1, 1, 1, 1, true, 1f, 1.0, 'c', "test", "test")
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     @Test
@@ -55,7 +55,7 @@ list2:
         val data = TestData(listOf(1, 1, 1, 1, 1), listOf("test"))
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     @Test
@@ -68,7 +68,7 @@ list2:
         val data = TestData(listOf(listOf(1, 1, 1, 1, 1), listOf(2, 2, 2, 2), listOf(4, 4, 4)))
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     @Test
@@ -86,7 +86,7 @@ list2:
         )
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     @Test
@@ -104,7 +104,7 @@ list2:
         )
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     @Test
@@ -128,7 +128,7 @@ list2:
         )
         val string = Kaml.default.encodeToString(TestData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
     }
 
     /*

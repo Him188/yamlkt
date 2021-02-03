@@ -11,7 +11,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.modules.SerializersModule
-import net.mamoe.yamlkt.YamlConfiguration
+import net.mamoe.yamlkt.YamlConfigurationInternal
 import net.mamoe.yamlkt.YamlDynamicSerializer
 import net.mamoe.yamlkt.YamlElement
 import net.mamoe.yamlkt.YamlNullableDynamicSerializer
@@ -25,7 +25,7 @@ private inline val READ_DONE: Int get() = CompositeDecoder.DECODE_DONE
  * The parser that provides [YamlElement]s from [TokenStream]
  */
 internal class YamlDecoder(
-    private val configuration: YamlConfiguration,
+    private val configuration: YamlConfigurationInternal,
     internal val tokenStream: TokenStream,
     override val serializersModule: SerializersModule,
 ) : Decoder {

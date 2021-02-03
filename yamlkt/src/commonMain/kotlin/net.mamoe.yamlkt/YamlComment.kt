@@ -14,7 +14,7 @@ import kotlinx.serialization.SerialInfo
  * # The gender of the person
  * gender: male
  * ```
- * Therefore ensure you are using [YamlConfiguration.MapSerialization.BLOCK_MAP] for [YamlConfiguration.classSerialization], or use default configuration
+ * Therefore ensure you are using [YamlBuilder.MapSerialization.BLOCK_MAP] for [YamlBuilder.classSerialization], or use default configuration
  *
  *
  * Example:

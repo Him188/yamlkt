@@ -1,6 +1,6 @@
 package net.mamoe.yamlkt.escaping
 
-import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.Yaml.Default
 import net.mamoe.yamlkt.internal.Language
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -14,7 +14,7 @@ internal class SingleQuotationMultilineTest {
     private infix fun String.from(@Language("yaml") actual: String) {
         assertEquals(
             this,
-            Yaml.default.decodeAnyFromString(
+            Default.decodeAnyFromString(
                 actual.trimIndent()
             ).toString()
         )

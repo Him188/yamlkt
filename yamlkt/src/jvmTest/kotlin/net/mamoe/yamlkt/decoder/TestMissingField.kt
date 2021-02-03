@@ -15,6 +15,6 @@ internal class TestMissingField {
             val label: String = "default"
         )
 
-        assertEquals(Item("Open"), Yaml.default.decodeFromString(Item.serializer(), """{"id": "Open"}"""))
+        assertEquals(Item("Open"), Yaml.decodeFromString(Item.serializer(), """{"id": "Open"}"""))
     }
 }

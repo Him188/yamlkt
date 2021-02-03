@@ -2,16 +2,19 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.*
-import kotlinx.serialization.modules.EmptySerializersModule
+import kotlinx.serialization.Contextual
+import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationStrategy
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.overwriteWith
 import net.mamoe.yamlkt.internal.*
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
-import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmField
 import kotlin.jvm.JvmStatic
 
 
@@ -50,8 +53,8 @@ import kotlin.jvm.JvmStatic
  * @see Yaml.default The instance using default configurations.
  * @see Yaml.nonStrict The instance using all non-strict configurations.
  */
-public class Yaml @JvmOverloads constructor(
-    public val configuration: YamlConfiguration = YamlConfiguration.Default,
+public sealed class Yaml(
+    @JvmField internal val configuration: YamlConfigurationInternal,
 
     /**
      * The context
@@ -60,14 +63,16 @@ public class Yaml @JvmOverloads constructor(
      */
     public override val serializersModule: SerializersModule = SerializersModule {
         contextual(Any::class, YamlDynamicSerializer)
-    }
+    }.overwriteWith(configuration.serializersModule)
 ) : StringFormat {
-    public companion object {
+    public companion object Default : Yaml(YamlConfigurationInternal()) {
         /**
          * The [Yaml] using all default configurations
          */
         @JvmStatic
-        public val default: Yaml = Yaml()
+        @Deprecated("use Default", replaceWith = ReplaceWith("Default"), DeprecationLevel.ERROR)
+        public val default: Yaml
+            get() = Default
 
         /**
          * The [Yaml] using all non-strict configurations.
@@ -75,13 +80,19 @@ public class Yaml @JvmOverloads constructor(
          *
          * It's not encouraged to use this.
          */
-        @JvmStatic
-        public val nonStrict: Yaml = Yaml(
-            configuration = YamlConfiguration {
-                nonStrictNumber = true
-                nonStrictNullability = true
-            }
+        @Deprecated(
+            "Please create your own nonStrict", replaceWith = ReplaceWith(
+                "Yaml {\n" +
+                    "nonStrictNumber = true\n" +
+                    "nonStrictNullability = true\n" +
+                    "}", "net.mamoe.yamlkt.Yaml"
+            ), DeprecationLevel.ERROR
         )
+        @JvmStatic
+        public val nonStrict: Yaml = Yaml {
+            nonStrictNumber = true
+            nonStrictNullability = true
+        }
     }
 
     // region stringify
@@ -221,21 +232,14 @@ public class Yaml @JvmOverloads constructor(
     // endregion
 }
 
-/**
- * Creates a [Yaml] instance using the configuration [configuration]
- */
-@ExperimentalSerializationApi
-public inline fun Yaml(serializersModule: SerializersModule, configuration: YamlConfigurationBuilder.() -> Unit): Yaml {
-    contract { callsInPlace(configuration, InvocationKind.EXACTLY_ONCE) }
-    return Yaml(YamlConfigurationBuilder().apply(configuration).build(), serializersModule)
-}
+internal class YamlImpl(configuration: YamlConfigurationInternal) : Yaml(configuration)
 
 /**
  * Creates a [Yaml] instance using the configuration [configuration]
  */
-public inline fun Yaml(configuration: YamlConfigurationBuilder.() -> Unit): Yaml {
+public fun Yaml(from: Yaml = Yaml.Default, configuration: YamlBuilder.() -> Unit = {}): Yaml {
     contract { callsInPlace(configuration, InvocationKind.EXACTLY_ONCE) }
-    return Yaml(YamlConfigurationBuilder().apply(configuration).build(), EmptySerializersModule)
+    return YamlImpl(YamlBuilder(from.configuration).apply(configuration).build())
 }
 
 // internal

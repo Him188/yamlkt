@@ -3,7 +3,7 @@ package test
 import com.google.gson.Gson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.Yaml.Default
 import org.openjdk.jmh.annotations.*
 import test.Constants.content
 import test.Constants.gson
@@ -61,7 +61,7 @@ object Constants {
 """
 
     val kotlinJson = Json { allowStructuredMapKeys = true }
-    val yamlkt = Yaml.default
+    val yamlkt = Default
     val gson = Gson()
 
 }

@@ -1,7 +1,8 @@
 package net.mamoe.yamlkt.decoder
 
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.Yaml.Companion.default
+import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.Yaml.Default
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -38,7 +39,7 @@ internal class FlowMapTest {
     fun testFlowMap1() {
         assertEquals(
             TestData("Bob"),
-            default.decodeFromString(TestData.serializer(), """{ name: Bob }""")
+            Yaml.decodeFromString(TestData.serializer(), """{ name: Bob }""")
         )
     }
 
@@ -46,18 +47,18 @@ internal class FlowMapTest {
     fun testFlowClassWithTrailingComma() {
         assertEquals(
             TestData("Bob"),
-            default.decodeFromString(TestData.serializer(), """{ name: Bob, }""")
+            Yaml.decodeFromString(TestData.serializer(), """{ name: Bob, }""")
         )
     }
 
     @Test
     fun testFlowMapWithTrailingComma() {
-        println(default.decodeMapFromString("""{ name: Bob, }"""))
+        println(Default.decodeMapFromString("""{ name: Bob, }"""))
     }
 
     @Test
     fun testFlowMapWithTwoTrailingComma() {
-        val map = default.decodeYamlMapFromString("""{ name: Bob , , }""")
+        val map = Default.decodeYamlMapFromString("""{ name: Bob , , }""")
         // should give  `{ name: 'Bob', null: null }`
         assertEquals(2, map.size)
         assertEquals("name", map.entries.first().key.content)
@@ -68,7 +69,7 @@ internal class FlowMapTest {
 
     @Test
     fun testFlowYamlMapWithTwoBeginning() {
-        val map = default.decodeYamlMapFromString("""{  , , name: Bob }""")
+        val map = Default.decodeYamlMapFromString("""{  , , name: Bob }""")
         // should give  `{ null: null, name: 'Bob' }`
         println(map)
         assertEquals(2, map.size)
@@ -83,7 +84,7 @@ internal class FlowMapTest {
      */
     @Test
     fun testFullJson() {
-        val json = default.decodeYamlMapFromString(
+        val json = Default.decodeYamlMapFromString(
             """
 {
     "glossary": {
@@ -114,7 +115,7 @@ internal class FlowMapTest {
 
     @Test
     fun testNestedJson() {
-        val json = default.decodeYamlMapFromString(
+        val json = Default.decodeYamlMapFromString(
             """
 {"menu": {
     "header": "SVG Viewer",
@@ -154,7 +155,7 @@ internal class FlowMapTest {
     fun `test flow map missing value`() {
         assertEquals(
             mapOf<String?, String?>("test" to null),
-            default.decodeMapFromString(
+            Default.decodeMapFromString(
                 """{test}"""
             )
         )
@@ -163,6 +164,6 @@ internal class FlowMapTest {
 
     @Test
     fun ttt() {
-        println(default.decodeMapFromString("'123456789': 123456789"))
+        println(Default.decodeMapFromString("'123456789': 123456789"))
     }
 }

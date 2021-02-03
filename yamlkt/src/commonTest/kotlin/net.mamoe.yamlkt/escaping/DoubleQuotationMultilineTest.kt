@@ -20,7 +20,7 @@ internal class DoubleQuotationMultilineTest {
 
         assertEquals(
             TestData("\n").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "\n"
                         """.trimIndent()
@@ -32,7 +32,7 @@ internal class DoubleQuotationMultilineTest {
     fun testSingleQuoteEscapeSingleQuotes() {
         assertEquals(
             TestData("Don't").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: 'Don''t'
                         """.trimIndent()
@@ -44,7 +44,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteNoEscapeLineSeparator() {
         assertEquals(
             TestData("te st").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "te
                             st"
@@ -57,7 +57,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteLeadingContactLines() {
         assertEquals(
             TestData("te st").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "te
                              st"
@@ -70,7 +70,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteLeadingEscapeNewline() {
         assertEquals(
             TestData("test").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "te\
                                st"
@@ -83,7 +83,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteBlankLine() {
         assertEquals(
             TestData("te\nst").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "te
                             
@@ -97,7 +97,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteBlankLine2() {
         assertEquals(
             TestData("te\n\n\n\n\nst").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "te
                             
@@ -115,7 +115,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteBlankLine3() {
         assertEquals(
             TestData(" st").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "
                                st"
@@ -128,7 +128,7 @@ internal class DoubleQuotationMultilineTest {
     fun testDoubleQuoteBlankLine4() {
         assertEquals(
             TestData("\nst").toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: "
                             
@@ -144,7 +144,7 @@ internal class DoubleQuotationMultilineTest {
             TestData(
                 "\\n"
             ).toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: \n
                         """.trimIndent()
@@ -155,7 +155,7 @@ internal class DoubleQuotationMultilineTest {
             TestData(
                 "p\\n"
             ).toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: p\n
                         """.trimIndent()
@@ -166,7 +166,7 @@ internal class DoubleQuotationMultilineTest {
             TestData(
                 "p\\\\n"
             ).toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: 'p\\n'
                         """.trimIndent()
@@ -177,7 +177,7 @@ internal class DoubleQuotationMultilineTest {
             TestData(
                 "\\n"
             ).toString(),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: '\n'
                         """.trimIndent()
@@ -199,7 +199,7 @@ internal class DoubleQuotationMultilineTest {
                     Newlines can also be added by leaving a blank line. Leading whitespace on lines is ignored.
                 """.trimIndent()
             ),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                         v: "Several lines of text,
                         containing \"double quotes\". Escapes (like \\n) work.\nIn addition,

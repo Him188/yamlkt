@@ -13,10 +13,7 @@ import kotlinx.serialization.descriptors.StructureKind
 import kotlinx.serialization.encoding.CompositeEncoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
-import net.mamoe.yamlkt.Comment
-import net.mamoe.yamlkt.Yaml
-import net.mamoe.yamlkt.YamlConfiguration
-import net.mamoe.yamlkt.YamlNullableDynamicSerializer
+import net.mamoe.yamlkt.*
 import net.mamoe.yamlkt.internal.YamlEncoder.AbstractEncoder
 import net.mamoe.yamlkt.internal.YamlEncoder.BlockMapOrClassEncoder
 import kotlin.jvm.JvmMultifileClass
@@ -44,7 +41,7 @@ import kotlin.jvm.JvmName
  *   Therefore, if there are 10 map entries, the `encode*` functions will be called 20 times, interlaced with key and values.
  */
 internal class YamlEncoder(
-    private val configuration: YamlConfiguration,
+    private val configuration: YamlConfigurationInternal,
     override val serializersModule: SerializersModule,
     private val writer: YamlWriter
 ) : Encoder {
@@ -61,36 +58,36 @@ internal class YamlEncoder(
             StructureKind.CLASS
             -> {
                 when (configuration.classSerialization) {
-                    YamlConfiguration.MapSerialization.BLOCK_MAP -> {
+                    YamlBuilder.MapSerialization.BLOCK_MAP -> {
                         BlockMapOrClassEncoder(parent)
                     }
-                    YamlConfiguration.MapSerialization.FLOW_MAP -> {
+                    YamlBuilder.MapSerialization.FLOW_MAP -> {
                         FlowMapOrClassEncoder(parent is BlockEncoder)
                     }
                 }
             }
             StructureKind.MAP -> {
                 when (configuration.mapSerialization) {
-                    YamlConfiguration.MapSerialization.BLOCK_MAP -> {
+                    YamlBuilder.MapSerialization.BLOCK_MAP -> {
                         BlockMapOrClassEncoder(parent)
                     }
-                    YamlConfiguration.MapSerialization.FLOW_MAP -> {
+                    YamlBuilder.MapSerialization.FLOW_MAP -> {
                         FlowMapOrClassEncoder(parent is BlockEncoder)
                     }
                 }
             }
             StructureKind.LIST -> {
                 when (configuration.listSerialization) {
-                    YamlConfiguration.ListSerialization.FLOW_SEQUENCE -> {
+                    YamlBuilder.ListSerialization.FLOW_SEQUENCE -> {
                         FlowSequenceEncoder(parent is BlockEncoder)
                     }
-                    YamlConfiguration.ListSerialization.BLOCK_SEQUENCE -> {
+                    YamlBuilder.ListSerialization.BLOCK_SEQUENCE -> {
                         if (parent is BlockMapOrClassEncoder) {
                             writer.levelDecrease()
                             BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = true)
                         } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
-                    YamlConfiguration.ListSerialization.AUTO -> {
+                    YamlBuilder.ListSerialization.AUTO -> {
                         //if (typeSerializers[0].descriptor is PrimitiveKind) {
                         // TODO: 2020/8/19 this typeSerializers is removed in serialization 1.0.0
                         //    FlowSequenceEncoder(parent is BlockEncoder)
@@ -383,7 +380,7 @@ internal class YamlEncoder(
         }
     }
 
-    override fun encodeBoolean(value: Boolean) = writer.write(configuration.booleanSerialization[value])
+    override fun encodeBoolean(value: Boolean) = writer.write(if (value) "true" else "false")
     override fun encodeByte(value: Byte) = writer.write(value.toString())
     override fun encodeChar(value: Char) = writer.write(value)
     override fun encodeDouble(value: Double) = writer.write(value.toString())
@@ -518,7 +515,7 @@ internal class YamlEncoder(
         }
 
         final override fun encodeBoolean(value: Boolean) =
-            encodeValue(if (value) configuration.booleanSerialization.trueValue else configuration.booleanSerialization.falseValue)
+            encodeValue(if (value) "true" else "false")
 
         final override fun encodeByte(value: Byte) = encodeValue(value.toChar())
         final override fun encodeChar(value: Char) = encodeValue(value)

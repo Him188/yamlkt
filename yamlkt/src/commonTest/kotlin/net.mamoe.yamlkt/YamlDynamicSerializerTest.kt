@@ -2,7 +2,6 @@ package net.mamoe.yamlkt
 
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.Yaml.Companion.default
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -22,7 +21,7 @@ internal class YamlDynamicSerializerTest {
             TestData(
                 listOf("test, set, tet, tes")
             ).toString(),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: 
                             - test
@@ -45,7 +44,7 @@ internal class YamlDynamicSerializerTest {
             TestData(
                 listOf("test, set, tet, tes")
             ).toString(),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             v: [test, set, tet, tes]
                         """.trimIndent()
@@ -67,7 +66,7 @@ internal class YamlDynamicSerializerTest {
                     "fooBar" to "v2"
                 )
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                     v:
                       foo: v1
@@ -86,7 +85,7 @@ internal class YamlDynamicSerializerTest {
                     "fooBar" to "v2"
                 )
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 YamlDynamicSerializer, """
                     v:
                       foo: v1

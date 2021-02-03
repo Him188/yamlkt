@@ -4,8 +4,8 @@
 
 package net.mamoe.yamlkt.internal
 
-import net.mamoe.yamlkt.YamlConfiguration
-import net.mamoe.yamlkt.YamlConfiguration.StringSerialization.*
+import net.mamoe.yamlkt.YamlBuilder
+import net.mamoe.yamlkt.YamlBuilder.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
@@ -344,7 +344,7 @@ internal inline fun <R> TokenStream.useNext(block: (ch: Char) -> R?): R? {
 
 internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
-internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlConfiguration.StringSerialization): String {
+internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlBuilder.StringSerialization): String {
     val availability = getQuotationAvailability()
     when {
         stringSerialization == SINGLE_QUOTATION && availability hasFlag SINGLE -> return "'$this'"

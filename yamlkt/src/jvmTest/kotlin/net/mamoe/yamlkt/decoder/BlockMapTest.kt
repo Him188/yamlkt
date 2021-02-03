@@ -5,7 +5,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import net.mamoe.yamlkt.Yaml
-import net.mamoe.yamlkt.Yaml.Companion.default
+import net.mamoe.yamlkt.Yaml.Default
 import net.mamoe.yamlkt.toContentMap
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -25,7 +25,7 @@ internal class BlockMapTest {
     @Test
     fun `test descriptor block map`() {
         println(
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 Config.serializer(), """
         bot:
           account: 12345678910
@@ -40,7 +40,7 @@ internal class BlockMapTest {
 
     @Test
     fun `test dynamic block map null`() {
-        val map = Yaml.default.decodeYamlMapFromString(
+        val map = Default.decodeYamlMapFromString(
             """
      #test
 part_no:   A4786    #test
@@ -63,7 +63,7 @@ quantity:  null   #test
 
     @Test
     fun `test dynamic block map`() {
-        val map = Yaml.default.decodeYamlMapFromString(
+        val map = Default.decodeYamlMapFromString(
             """
 part_no:   A4786
 descrip:   Water Bucket (Filled)
@@ -84,7 +84,7 @@ quantity:  4
 
     @Test
     fun `test dynamic block map nested 1`() {
-        val map = Yaml.default.decodeYamlMapFromString(
+        val map = Default.decodeYamlMapFromString(
             """
 t:
   part_no:   A4786
@@ -109,7 +109,7 @@ t:
 
     @Test
     fun `test dynamic block map nested 2`() {
-        val map = Yaml.default.decodeYamlMapFromString(
+        val map = Default.decodeYamlMapFromString(
             """
 t:
 - part_no:   A4786
@@ -136,7 +136,7 @@ t:
 
     @Test
     fun `test descriptor block map nested 2`() {
-        val map = Yaml.default.decodeFromString(
+        val map = Yaml.decodeFromString(
             MapSerializer(String.serializer(), ListSerializer(MapSerializer(String.serializer(), String.serializer()))),
             """
     t:
@@ -173,7 +173,7 @@ t:
         )
 
         assertEquals(
-            TestData(null, "value", null, null), default.decodeFromString(
+            TestData(null, "value", null, null), Yaml.decodeFromString(
                 TestData.serializer(), """
                         nullable:
                         nonnull: value

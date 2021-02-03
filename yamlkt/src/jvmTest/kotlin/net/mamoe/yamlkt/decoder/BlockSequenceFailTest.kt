@@ -15,7 +15,7 @@ internal class BlockSequenceFailTest {
     @Test
     fun `nested descriptor block sequence3`() {
         assertFailsWith<YamlDecodingException> {
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 ListSerializer(ListSerializer(String.serializer())),
                 """
         - pp
@@ -29,7 +29,7 @@ internal class BlockSequenceFailTest {
 
     @Test
     fun `nested descriptor block sequence4`() {
-        val list = Yaml.default.decodeFromString(
+        val list = Yaml.decodeFromString(
             ListSerializer(ListSerializer(String.serializer())),
             """
     - 
@@ -43,43 +43,44 @@ internal class BlockSequenceFailTest {
         )
         assertEquals(listOf(listOf("sss", "ss"), listOf("sss", "ss")), list)
     }
-/*
-    @Test
-    fun `nested descriptor block sequence5`() {
-        assertEquals(
-            listOf(listOf("sss - ss")),
-            Yaml.default.decodeFromString(
-                ListSerializer(ListSerializer(String.serializer())),
-                """
-        - 
-          - sss
-           - ss
-        
-        """
-            )
-        )
-    }
 
-    @Test
-    fun `nested descriptor block sequence6`() {
-        assertFails {
-            Yaml.default.decodeFromString(
-                ListSerializer(ListSerializer(String.serializer())),
-                """
-        - 
-          - sss
-         - ss
-        
-        """
+    /*
+        @Test
+        fun `nested descriptor block sequence5`() {
+            assertEquals(
+                listOf(listOf("sss - ss")),
+                Yaml.Yaml.decodeFromString(
+                    ListSerializer(ListSerializer(String.serializer())),
+                    """
+            -
+              - sss
+               - ss
+
+            """
+                )
             )
         }
-    }
-*/
+
+        @Test
+        fun `nested descriptor block sequence6`() {
+            assertFails {
+                Yaml.Yaml.decodeFromString(
+                    ListSerializer(ListSerializer(String.serializer())),
+                    """
+            -
+              - sss
+             - ss
+
+            """
+                )
+            }
+        }
+    */
     @Test
     fun `nested descriptor block sequence7`() {
         assertEquals(
             listOf(listOf("sss - ss")),
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 ListSerializer(ListSerializer(String.serializer())),
                 """
         - 

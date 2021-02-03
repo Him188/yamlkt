@@ -14,7 +14,7 @@ internal class TestSkippingUnknownElements {
             val useful: Int
         )
         assertEquals(
-            Data(1), Yaml.default.decodeFromString(
+            Data(1), Yaml.decodeFromString(
                 Data.serializer(), """
         unknown1: test
         unknown2: sss
@@ -34,7 +34,7 @@ internal class TestSkippingUnknownElements {
             val useful: Int
         )
         assertEquals(
-            Data(1), Yaml.default.decodeFromString(
+            Data(1), Yaml.decodeFromString(
                 Data.serializer(), """
         {
         unknown1: test,

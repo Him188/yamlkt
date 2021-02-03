@@ -5,6 +5,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.Yaml.Default
 import net.mamoe.yamlkt.YamlElement
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,7 +15,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `simple descriptor block sequence`() {
-        val map = Yaml.default.decodeFromString(
+        val map = Yaml.decodeFromString(
             ListSerializer(YamlElement.serializer()),
             """
                             - part_nox
@@ -29,7 +30,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `simple dynamic block sequence`() {
-        val map = Yaml.default.decodeYamlListFromString(
+        val map = Default.decodeYamlListFromString(
             """
 - part_nox
 - test
@@ -43,7 +44,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested descriptor block sequence`() {
-        val map = Yaml.default.decodeFromString(
+        val map = Yaml.decodeFromString(
             ListSerializer(ListSerializer(String.serializer())),
             """
                             - [part_nox]
@@ -58,7 +59,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested descriptor block sequence2`() {
-        val list = Yaml.default.decodeFromString(
+        val list = Yaml.decodeFromString(
             ListSerializer(MapSerializer(String.serializer(), String.serializer())),
             """
     - pp: s
@@ -77,7 +78,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested dynamic block sequence2`() {
-        val list = Yaml.default.decodeListFromString(
+        val list = Default.decodeListFromString(
             """
 - pp: s
   ss: p
@@ -105,7 +106,7 @@ internal class BlockSequenceTest {
 
     @Test
     fun `nested dynamic block sequence`() {
-        val map = Yaml.default.decodeYamlListFromString(
+        val map = Default.decodeYamlListFromString(
             """
                         - part_nox
                         - test
@@ -150,7 +151,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.decodeFromString(TestData.serializer(), yaml)
+            Yaml.decodeFromString(TestData.serializer(), yaml)
         )
 
         // contextual
@@ -166,7 +167,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ).toString(),
-            Yaml.default.decodeMapFromString(yaml).toString()
+            Default.decodeMapFromString(yaml).toString()
         )
     }
 
@@ -201,7 +202,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ),
-            Yaml.default.decodeFromString(TestData.serializer(), yaml)
+            Yaml.decodeFromString(TestData.serializer(), yaml)
         )
 
         assertEquals(
@@ -219,7 +220,7 @@ internal class BlockSequenceTest {
                     )
                 )
             ).toString(),
-            Yaml.default.decodeMapFromString(yaml).toString()
+            Default.decodeMapFromString(yaml).toString()
         )
     }
 }

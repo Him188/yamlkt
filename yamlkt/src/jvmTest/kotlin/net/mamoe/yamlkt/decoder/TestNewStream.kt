@@ -14,7 +14,7 @@ internal class TestNewStream {
         )
 
         println(
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 Data.serializer(), """
                 s: test 
                 """

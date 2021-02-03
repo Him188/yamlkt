@@ -29,10 +29,10 @@ internal class BlockMapTest {
  """
 
 
-        val old = Yaml.default.decodeFromString(MyData.serializer(), yaml)
+        val old = Yaml.decodeFromString(MyData.serializer(), yaml)
         println(allFlow.encodeToString(old))
-        val out = Yaml.default.encodeToString(old)
-        val new = Yaml.default.decodeFromString(MyData.serializer(), out)
+        val out = Yaml.encodeToString(old)
+        val new = Yaml.decodeFromString(MyData.serializer(), out)
 
         assertEquals(old, new)
     }

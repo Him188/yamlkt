@@ -1,7 +1,7 @@
 package net.mamoe.yamlkt.encoder
 
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.Yaml.Companion.default
+import net.mamoe.yamlkt.Yaml.Default
 import org.junit.Test
 
 
@@ -38,16 +38,16 @@ internal class BasicEncoderTest {
 
     @Test
     fun testDynamic() {
-        default.testDynamic("str")
-        default.testDynamic(123)
-        default.testDynamic(true)
-        default.testDynamic("s")
-        default.testDynamic(listOf("test", "s"))
+        Default.testDynamic("str")
+        Default.testDynamic(123)
+        Default.testDynamic(true)
+        Default.testDynamic("s")
+        Default.testDynamic(listOf("test", "s"))
     }
 
     @Test
     fun testDynamicMap() {
-        default.testDynamic(
+        Default.testDynamic(
             mapOf(
                 "apple" to "banana",
                 "test" to "sss"

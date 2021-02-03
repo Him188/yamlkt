@@ -3,7 +3,7 @@
 package net.mamoe.yamlkt.decoder
 
 import kotlinx.serialization.Serializable
-import net.mamoe.yamlkt.Yaml.Companion.default
+import net.mamoe.yamlkt.Yaml
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -27,7 +27,7 @@ internal class FlowListTest {
             TestData(
                 listOf(Item("Open"), Item("OpenNew", "Open New"), null)
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
         list: [
           {"id": "Open"},
@@ -46,7 +46,7 @@ internal class FlowListTest {
             val list: List<List<String>>
         )
 
-        default.decodeFromString(
+        Yaml.decodeFromString(
             TestData.serializer(), """
     list: [[test, test, test, ]] 
     """

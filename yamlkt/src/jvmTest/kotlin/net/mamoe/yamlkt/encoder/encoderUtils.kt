@@ -4,7 +4,7 @@ package net.mamoe.yamlkt.encoder
 
 import kotlinx.serialization.KSerializer
 import net.mamoe.yamlkt.Yaml
-import net.mamoe.yamlkt.YamlConfiguration
+import net.mamoe.yamlkt.YamlBuilder
 import net.mamoe.yamlkt.YamlDynamicSerializer
 import kotlin.test.assertEquals
 
@@ -43,26 +43,20 @@ inline fun Yaml.testDynamic(
     print: Boolean = false
 ) = testDescriptorBased(YamlDynamicSerializer, value, print)
 
-val allFlow = Yaml(
-    configuration = YamlConfiguration {
-        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
-        classSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
-        listSerialization = YamlConfiguration.ListSerialization.FLOW_SEQUENCE
-    }
-)
+val allFlow = Yaml {
+    mapSerialization = YamlBuilder.MapSerialization.FLOW_MAP
+    classSerialization = YamlBuilder.MapSerialization.FLOW_MAP
+    listSerialization = YamlBuilder.ListSerialization.FLOW_SEQUENCE
+}
 
-val blockClassOtherFlow = Yaml(
-    configuration = YamlConfiguration {
-        mapSerialization = YamlConfiguration.MapSerialization.FLOW_MAP
-        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
-        listSerialization = YamlConfiguration.ListSerialization.FLOW_SEQUENCE
-    }
-)
+val blockClassOtherFlow = Yaml {
+    mapSerialization = YamlBuilder.MapSerialization.FLOW_MAP
+    classSerialization = YamlBuilder.MapSerialization.BLOCK_MAP
+    listSerialization = YamlBuilder.ListSerialization.FLOW_SEQUENCE
+}
 
-val allBlock = Yaml(
-    configuration = YamlConfiguration {
-        mapSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
-        classSerialization = YamlConfiguration.MapSerialization.BLOCK_MAP
-        listSerialization = YamlConfiguration.ListSerialization.BLOCK_SEQUENCE
-    }
-)
+val allBlock = Yaml {
+    mapSerialization = YamlBuilder.MapSerialization.BLOCK_MAP
+    classSerialization = YamlBuilder.MapSerialization.BLOCK_MAP
+    listSerialization = YamlBuilder.ListSerialization.BLOCK_SEQUENCE
+}

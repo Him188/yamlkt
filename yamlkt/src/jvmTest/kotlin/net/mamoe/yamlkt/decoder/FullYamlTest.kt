@@ -1,13 +1,13 @@
 package net.mamoe.yamlkt.decoder
 
-import net.mamoe.yamlkt.Yaml.Companion.default
+import net.mamoe.yamlkt.Yaml.Default
 import org.junit.Test
 
 internal class FullYamlTest {
 
     @Test
     fun testFullYaml() {
-        val map = default.decodeMapFromString(
+        val map = Default.decodeMapFromString(
             """
 receipt:     Oz-Ware Purchase Invoice
 date:        2012-08-06

@@ -26,7 +26,7 @@ internal class NullabilityTest {
 
     @Test
     fun testNullable() {
-        Yaml.default.decodeFromString(
+        Yaml.decodeFromString(
             User.serializer(), """
 name: cssxsh
 mailAddress: 
@@ -37,7 +37,7 @@ mailAddress:
 
     @Test
     fun testNullable2() {
-        Yaml.default.decodeFromString(
+        Yaml.decodeFromString(
             User.serializer(), """
 name: cssxsh
 mailAddress: cssxsh@gmail.com
@@ -48,7 +48,7 @@ mailAddress: cssxsh@gmail.com
     @Test
     fun testNullableFail() {
         assertFails {
-            Yaml.default.decodeFromString(
+            Yaml.decodeFromString(
                 User.serializer(), """
 name: cssxsh
 mailAddress: 

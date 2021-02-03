@@ -8,17 +8,13 @@ import kotlin.test.assertFails
 internal class DecoderTest {
     private val default = Yaml()
     private val nonStrictNullability =
-        Yaml(
-            configuration = YamlConfiguration {
-                nonStrictNullability = true
-            }
-        )
+        Yaml {
+            nonStrictNullability = true
+        }
     private val nonStrictNumber =
-        Yaml(
-            configuration = YamlConfiguration {
-                nonStrictNumber = true
-            }
-        )
+        Yaml {
+            nonStrictNumber = true
+        }
 
 
     @Serializable
@@ -48,7 +44,7 @@ internal class DecoderTest {
                     )
                 )
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 NestedTestData.serializer(), """
                         outer: 
                           inner:
@@ -66,11 +62,9 @@ internal class DecoderTest {
             val byte: Byte
         )
 
-        val nonStrict = Yaml(
-            configuration = YamlConfiguration{
-                nonStrictNumber = true
-            }
-        )
+        val nonStrict = Yaml {
+            nonStrictNumber = true
+        }
 
         assertEquals(
             TestData(123),
@@ -90,11 +84,9 @@ internal class DecoderTest {
             )
         )
 
-        val strict = Yaml(
-            configuration = YamlConfiguration {
-                nonStrictNumber = false
-            }
-        )
+        val strict = Yaml {
+            nonStrictNumber = false
+        }
 
         assertFails {
             strict.decodeFromString(
@@ -112,11 +104,9 @@ internal class DecoderTest {
             val byte: Byte
         )
 
-        val yaml = Yaml(
-            configuration = YamlConfiguration {
-                nonStrictNullability = true
-            }
-        )
+        val yaml = Yaml {
+            nonStrictNullability = true
+        }
 
         assertEquals(
             TestData(0),
@@ -177,7 +167,7 @@ internal class DecoderTest {
 
         assertEquals(
             TestData("value"),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             key: value
                         """.trimIndent()
@@ -195,7 +185,7 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(listOf(1, 2, 3)),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             list:
                             - 1
@@ -207,7 +197,7 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(listOf(1, 2, 3)),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                             list:
                               - 1
@@ -232,7 +222,7 @@ internal class DecoderTest {
                     "test" to "ok"
                 )
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                     map: {foo: bar, test: ok}
                 """.trimIndent()
@@ -254,7 +244,7 @@ internal class DecoderTest {
                     "test" to "ok"
                 )
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                     |map: 
                     |  foo: bar
@@ -273,7 +263,7 @@ internal class DecoderTest {
 
         assertEquals(
             TestData(listOf("foo", "bar")),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                     list: [foo, bar]
                 """.trimIndent()
@@ -314,7 +304,7 @@ internal class DecoderTest {
                 "string",
                 "123"
             ),
-            default.decodeFromString(
+            Yaml.decodeFromString(
                 TestData.serializer(), """
                     negative: -1
                     int: 123
