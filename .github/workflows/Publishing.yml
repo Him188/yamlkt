@@ -26,6 +26,8 @@ jobs:
                 run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
     build-on-macos:
         runs-on: macos-latest
+        needs:
+            - build-on-windows
         steps:
             -   uses: actions/checkout@v2
             -   name: Set up JDK 1.8
