@@ -44,6 +44,10 @@ kotlin {
             languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
             languageSettings.useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
             languageSettings.progressiveMode = true
+
+            if (name.endsWith("Test")) {
+                languageSettings.enableLanguageFeature("InlineClasses")
+            }
         }
 
         val commonMain by getting {
@@ -62,13 +66,14 @@ kotlin {
             }
         }
 
+        // don't configure nativeMain or nativeTest here. Source set names might be inconsistent on github actions.
+
 
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
-            languageSettings.enableLanguageFeature("InlineClasses")
         }
 
         val jvmTest by getting {
@@ -79,7 +84,6 @@ kotlin {
                 implementation("com.charleskorn.kaml:kaml:0.19.0")
                 implementation("org.yaml:snakeyaml:1.26")
             }
-            languageSettings.enableLanguageFeature("InlineClasses")
         }
 
         val jsTest by getting {
@@ -87,11 +91,6 @@ kotlin {
                 dependsOn(commonTest)
                 implementation(kotlin("test-js"))
             }
-            languageSettings.enableLanguageFeature("InlineClasses")
-        }
-
-        val nativeTest by getting {
-            languageSettings.enableLanguageFeature("InlineClasses")
         }
     }
 }
