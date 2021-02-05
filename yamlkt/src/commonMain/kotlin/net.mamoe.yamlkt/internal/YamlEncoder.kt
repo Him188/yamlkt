@@ -183,6 +183,14 @@ internal class YamlEncoder(
             }
         }
 
+        override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) {
+            if (descriptor.kind == StructureKind.CLASS) {
+                encodeUnquotedString(value)
+            } else structuredKeyValue {
+                encodeUnquotedString(value)
+            }
+        }
+
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) {
             if (descriptor.kind == StructureKind.MAP) return
             if (descriptor.kind == StructureKind.LIST) return
@@ -230,6 +238,13 @@ internal class YamlEncoder(
             super.encodeSerializableElement0(descriptor, index, serializer, value)
         }
 
+        override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) {
+            if (justStarted) justStarted = false
+            else writer.write(", ")
+
+            encodeUnquotedString(value)
+        }
+
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
     }
 
@@ -240,6 +255,8 @@ internal class YamlEncoder(
         override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("EmptySequenceEncoder.encodeElement shouldn't be called")
         override fun endStructure0(descriptor: SerialDescriptor) = writer.write("[]")
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = error("EmptySequenceEncoder.writeValueHead shouldn't be called")
+        override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) =
+            error("EmptySequenceEncoder.encodeSerializableUnquotedStringImpl shouldn't be called")
     }
 
     internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean, private val increaseBackLevel: Boolean) :
@@ -277,6 +294,16 @@ internal class YamlEncoder(
             }
             writer.writeIndentedSmart("- ")
             super.encodeSerializableElement0(descriptor, index, serializer, value)
+        }
+
+        override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) {
+            if (justStarted) {
+                justStarted = false
+            } else {
+                writer.writeln()
+            }
+            writer.writeIndentedSmart("- ")
+            encodeUnquotedString(value)
         }
 
         override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = Unit
@@ -325,6 +352,13 @@ internal class YamlEncoder(
             Debugging.logCustom { "encodeSerializableElement0, elementName=${descriptor.getElementName(index)}" }
             structuredKeyValue {
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
+            }
+        }
+
+        override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) {
+            Debugging.logCustom { "encodeSerializableUnquotedStringImpl, elementName=${descriptor.getElementName(index)}" }
+            structuredKeyValue {
+                encodeUnquotedString(value)
             }
         }
 
@@ -387,6 +421,10 @@ internal class YamlEncoder(
     override fun encodeDouble(value: Double) = writer.write(value.toString())
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = writer.write(enumDescriptor.getElementName(index))
     override fun encodeFloat(value: Float) = writer.write(value.toString())
+
+    @OptIn(ExperimentalUnsignedTypes::class)
+    override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder = InlineEncoder(writer, this, serializersModule)
+
     override fun encodeInt(value: Int) = writer.write(value.toString())
     override fun encodeLong(value: Long) = writer.write(value.toString())
     override fun encodeShort(value: Short) = writer.write(value.toString())
@@ -458,11 +496,26 @@ internal class YamlEncoder(
             serializer.serialize(this, value)
         }
 
+
+        /**
+         * @see encodeInlineElement
+         */
         final override fun <T> encodeSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
             // if (descriptor.kind !is PrimitiveKind) {
             writeValueHead(descriptor, index)
             //  }
             encodeSerializableElement0(descriptor, index, serializer, value)
+            writeValueTail(descriptor, index)
+            return
+        }
+
+        abstract fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String)
+
+        fun encodeSerializableUnquotedStringElement(descriptor: SerialDescriptor, index: Int, value: String) {
+            // if (descriptor.kind !is PrimitiveKind) {
+            writeValueHead(descriptor, index)
+            //  }
+            encodeSerializableUnquotedStringImpl(descriptor, index, value)
             writeValueTail(descriptor, index)
             return
         }
@@ -508,6 +561,17 @@ internal class YamlEncoder(
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
             encodeSerializableElement(descriptor, index, String.serializer(), value)
 
+        @OptIn(ExperimentalUnsignedTypes::class)
+        final override fun encodeInlineElement(descriptor: SerialDescriptor, index: Int): Encoder {
+            return object : kotlinx.serialization.encoding.AbstractEncoder() {
+                override val serializersModule: SerializersModule get() = this@AbstractEncoder.serializersModule
+                override fun encodeByte(value: Byte) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUByte().toString())
+                override fun encodeShort(value: Short) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUShort().toString())
+                override fun encodeInt(value: Int) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUInt().toString())
+                override fun encodeLong(value: Long) = encodeSerializableUnquotedStringElement(descriptor, index, value.toULong().toString())
+            }
+        }
+
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
@@ -528,6 +592,8 @@ internal class YamlEncoder(
         final override fun encodeNull() = encodeValue(configuration.nullSerialization.value)
         final override fun encodeShort(value: Short) = encodeValue(value.toString())
         final override fun encodeString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
+        fun encodeUnquotedString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, YamlBuilder.StringSerialization.NONE))
+        final override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder = InlineEncoder(writer, this, serializersModule)
 
         final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaultValues
         final override val serializersModule: SerializersModule get() = this@YamlEncoder.serializersModule

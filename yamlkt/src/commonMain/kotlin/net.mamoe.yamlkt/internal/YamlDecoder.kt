@@ -63,6 +63,8 @@ internal class YamlDecoder(
         EMPTY_CLASS,
     }
 
+    private val inlineDecoder = InlineDecoder(this)
+
     abstract inner class AbstractDecoder(
         /**
          * The name for its output to help create a pretty exception
@@ -104,6 +106,7 @@ internal class YamlDecoder(
         final override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long = nextStringOrNull().decodeLongElementImpl(descriptor, index)
         final override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short = nextStringOrNull().decodeShortElementImpl(descriptor, index)
         final override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String = nextStringOrNull().decodeStringElementImpl(descriptor, index)
+        final override fun decodeInlineElement(descriptor: SerialDescriptor, index: Int): Decoder = InlineElementDecoder(this@YamlDecoder, this, descriptor, index)
         // endregion
 
         // region Decoder primitives override
@@ -117,6 +120,8 @@ internal class YamlDecoder(
         final override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
         final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
+        final override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder = inlineDecoder
+
         override fun decodeNotNullMark(): Boolean =
             when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> false
@@ -855,6 +860,8 @@ internal class YamlDecoder(
     override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
     override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, -1)
     override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, -1)
+    override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder = inlineDecoder
+
     override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
     override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
     override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
@@ -1010,7 +1017,7 @@ internal class YamlDecoder(
      *
      * @param typeName the name of the type, e.g. "int", "long"
      */
-    private fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int): Long {
+    internal fun String?.withIntegerValue(typeName: String, descriptor: SerialDescriptor?, index: Int): Long {
         return castFromNullToZeroOrNull(descriptor, index)?.let {
             return 0L
         } ?: kotlin.run {

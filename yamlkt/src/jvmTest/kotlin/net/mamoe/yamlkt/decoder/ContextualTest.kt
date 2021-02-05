@@ -3,6 +3,7 @@ package net.mamoe.yamlkt.decoder
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import net.mamoe.yamlkt.Yaml
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -23,6 +24,9 @@ internal class ContextualTest {
 
     val yaml = Yaml {
         serializersModule = SerializersModule {
+            polymorphic(Fruit::class) {
+                subclass(Banana::class, Banana.serializer())
+            }
             contextual(Banana::class, Banana.serializer())
         }
     }
@@ -34,7 +38,9 @@ internal class ContextualTest {
         assertEquals(
             """
             fruit: 
-              prop: prop
+              type: net.mamoe.yamlkt.decoder.ContextualTest.Banana
+              value: 
+                prop: prop
         """.trimIndent(), result
         )
     }

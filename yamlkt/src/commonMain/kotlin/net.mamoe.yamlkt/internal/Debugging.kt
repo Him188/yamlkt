@@ -7,18 +7,32 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
+import kotlin.native.concurrent.ThreadLocal
 
+
+@ThreadLocal
+private var enabled0: Boolean = false
+
+@ThreadLocal
+private var logIndent0 = 0
+
+@ThreadLocal
+private var decodeValue0 = 0
 
 @Suppress("ConstantConditionIf")
 internal object Debugging {
     @JvmStatic
-    internal var enabled: Boolean = false
+    internal var enabled: Boolean by ::enabled0
 
     @JvmStatic
-    var logIndent = 0
+    var logIndent by ::logIndent0
+
+    @JvmStatic
+    private var decodeValue by ::decodeValue0
 
     @JvmStatic
     fun beginStructure(descriptor: SerialDescriptor, decoder: YamlDecoder.AbstractDecoder?) {
+        if (!enabled) return
         if (!enabled) return
         if (decoder == null) {
             println(space(logIndent) + "${descriptor.serialName} {")
@@ -37,9 +51,6 @@ internal object Debugging {
         logIndent -= 4
         println(space(logIndent) + "}")
     }
-
-    @JvmStatic
-    private var decodeValue = 0
 
     @JvmStatic
     fun logDecode(descriptor: SerialDescriptor?, index: Int, value: String) {

@@ -1,10 +1,16 @@
 @file:Suppress("UNUSED_VARIABLE")
 
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
+
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     `maven-publish`
     id("com.jfrog.bintray")
+}
+
+tasks.withType(KotlinJvmCompile::class) {
+    kotlinOptions.useIR = true
 }
 
 kotlin {
@@ -62,6 +68,7 @@ kotlin {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
             }
+            languageSettings.enableLanguageFeature("InlineClasses")
         }
 
         val jvmTest by getting {
@@ -72,6 +79,7 @@ kotlin {
                 implementation("com.charleskorn.kaml:kaml:0.19.0")
                 implementation("org.yaml:snakeyaml:1.26")
             }
+            languageSettings.enableLanguageFeature("InlineClasses")
         }
 
         val jsTest by getting {
@@ -79,6 +87,11 @@ kotlin {
                 dependsOn(commonTest)
                 implementation(kotlin("test-js"))
             }
+            languageSettings.enableLanguageFeature("InlineClasses")
+        }
+
+        val nativeTest by getting {
+            languageSettings.enableLanguageFeature("InlineClasses")
         }
     }
 }

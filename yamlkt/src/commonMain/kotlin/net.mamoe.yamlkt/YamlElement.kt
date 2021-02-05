@@ -275,6 +275,7 @@ public data class YamlMap(
      * Gets a value whose corresponding key's [YamlElement.content] is [key]
      * @return `null` if not found, otherwise the matched value.
      */
+    @JvmName("getElement") // clashes with Map.get
     public operator fun get(key: Any?): YamlElement? {
         for ((k, value) in this) {
             if (k.content == key) return value
