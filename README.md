@@ -2,21 +2,23 @@
 ![Gradle CI](https://github.com/mamoe/yamlkt/workflows/Gradle%20CI/badge.svg?branch=master)
 [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
-Fast multi-platform YAML with comments support for kotlinx.serialization
+[kotlinx.serialization]: https://github.com/kotlin/kotlinx.serialization
+
+Fast multi-platform YAML with comments support for [kotlinx.serialization]
 
 This project is in alpha state.
 
 ## Setup
 
-Dependency requirements:
+Third-party formats for [kotlinx.serialization] is strongly dependent on the versions of `kotlinx-serialization-core` and Kotlin compiler.
 
-| yamlkt | Kotlin | kotlinx.serialization |
-|:------:|:------:|:---------------------:|
-| 0.3.3  | 1.3.70 |        0.20.0         |
-| 0.5.3  | 1.4.0  |       1.0.0-RC        |
-| 0.6.0  | 1.4.10 |       1.0.0-RC2       |
-| 0.8.0  | 1.4.10 |         1.0.1         |
-| 0.9.0  | 1.4.30 |       1.1.0-RC        |
+| yamlkt | Kotlin | kotlinx-serialization-core |
+|:------:|:------:|:--------------------------:|
+| 0.3.3  | 1.3.70 |           0.20.0           |
+| 0.5.3  | 1.4.0  |          1.0.0-RC          |
+| 0.6.0  | 1.4.10 |         1.0.0-RC2          |
+| 0.8.0  | 1.4.10 |           1.0.1            |
+| 0.9.0  | 1.4.30 |          1.1.0-RC          |
 
 #### Gradle
 
