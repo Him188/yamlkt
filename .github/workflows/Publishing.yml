@@ -1,46 +1,46 @@
 name: Bintray Publish
 
 on:
-    release:
-        types:
-            - created
+  release:
+    types:
+      - created
 
 jobs:
-    build-on-windows:
-        runs-on: windows-latest
-        steps:
-            -   uses: actions/checkout@v2
-            -   name: Set up JDK 1.8
-                uses: actions/setup-java@v1
-                with:
-                    java-version: 1.8
-            -   name: Grant execute permission for gradlew
-                run: chmod +x gradlew
-            -   name: Gradle clean
-                run: ./gradlew clean
-            -   name: Gradle build
-                run: ./gradlew build # if test's failed, don't publish
-            -   name: Check keys
-                run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :yamlkt:publish
-                run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-    build-on-macos:
-        runs-on: macos-latest
-        needs:
-            - build-on-windows
-        steps:
-            -   uses: actions/checkout@v2
-            -   name: Set up JDK 1.8
-                uses: actions/setup-java@v1
-                with:
-                    java-version: 1.8
-            -   name: Grant execute permission for gradlew
-                run: chmod +x gradlew
-            -   name: Gradle clean
-                run: ./gradlew clean
-            -   name: Gradle build
-                run: ./gradlew build # if test's failed, don't publish
-            -   name: Check keys
-                run: ./gradlew :yamlkt:ensureBintrayAvailable -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
-            -   name: Gradle :yamlkt:publish
-                run: ./gradlew :yamlkt:publish -Dbintray_user=${{ secrets.BINTRAY_USER }} -Pbintray_user=${{ secrets.BINTRAY_USER }} -Dbintray_key=${{ secrets.BINTRAY_KEY }} -Pbintray_key=${{ secrets.BINTRAY_KEY }}
+  build-on-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Gradle clean
+        run: ./gradlew clean
+      - name: Gradle build
+        run: ./gradlew build # if test's failed, don't publish
+      - run: ./gradlew checkPublicationCredentials
+        env:
+          PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
+      - run: ./gradlew publish
+  build-on-macos:
+    runs-on: macos-latest
+    needs:
+      - build-on-windows
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Gradle clean
+        run: ./gradlew clean
+      - name: Gradle build
+        run: ./gradlew build # if test's failed, don't publish
+      - run: ./gradlew checkPublicationCredentials
+        env:
+          PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
+      - run: ./gradlew publish
