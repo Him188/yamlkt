@@ -3,10 +3,10 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
 
 plugins {
+    id("net.mamoe.maven-central-publish")
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     `maven-publish`
-    id("com.jfrog.bintray")
 }
 
 tasks.withType(KotlinJvmCompile::class) {
@@ -47,6 +47,7 @@ kotlin {
 
             if (name.endsWith("Test")) {
                 languageSettings.enableLanguageFeature("InlineClasses")
+                languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
             }
         }
 
@@ -94,4 +95,8 @@ kotlin {
         }
     }
 }
-apply(from = "../gradle/publish.gradle")
+
+mavenCentralPublish {
+    singleDevGithubProject("Him188", "yamlkt")
+    licenseFromGitHubProject("Apache-2.0", "master")
+}

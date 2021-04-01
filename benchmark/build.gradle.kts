@@ -14,11 +14,13 @@ dependencies {
     api("org.openjdk.jmh:jmh-core:1.23")
     api("org.openjdk.jmh:jmh-generator-annprocess:1.21")
     api(project(":yamlkt"))
+    api(kotlinx("serialization-core", Versions.serialization))
     api(kotlinx("serialization-json", Versions.serialization))
     kapt("org.openjdk.jmh:jmh-generator-annprocess:1.21")
     api("com.charleskorn.kaml:kaml:0.17.0")
     api("org.yaml:snakeyaml:1.26")
     api("com.google.code.gson:gson:2.8.6")
+    api("com.alibaba:fastjson:1.2.75")
 }
 
 
