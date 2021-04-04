@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew clean
       - name: Gradle build
         run: ./gradlew build # if test's failed, don't publish
-      - run: ./gradlew checkPublicationCredentials
+      - run: ./gradlew checkPublicationCredentials --info  --scan
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
       - run: ./gradlew publish
@@ -49,6 +49,9 @@ jobs:
         run: ./gradlew clean
       - name: Gradle build
         run: ./gradlew build # if test's failed, don't publish
+      - run: ./gradlew checkPublicationCredentials --info  --scan
+        env:
+          PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
       - run: ./gradlew publish
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
