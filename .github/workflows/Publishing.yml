@@ -26,7 +26,6 @@ jobs:
       - run: ./gradlew checkPublicationCredentials --info  --scan
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
-      - run: ./gradlew publish
       - run: ./gradlew publishMingwX64PublicationToMavenRepository --info  --scan
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTAILS }}
