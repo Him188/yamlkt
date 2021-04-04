@@ -1,12 +1,12 @@
 name: Bintray Publish
 
-on:
-  push:
-    tags:
-      - 'v*'
-  release:
-    types:
-      - created
+on: [ push ]
+#  push:
+#    tags:
+#      - 'v*'
+#  release:
+#    types:
+#      - created
 
 jobs:
   build-on-windows:
