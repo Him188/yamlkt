@@ -97,6 +97,7 @@ kotlin {
 }
 
 mavenCentralPublish {
+    packageGroup = "net.mamoe"
     singleDevGithubProject("Him188", "yamlkt")
     licenseFromGitHubProject("Apache-2.0", "master")
 }
