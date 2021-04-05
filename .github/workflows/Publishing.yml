@@ -1,4 +1,4 @@
-name: Bintray Publish
+name: Publishing
 
 on: [ push ]
 #  push:
