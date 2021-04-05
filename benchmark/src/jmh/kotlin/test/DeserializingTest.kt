@@ -1,5 +1,6 @@
 package test
 
+import com.alibaba.fastjson.JSON
 import com.google.gson.Gson
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -116,5 +117,10 @@ open class DeserializingTest {
     @Benchmark
     fun gsonContextual() {
         gson.fromJson(content, Map::class.java)
+    }
+
+    @Benchmark
+    fun fastjson() {
+        JSON.parse(content)
     }
 }
