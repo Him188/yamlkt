@@ -1,12 +1,9 @@
 name: Publishing
 
-on: [ push ]
-#  push:
-#    tags:
-#      - 'v*'
-#  release:
-#    types:
-#      - created
+on:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build-on-windows:
