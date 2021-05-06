@@ -24,7 +24,7 @@ Third-party formats for [kotlinx.serialization] is strongly dependent on the ver
 
 ```kotlin
 repositories {
-  jcenter()
+  mavenCentral()
 }
 ```
 
@@ -36,19 +36,12 @@ implementation("net.mamoe.yamlkt:yamlkt:0.9.0")
 
 #### Maven
 
-```xml
-<repository>
-    <name>jcenter</name>
-    <url>https://jcenter.bintray.com/</url>
-</repository>
-```
-
-Only JVM is available for Maven.
+Only JVM target is available for Maven.
 
 ```xml
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
-    <artifactId>yamlkt</artifactId>
+    <artifactId>yamlkt-jvm</artifactId>
     <version>0.9.0</version>
 </dependency>
 ```
