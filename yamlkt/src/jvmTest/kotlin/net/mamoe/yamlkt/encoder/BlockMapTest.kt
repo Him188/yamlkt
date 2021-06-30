@@ -37,19 +37,19 @@ internal class BlockMapTest {
         assertEquals(old, new)
     }
 
-    @Test
-    fun `test empty class`() {
-        @Serializable
-        class Empty {
-            override fun equals(other: Any?): Boolean {
-                return other != null && other::class == this::class
-            }
-
-            override fun hashCode(): Int {
-                return javaClass.hashCode()
-            }
+    @Serializable
+    class Empty {
+        override fun equals(other: Any?): Boolean {
+            return other != null && other::class == this::class
         }
 
+        override fun hashCode(): Int {
+            return javaClass.hashCode()
+        }
+    }
+
+    @Test
+    fun `test empty class`() {
         assertEquals("{}", allBlock.encodeToString(Empty()).trim())
     }
 }

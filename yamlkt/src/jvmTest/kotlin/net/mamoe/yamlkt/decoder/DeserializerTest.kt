@@ -11,36 +11,36 @@ import com.charleskorn.kaml.Yaml.Companion as Kaml
  */
 internal class DeserializerTest {
 
+    @Serializable
+    data class TestPrimitiveTypesData(
+        val negative: Int,
+        val int: Int,
+        val short: Short,
+        val byte: Byte,
+        val long: Long,
+        val boolean: Boolean,
+        val float: Float,
+        val double: Double,
+        val char: Char,
+        val string: String,
+        val quotedString: String
+    )
+
     @Test
     fun testPrimitiveTypes() {
-        @Serializable
-        data class TestData(
-            val negative: Int,
-            val int: Int,
-            val short: Short,
-            val byte: Byte,
-            val long: Long,
-            val boolean: Boolean,
-            val float: Float,
-            val double: Double,
-            val char: Char,
-            val string: String,
-            val quotedString: String
-        )
-
-        val data = TestData(1, 1, 1, 1, 1, true, 1f, 1.0, 'c', "test", "test")
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        val data = TestPrimitiveTypesData(1, 1, 1, 1, 1, true, 1f, 1.0, 'c', "test", "test")
+        val string = Kaml.default.encodeToString(TestPrimitiveTypesData.serializer(), data)
+        assertEquals(data, Yaml.decodeFromString(TestPrimitiveTypesData.serializer(), string))
     }
+
+    @Serializable
+    data class TestListsData(
+        val list: List<Int>,
+        val list2: List<String>
+    )
 
     @Test
     fun testList() {
-        @Serializable
-        data class TestData(
-            val list: List<Int>,
-            val list2: List<String>
-        )
-
         /*
 list:
 - 1
@@ -52,69 +52,69 @@ list2:
 - "test"
          */
 
-        val data = TestData(listOf(1, 1, 1, 1, 1), listOf("test"))
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
+        val data = TestListsData(listOf(1, 1, 1, 1, 1), listOf("test"))
+        val string = Kaml.default.encodeToString(TestListsData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestListsData.serializer(), string))
     }
+
+    @Serializable
+    data class TestNestedListsData(
+        val negative: List<List<Int>>
+    )
 
     @Test
     fun testNestedLists() {
-        @Serializable
-        data class TestData(
-            val negative: List<List<Int>>
-        )
-
-        val data = TestData(listOf(listOf(1, 1, 1, 1, 1), listOf(2, 2, 2, 2), listOf(4, 4, 4)))
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
+        val data = TestNestedListsData(listOf(listOf(1, 1, 1, 1, 1), listOf(2, 2, 2, 2), listOf(4, 4, 4)))
+        val string = Kaml.default.encodeToString(TestNestedListsData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestNestedListsData.serializer(), string))
     }
+
+    @Serializable
+    data class TestMapAndNestedListData(
+        val negative: Map<String, List<List<Int>>>
+    )
 
     @Test
     fun testNestedMapAndList() {
-        @Serializable
-        data class TestData(
-            val negative: Map<String, List<List<Int>>>
-        )
-
-        val data = TestData(
+        val data = TestMapAndNestedListData(
             mapOf(
                 "coconut" to listOf(listOf(1, 1, 1, 1, 1), listOf(1, 1, 1, 1, 1)),
                 "banana" to listOf(listOf(2, 2))
             )
         )
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
+        val string = Kaml.default.encodeToString(TestMapAndNestedListData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestMapAndNestedListData.serializer(), string))
     }
+
+    @Serializable
+    data class TestMapAndListData(
+        val data: Map<String, List<String>>
+    )
 
     @Test
     fun testNestedMapAndList2() {
-        @Serializable
-        data class TestData(
-            val data: Map<String, List<String>>
-        )
-
-        val data = TestData(
+        val data = TestMapAndListData(
             mapOf(
                 "food" to listOf("banana", "apple"),
                 "book" to listOf("book1")
             )
         )
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
+        val string = Kaml.default.encodeToString(TestMapAndListData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestMapAndListData.serializer(), string))
     }
+
+    @Serializable
+    data class TestNestedMapData(
+        val data: Map<String, Map<String, Int>>
+    )
 
     @Test
     fun testNestedMapMap() {
-        @Serializable
-        data class TestData(
-            val data: Map<String, Map<String, Int>>
-        )
-
-        val data = TestData(
+        val data = TestNestedMapData(
             mapOf(
                 "coconut" to mapOf(
                     "foo" to 111,
@@ -126,20 +126,20 @@ list2:
                 )
             )
         )
-        val string = Kaml.default.encodeToString(TestData.serializer(), data)
+        val string = Kaml.default.encodeToString(TestNestedMapData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.decodeFromString(TestData.serializer(), string))
+        assertEquals(data, Yaml.decodeFromString(TestNestedMapData.serializer(), string))
     }
 
     /*
+    @Serializable
+    data class TestListAsMapKeyData(
+        val data: Map<List<String>, Map<String, Int>>
+    )
+
     @Test
     fun testListAsMapKey() {
-        @Serializable
-        data class TestData(
-            val data: Map<List<String>, Map<String, Int>>
-        )
-
-        val data = TestData(
+        val data = TestListAsMapKeyData(
             mapOf(
                 listOf("coconut", "coco") to mapOf(
                     "foo" to 111,
@@ -151,8 +151,8 @@ list2:
                 )
             )
         )
-        val string = Kaml.default.stringify(TestData.serializer(), data)
+        val string = Kaml.default.stringify(TestListAsMapKeyData.serializer(), data)
         println(string)
-        assertEquals(data, Yaml.default.parse(TestData.serializer(), string))
+        assertEquals(data, Yaml.default.parse(TestListAsMapKeyData.serializer(), string))
     }*/
 }

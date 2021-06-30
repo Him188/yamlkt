@@ -7,13 +7,13 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 internal class Issue5 {
+    @Serializable
+    class Config(
+        var tt: String? = null,
+    )
+
     @Test
     fun test() {
-        @Serializable
-        class Config(
-            var tt: String? = null,
-        )
-
         Debugging.enabled = true
         val result = Yaml.encodeToString(Config.serializer(), Config())
         assertEquals("tt: null", result.trim(), "Result: $result")

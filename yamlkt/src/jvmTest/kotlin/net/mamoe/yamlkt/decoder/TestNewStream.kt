@@ -6,13 +6,13 @@ import org.junit.Test
 
 
 internal class TestNewStream {
+    @Serializable
+    data class Data(
+        val s: String
+    )
+
     @Test
     fun testNewStream() {
-        @Serializable
-        data class Data(
-            val s: String
-        )
-
         println(
             Yaml.decodeFromString(
                 Data.serializer(), """

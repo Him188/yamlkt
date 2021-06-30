@@ -6,35 +6,26 @@ import org.junit.Test
 
 
 internal class CommentEncodeTest {
+    @Serializable
+    data class CommentTest(
+        @Comment("testA")
+        val value1: String,
+        @Comment("testA\nff")
+        val value2: String
+    )
 
     @Test
     fun testComments() {
-        @Serializable
-        data class CommentTest(
-            @Comment("testA")
-            val value1: String,
-            @Comment("testA\nff")
-            val value2: String
-        )
-
         allBlock.testDescriptorBased(CommentTest.serializer(), CommentTest("vv", "ss"), true)
     }
 
+    @Serializable
+    data class OuterClass(
+        val inner: CommentTest,
+    )
+
     @Test
     fun testCommentsWithHierarchy() {
-        @Serializable
-        data class CommentTest(
-            @Comment("testA")
-            val value1: String,
-            @Comment("testA\nff")
-            val value2: String
-        )
-
-        @Serializable
-        data class OuterClass(
-            val inner: CommentTest,
-        )
-
         allBlock.testDescriptorBased(OuterClass.serializer(), OuterClass(CommentTest("vv", "ss")), true)
     }
 }

@@ -6,13 +6,13 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 internal class TestSkippingUnknownElements {
+    @Serializable
+    data class Data(
+        val useful: Int
+    )
 
     @Test
     fun `skip in block map`() {
-        @Serializable
-        data class Data(
-            val useful: Int
-        )
         assertEquals(
             Data(1), Yaml.decodeFromString(
                 Data.serializer(), """
@@ -29,10 +29,6 @@ internal class TestSkippingUnknownElements {
 
     @Test
     fun `skip in flow map`() {
-        @Serializable
-        data class Data(
-            val useful: Int
-        )
         assertEquals(
             Data(1), Yaml.decodeFromString(
                 Data.serializer(), """
