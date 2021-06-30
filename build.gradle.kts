@@ -1,5 +1,5 @@
 plugins {
-    id("net.mamoe.maven-central-publish") version "0.3.1" apply false
+    id("net.mamoe.maven-central-publish") version Versions.mavenCentralPublish
     kotlin("multiplatform") version Versions.kotlin apply false
     kotlin("plugin.serialization") version Versions.kotlin apply false
 
@@ -12,7 +12,6 @@ allprojects {
     description = "Multiplatform YAML parser & serializer for kotlinx.serialization written in pure Kotlin."
 
     repositories {
-        mavenLocal()
         mavenCentral()
         gradlePluginPortal()
     }

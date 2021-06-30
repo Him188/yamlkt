@@ -4,5 +4,8 @@ object Versions {
     const val kotlin = "1.5.20"
     const val serialization = "1.2.1"
 
-    const val bintray = "1.8.5"
+    const val mavenCentralPublish = "0.4.5"
 }
+
+@Suppress("unused")
+fun kotlinx(id: String, version: String) = "org.jetbrains.kotlinx:kotlinx-$id:$version"
