@@ -10,6 +10,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import net.mamoe.yamlkt.internal.Debugging
+import kotlin.jvm.JvmInline
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -18,8 +19,9 @@ import kotlin.test.assertEquals
 @Serializable
 data class SimpleContainerForUInt(val i: UInt)
 
+@JvmInline
 @Serializable(MyUIntSerializer::class)
-inline class MyUInt(val m: Int)
+value class MyUInt(val m: Int)
 
 @Serializer(forClass = MyUInt::class)
 object MyUIntSerializer {
@@ -36,8 +38,9 @@ object MyUIntSerializer {
 @Serializable
 data class SimpleContainerForMyType(val i: MyUInt)
 
+@JvmInline
 @Serializable
-inline class MyList<T>(val list: List<T>)
+value class MyList<T>(val list: List<T>)
 
 @Serializable
 data class ContainerForList<T>(val i: MyList<T>)

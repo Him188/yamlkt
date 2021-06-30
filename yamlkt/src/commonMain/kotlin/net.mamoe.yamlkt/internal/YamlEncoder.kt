@@ -582,7 +582,7 @@ internal class YamlEncoder(
         final override fun encodeBoolean(value: Boolean) =
             encodeValue(if (value) "true" else "false")
 
-        final override fun encodeByte(value: Byte) = encodeValue(value.toChar())
+        final override fun encodeByte(value: Byte) = encodeValue(value.toInt().toChar())
         final override fun encodeChar(value: Char) = encodeValue(value)
         final override fun encodeDouble(value: Double) = encodeValue(value.toString())
         final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = encodeValue(enumDescriptor.getElementName(index))

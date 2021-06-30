@@ -37,7 +37,7 @@ internal enum class Token(val value: Char) {
 
         @Suppress("NOTHING_TO_INLINE")
         inline operator fun get(char: Char): Token? =
-            if (char > valuesLastIndex) null else values[char.toInt()]
+            if (char > valuesLastIndex) null else values[char.code]
     }
 }
 
@@ -54,10 +54,10 @@ private val __values__init: Array<Token?> = run {
     )
 
     arrayOfNulls<Token>(
-        all.map { it.value.toInt() }.maxOrNull()!! + 1
+        all.maxOf { it.value.code } + 1
     ).apply {
         for (tokenClass in all) {
-            set(tokenClass.value.toInt(), tokenClass)
+            set(tokenClass.value.code, tokenClass)
         }
     }
 }

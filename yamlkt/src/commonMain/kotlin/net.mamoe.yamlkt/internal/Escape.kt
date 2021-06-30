@@ -33,12 +33,12 @@ internal val REPLACEMENT_CHARS: Array<String?> = arrayOfNulls<String?>(128).appl
     for (i in 0x10..0x1f) {
         this[i] = "\\u00$i"
     }
-    this['"'.toInt()] = "\\\""
-    this['\\'.toInt()] = "\\\\"
-    this['\t'.toInt()] = "\\t"
-    this['\b'.toInt()] = "\\b"
-    this['\n'.toInt()] = "\\n"
-    this['\r'.toInt()] = "\\r"
+    this['"'.code] = "\\\""
+    this['\\'.code] = "\\\\"
+    this['\t'.code] = "\\t"
+    this['\b'.code] = "\\b"
+    this['\n'.code] = "\\n"
+    this['\r'.code] = "\\r"
     this[12] = "\\f"
 }
 
@@ -68,10 +68,10 @@ private object EscapeCharMappings {
     }
 
     private fun initC2ESC(c: Int, esc: Char) {
-        if (esc != UNICODE_ESC) ESCAPE_2_CHAR[esc.toInt()] = c.toChar()
+        if (esc != UNICODE_ESC) ESCAPE_2_CHAR[esc.code] = c.toChar()
     }
 
-    private fun initC2ESC(c: Char, esc: Char) = initC2ESC(c.toInt(), esc)
+    private fun initC2ESC(c: Char, esc: Char) = initC2ESC(c.code, esc)
 }
 
 internal fun escapeToChar(c: Int): Char = if (c < ESC2C_MAX) EscapeCharMappings.ESCAPE_2_CHAR[c] else INVALID
@@ -307,7 +307,7 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                         startCur = cur
                     }
                     else -> {
-                        val es = escapeToChar(esChar.toInt())
+                        val es = escapeToChar(esChar.code)
                         if (es != INVALID) {
                             append(es)
                             startCur = cur
@@ -369,7 +369,7 @@ internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: Y
 private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf) {
     append('\"')
     for (ch in this@toDoubleQuotedString) {
-        val es = REPLACEMENT_CHARS.getOrNull(ch.toInt())
+        val es = REPLACEMENT_CHARS.getOrNull(ch.code)
         if (es != null) {
             append(es, 0, es.length - 1)
         } else append(ch)
@@ -408,7 +408,7 @@ internal fun String.getQuotationAvailability(): Int {
                 // doubleWithoutEscape = false
                 // canBeUnquoted = false
             }
-            doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.toInt()) != null -> {
+            doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.code) != null -> {
                 doubleWithoutEscape = false
             }
             c == '\'' -> {

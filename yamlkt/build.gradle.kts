@@ -1,16 +1,10 @@
 @file:Suppress("UNUSED_VARIABLE")
 
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile
-
 plugins {
     id("net.mamoe.maven-central-publish")
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     `maven-publish`
-}
-
-tasks.withType(KotlinJvmCompile::class) {
-    kotlinOptions.useIR = true
 }
 
 kotlin {
@@ -51,48 +45,31 @@ kotlin {
             }
         }
 
+        // don't configure nativeMain or nativeTest here. Source set names might be inconsistent on github actions.
+
         val commonMain by getting {
             dependencies {
+                api(kotlin("stdlib", Versions.kotlin))
                 api(kotlinx("serialization-core", serializationVersion))
             }
         }
-
-        val jvmMain by getting {
-            dependencies {
-            }
-        }
-
-        val jsMain by getting {
-            dependencies {
-            }
-        }
-
-        // don't configure nativeMain or nativeTest here. Source set names might be inconsistent on github actions.
-
-
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                api(kotlin("test"))
             }
         }
 
+        val jvmMain by getting
         val jvmTest by getting {
             dependencies {
-                dependsOn(commonTest)
-                implementation(kotlin("test"))
-                implementation(kotlin("test-junit"))
-                implementation("com.charleskorn.kaml:kaml:0.19.0")
-                implementation("org.yaml:snakeyaml:1.26")
+                api(kotlin("test-junit"))
+                api("com.charleskorn.kaml:kaml:0.34.0")
+                api("org.yaml:snakeyaml:1.26")
             }
         }
 
-        val jsTest by getting {
-            dependencies {
-                dependsOn(commonTest)
-                implementation(kotlin("test-js"))
-            }
-        }
+        val jsMain by getting
+        val jsTest by getting
     }
 }
 
