@@ -10,13 +10,13 @@ import kotlin.test.assertEquals
  * @see YamlDynamicSerializer
  */
 internal class YamlDynamicSerializerTest {
+    @Serializable
+    data class TestData(
+        val v: @Contextual Any
+    )
+
     @Test
     fun testDynamicAsMultilineList() {
-        @Serializable
-        data class TestData(
-            val v: @Contextual Any
-        )
-
         assertEquals(
             TestData(
                 listOf("test, set, tet, tes")
@@ -35,11 +35,6 @@ internal class YamlDynamicSerializerTest {
 
     @Test
     fun testDynamicAsList() {
-        @Serializable
-        data class TestData(
-            val v: @Contextual Any
-        )
-
         assertEquals(
             TestData(
                 listOf("test, set, tet, tes")
@@ -54,11 +49,6 @@ internal class YamlDynamicSerializerTest {
 
     @Test
     fun testDynamicAsMap() {
-        @Serializable
-        data class TestData(
-            val v: @Contextual Any
-        )
-
         assertEquals(
             TestData(
                 mapOf(

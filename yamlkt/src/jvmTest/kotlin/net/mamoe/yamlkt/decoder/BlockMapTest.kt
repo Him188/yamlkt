@@ -161,17 +161,17 @@ t:
         )
     }
 
+    @Serializable
+    data class TestData(
+        val nullable: String?,
+        val nonnull: String,
+        val nullableMap: Map<String, String>?,
+        val nullableList: List<String>?,
+    )
+
     // from https://github.com/Him188/yamlkt/issues/3
     @Test
     fun testNullValue() {
-        @Serializable
-        data class TestData(
-            val nullable: String?,
-            val nonnull: String,
-            val nullableMap: Map<String, String>?,
-            val nullableList: List<String>?,
-        )
-
         assertEquals(
             TestData(null, "value", null, null), Yaml.decodeFromString(
                 TestData.serializer(), """

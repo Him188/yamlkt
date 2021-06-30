@@ -55,30 +55,30 @@ internal class DecoderTest {
         )
     }
 
+    @Serializable
+    data class TestByteData(
+        val byte: Byte
+    )
+
     @Test
     fun testNonStrictNumberCasting() {
-        @Serializable
-        data class TestData(
-            val byte: Byte
-        )
-
         val nonStrict = Yaml {
             nonStrictNumber = true
         }
 
         assertEquals(
-            TestData(123),
+            TestByteData(123),
             nonStrict.decodeFromString(
-                TestData.serializer(), """
+                TestByteData.serializer(), """
                         byte: 123.8
                     """.trimIndent()
             )
         )
 
         assertEquals(
-            TestData(123),
+            TestByteData(123),
             nonStrict.decodeFromString(
-                TestData.serializer(), """
+                TestByteData.serializer(), """
                         byte: 123.0
                     """.trimIndent()
             )
@@ -90,7 +90,7 @@ internal class DecoderTest {
 
         assertFails {
             strict.decodeFromString(
-                TestData.serializer(), """
+                TestByteData.serializer(), """
                         byte: 123.0
                     """.trimIndent()
             )
@@ -99,49 +99,44 @@ internal class DecoderTest {
 
     @Test
     fun testNonStrictNullCasting() {
-        @Serializable
-        data class TestData(
-            val byte: Byte
-        )
-
         val yaml = Yaml {
             nonStrictNullability = true
         }
 
         assertEquals(
-            TestData(0),
+            TestByteData(0),
             yaml.decodeFromString(
-                TestData.serializer(), """
+                TestByteData.serializer(), """
                         byte: null
                     """.trimIndent()
             )
         )
 
         assertEquals(
-            TestData(123),
+            TestByteData(123),
             nonStrictNumber.decodeFromString(
-                TestData.serializer(), """
+                TestByteData.serializer(), """
                         byte: 123.0
                     """.trimIndent()
             )
         )
     }
 
+    @Serializable
+    data class TestBooleanData(
+        val bool: Boolean
+    )
+
     @Test
     fun testBooleanCasting() {
-        @Serializable
-        data class TestData(
-            val bool: Boolean
-        )
-
         fun Yaml.testBoolean(
             expect: Boolean,
             vararg string: String
         ) = string.forEach { str ->
             kotlin.runCatching {
                 assertEquals(
-                    TestData(expect),
-                    decodeFromString(TestData.serializer(), """bool: $str""")
+                    TestBooleanData(expect),
+                    decodeFromString(TestBooleanData.serializer(), """bool: $str""")
                 )
             }.exceptionOrNull()?.let { e ->
                 throw IllegalStateException("error when testing $str", e)
@@ -158,35 +153,35 @@ internal class DecoderTest {
         nonStrictNullability.testBoolean(false, "~", "null", "nUll")
     }
 
+    @Serializable
+    data class TestStringData(
+        val key: String
+    )
+
     @Test
     fun testSimpleClass() {
-        @Serializable
-        data class TestData(
-            val key: String
-        )
-
         assertEquals(
-            TestData("value"),
+            TestStringData("value"),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestStringData.serializer(), """
                             key: value
                         """.trimIndent()
             )
         )
     }
 
+    @Serializable
+    data class TestIntListData(
+        val list: List<Int>
+    )
+
     // primitive types and casting
     @Test
     fun testSimpleMultilineList() {
-        @Serializable
-        data class TestData(
-            val list: List<Int>
-        )
-
         assertEquals(
-            TestData(listOf(1, 2, 3)),
+            TestIntListData(listOf(1, 2, 3)),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestIntListData.serializer(), """
                             list:
                             - 1
                             - 2
@@ -196,9 +191,9 @@ internal class DecoderTest {
         )
 
         assertEquals(
-            TestData(listOf(1, 2, 3)),
+            TestIntListData(listOf(1, 2, 3)),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestIntListData.serializer(), """
                             list:
                               - 1
                               - 2
@@ -208,22 +203,22 @@ internal class DecoderTest {
         )
     }
 
+    @Serializable
+    data class TestStringMapData(
+        val map: Map<String, String>
+    )
+
     @Test
     fun testJsonMap() {
-        @Serializable
-        data class TestData(
-            val map: Map<String, String>
-        )
-
         assertEquals(
-            TestData(
+            TestStringMapData(
                 mapOf(
                     "foo" to "bar",
                     "test" to "ok"
                 )
             ),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestStringMapData.serializer(), """
                     map: {foo: bar, test: ok}
                 """.trimIndent()
             )
@@ -232,20 +227,15 @@ internal class DecoderTest {
 
     @Test
     fun testYamlMap() {
-        @Serializable
-        data class TestData(
-            val map: Map<String, String>
-        )
-
         assertEquals(
-            TestData(
+            TestStringMapData(
                 mapOf(
                     "foo" to "bar",
                     "test" to "ok"
                 )
             ),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestStringMapData.serializer(), """
                     |map: 
                     |  foo: bar
                     |  test: ok
@@ -254,44 +244,43 @@ internal class DecoderTest {
         )
     }
 
+    @Serializable
+    data class TestStringListData(
+        val list: List<String>
+    )
+
     @Test
     fun testSquareList() {
-        @Serializable
-        data class TestData(
-            val list: List<String>
-        )
-
         assertEquals(
-            TestData(listOf("foo", "bar")),
+            TestStringListData(listOf("foo", "bar")),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestStringListData.serializer(), """
                     list: [foo, bar]
                 """.trimIndent()
             )
         )
     }
 
+    @Serializable
+    data class TestPrimitiveTypesData(
+        val negative: Int,
+        val int: Int,
+        val short: Short,
+        val byte: Byte,
+        val long: Long,
+        val boolean: Boolean,
+        val float: Float,
+        val double: Double,
+        val char: Char,
+        val string: String,
+        val quotedString: String
+    )
+
     // primitive types and casting
     @Test
     fun testSimpleStructure() {
-
-        @Serializable
-        data class TestData(
-            val negative: Int,
-            val int: Int,
-            val short: Short,
-            val byte: Byte,
-            val long: Long,
-            val boolean: Boolean,
-            val float: Float,
-            val double: Double,
-            val char: Char,
-            val string: String,
-            val quotedString: String
-        )
-
         assertEquals(
-            TestData(
+            TestPrimitiveTypesData(
                 -1,
                 123,
                 123,
@@ -305,7 +294,7 @@ internal class DecoderTest {
                 "123"
             ),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestPrimitiveTypesData.serializer(), """
                     negative: -1
                     int: 123
                     short: 123

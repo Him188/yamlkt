@@ -10,7 +10,8 @@ import kotlin.math.pow
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance
 @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-@kotlin.internal.InlineOnly
+// TODO(#27): This breaks the compiler
+// @kotlin.internal.InlineOnly
 private inline fun CharSequence.foldFromRightOffsetIndexed(offset: Int, initial: Long, operation: (index: Int, acc: Long, Char) -> Long): Long {
     require(offset <= this.length - 1) { "length < offset" }
     var accumulator = initial
@@ -25,7 +26,8 @@ private inline fun CharSequence.foldFromRightOffsetIndexed(offset: Int, initial:
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance
 @Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-@kotlin.internal.InlineOnly
+// TODO(#27): This breaks the compiler
+// @kotlin.internal.InlineOnly
 private inline fun CharArray.foldFromRightOffsetIndexed(offset: Int, length: Int, initial: Long, operation: (index: Int, acc: Long, Char) -> Long): Long {
     var accumulator = initial
 

@@ -118,17 +118,17 @@ internal class BlockSequenceTest {
 
     }
 
+    @Serializable
+    data class NestedTestData(val item1: String, val item2: String)
+
+    @Serializable
+    data class TestData(val list: List<List<NestedTestData>>)
+
     /**
      * Test data from https://github.com/Him188/yamlkt/issues/1
      */
     @Test
     fun testNestedList() {
-        @Serializable
-        data class NestedTestData(val item1: String, val item2: String)
-
-        @Serializable
-        data class TestData(val list: List<List<NestedTestData>>)
-
         val yaml = """
             list:
             - - item1: 1
@@ -173,12 +173,6 @@ internal class BlockSequenceTest {
 
     @Test
     fun testMixedNestingList() {
-        @Serializable
-        data class NestedTestData(val item1: String, val item2: String)
-
-        @Serializable
-        data class TestData(val list: List<List<NestedTestData>>)
-
         val yaml = """
                     list:
                     - [ {item1: 1, item2: A}, { item1: 2, item2: B} ]

@@ -9,26 +9,25 @@ import kotlin.test.assertEquals
 
 
 internal class FlowListTest {
+    @Serializable
+    data class Item(
+        val id: String = "",
+        val label: String = "default"
+    )
+
+    @Serializable
+    data class TestListData(
+        val list: List<Item?>
+    )
 
     @Test
     fun `nullable list`() {
-        @Serializable
-        data class Item(
-            val id: String = "",
-            val label: String = "default"
-        )
-
-        @Serializable
-        data class TestData(
-            val list: List<Item?>
-        )
-
         assertEquals(
-            TestData(
+            TestListData(
                 listOf(Item("Open"), Item("OpenNew", "Open New"), null)
             ),
             Yaml.decodeFromString(
-                TestData.serializer(), """
+                TestListData.serializer(), """
         list: [
           {"id": "Open"},
           {"id": "OpenNew", "label": "Open New"},
@@ -39,15 +38,15 @@ internal class FlowListTest {
         )
     }
 
+    @Serializable
+    class TestNestedListData(
+        val list: List<List<String>>
+    )
+
     @Test
     fun testFlowListWithDescriptor() {
-        @Serializable
-        class TestData(
-            val list: List<List<String>>
-        )
-
         Yaml.decodeFromString(
-            TestData.serializer(), """
+            TestNestedListData.serializer(), """
     list: [[test, test, test, ]] 
     """
         )
