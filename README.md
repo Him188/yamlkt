@@ -80,7 +80,7 @@ data class Test(
     )
 }
 
-println(Yaml.default.parse(Test.serializer(), """
+println(Yaml.parse(Test.serializer(), """
 test: testString
 nest: 
   numberCast: 0xFE
@@ -100,7 +100,7 @@ data class Test(
     val any: @Contextual Any
 )
 
-Yaml.default.parse(Test.serializer(), yamlText)
+Yaml.parse(Test.serializer(), yamlText)
 ```
 For input YAML text:
 ```yaml
@@ -111,14 +111,14 @@ test: { key1: v1, key2: [v2, v3, v4] }
 
 Alternatively, you can deserialize without any class:
 ```kotlin
-val map: Map<String?, Any?> = Yaml.default.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
+val map: Map<String?, Any?> = Yaml.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
 
 #### `YamlElement`
 `YamlElement` is a type-safe way to deserialize without descriptors.
 ```kotlin
-val map: YamlMap = Yaml.default.decodeYamlMapFromString("""test: { key1: v1, key2: [v2, v3, v4] }""")
+val map: YamlMap = Yaml.decodeYamlMapFromString("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
 #### Comments
