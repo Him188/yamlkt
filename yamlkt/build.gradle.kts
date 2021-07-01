@@ -79,16 +79,3 @@ mavenCentralPublish {
     singleDevGithubProject("Him188", "yamlkt")
     licenseFromGitHubProject("Apache-2.0", "master")
 }
-
-@Suppress("DEPRECATION")
-val samplessources = tasks.register("samplessources", Jar::class) {
-    classifier = "samplessources"
-}
-
-publishing {
-    publications.withType(MavenPublication::class) {
-        if (name.contains("js")) {
-            artifact(samplessources)
-        }
-    }
-}
