@@ -1,5 +1,5 @@
 plugins {
-    id("net.mamoe.maven-central-publish") version Versions.mavenCentralPublish
+    id("net.mamoe.maven-central-publish") version Versions.mavenCentralPublish apply false
     kotlin("multiplatform") version Versions.kotlin apply false
     kotlin("plugin.serialization") version Versions.kotlin apply false
 
