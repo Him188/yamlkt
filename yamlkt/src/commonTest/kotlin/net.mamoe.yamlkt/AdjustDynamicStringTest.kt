@@ -42,7 +42,6 @@ internal class AdjustDynamicStringTest {
     @Test
     fun `test string`() {
         test("1.0xx", "1.0xx")
-        test(" 1.0", " 1.0")
     }
 
     @Test
