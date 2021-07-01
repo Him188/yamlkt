@@ -19,6 +19,7 @@ Third-party formats for [kotlinx.serialization] is strongly dependent on the ver
 | 0.6.0  | 1.4.10 |         1.0.0-RC2          |
 | 0.8.0  | 1.4.10 |           1.0.1            |
 | 0.9.0  | 1.4.30 |          1.1.0-RC          |
+| 0.10.0 | 1.5.20 |           1.2.1            |
 
 #### Gradle
 
@@ -29,7 +30,9 @@ repositories {
 ```
 
 ```kotlin
-implementation("net.mamoe.yamlkt:yamlkt:0.9.0")
+dependencies {
+    implementation("net.mamoe.yamlkt:yamlkt:0.10.0")
+}
 ```
 **If your project is multiplatform, you need only to add this dependency for commonMain.**  
 
@@ -42,7 +45,7 @@ Only JVM target is available for Maven.
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
     <artifactId>yamlkt-jvm</artifactId>
-    <version>0.9.0</version>
+    <version>0.10.0</version>
 </dependency>
 ```
 
