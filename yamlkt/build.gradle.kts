@@ -56,6 +56,7 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 api(kotlin("test"))
+                api(kotlin("reflect"))
             }
         }
 
