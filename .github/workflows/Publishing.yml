@@ -22,9 +22,6 @@ jobs:
       - run: ./gradlew publishMingwX64PublicationToMavenRepository --info  --scan
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
-      - run: ./gradlew :closeAndReleaseRepository --info --scan
-        env:
-          PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
   build-on-macos:
     runs-on: macos-latest
     needs:
@@ -41,8 +38,5 @@ jobs:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
       - run: ./gradlew build --info  --scan
       - run: ./gradlew publish --info  --scan
-        env:
-          PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
-      - run: ./gradlew :closeAndReleaseRepository --info --scan
         env:
           PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
