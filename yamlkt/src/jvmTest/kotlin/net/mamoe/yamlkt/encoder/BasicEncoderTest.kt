@@ -12,8 +12,35 @@ internal class BasicEncoderTest {
         val number: Int = 0,
         val map: Map<String, String> = mapOf("bob" to "2"),
         val list: List<String> = listOf("value1", "value2"),
-        val anotherData: Data? = null
-    )
+        val anotherData: Data? = null,
+        val byteArray: ByteArray? = null
+    ) {
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as Data
+
+            if (v1 != other.v1) return false
+            if (number != other.number) return false
+            if (map != other.map) return false
+            if (list != other.list) return false
+            if (anotherData != other.anotherData) return false
+            if (!byteArray.contentEquals(other.byteArray)) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = v1.hashCode()
+            result = 31 * result + number
+            result = 31 * result + map.hashCode()
+            result = 31 * result + list.hashCode()
+            result = 31 * result + (anotherData?.hashCode() ?: 0)
+            result = 31 * result + byteArray.contentHashCode()
+            return result
+        }
+    }
 
     @Serializable
     data class Data2(
@@ -27,8 +54,8 @@ internal class BasicEncoderTest {
 
         allFlow.testDescriptorBased(Data2.serializer(), Data2())
 
-        allFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
-        blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111)))
+        allFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray()))
+        blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray()))
     }
 
     /*
@@ -43,6 +70,7 @@ internal class BasicEncoderTest {
         Default.testDynamic(true)
         Default.testDynamic("s")
         Default.testDynamic(listOf("test", "s"))
+        Default.testDynamic(listOf(1.toByte())) // ByteArray will be decoded to List<Byte>
     }
 
     @Test
