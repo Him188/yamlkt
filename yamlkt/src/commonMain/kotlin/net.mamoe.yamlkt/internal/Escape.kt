@@ -342,6 +342,11 @@ internal inline fun <R> TokenStream.useNext(block: (ch: Char) -> R?): R? {
     return source[cur++].let(block)
 }
 
+internal inline fun <R> TokenStream.peekNext(block: (ch: Char) -> R?): R? {
+    if (endOfInput) return null
+    return source[cur + 1].let(block)
+}
+
 internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
 internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlBuilder.StringSerialization): String {

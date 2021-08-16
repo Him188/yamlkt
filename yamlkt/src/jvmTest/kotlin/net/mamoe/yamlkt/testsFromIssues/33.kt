@@ -2,6 +2,7 @@ package net.mamoe.yamlkt.testsFromIssues
 
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Yaml
+import net.mamoe.yamlkt.encoder.allFlow
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -41,14 +42,19 @@ internal class Issue33 {
         val data = TestData(
             test = 125,
             test5 = -125,
-            test2 = byteArrayOf(125, -125) + "test".toByteArray(),
+            test2 = byteArrayOf(-125, 125) + "test".toByteArray(),
             test3 = 125u,
             test4 = 254u,
         )
 
-        val encodedString = yaml.encodeToString(TestData.serializer(), data)
+        var encodedString = yaml.encodeToString(TestData.serializer(), data)
         println(encodedString)
-        val decodedData = yaml.decodeFromString(TestData.serializer(), encodedString)
+        var decodedData = yaml.decodeFromString(TestData.serializer(), encodedString)
+        println(decodedData)
+
+        encodedString = allFlow.encodeToString(TestData.serializer(), data)
+        println(encodedString)
+        decodedData = allFlow.decodeFromString(TestData.serializer(), encodedString)
         println(decodedData)
 
         assertEquals(data, decodedData)

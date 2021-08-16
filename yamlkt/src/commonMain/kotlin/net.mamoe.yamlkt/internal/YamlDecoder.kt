@@ -609,6 +609,13 @@ internal class YamlDecoder(
                     Token.STRING_NULL,
                     Token.STRING
                     -> tokenStream.reuseToken(next)
+
+                    Token.MULTILINE_LIST_FLAG,
+                    -> {
+                        handlePossibleNegativeValues(current)
+                        return index++
+                    }
+
                     else -> throw contextualDecodingException("Illegal token $next")
                 }
 
@@ -619,10 +626,36 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(current)
                     return index++
                 }
+
+                Token.MULTILINE_LIST_FLAG,
+                -> {
+                    handlePossibleNegativeValues(current)
+                    return index++
+                }
                 else ->
                     throw contextualDecodingException("Illegal token $current")
             }
             return index++
+        }
+
+        private fun handlePossibleNegativeValues(current: Token) {
+            tokenStream.peekNext {
+                if (!it.isWhitespace() && (it == '-' || Token[it] == null)) {
+                    // like `[ --1 ]`, should be string
+                    tokenStream.reuseToken(tokenStream.readUnquotedString(true, it))
+                    return
+                }
+            }
+
+            when (val next = tokenStream.nextToken() ?: throw contextualDecodingException("Unexpected end of text")) {
+                Token.STRING -> {
+                    tokenStream.reuseToken(next)
+                    tokenStream.strBuff = "-" + tokenStream.strBuff
+                }
+                else -> {
+                    tokenStream.reuseToken(current)
+                }
+            }
         }
     }
 
@@ -871,7 +904,7 @@ internal class YamlDecoder(
     /**
      * Null represents the value is null, instead of EOF.
      */
-    private fun nextStringOrNull(stopOnComma: Boolean = false): String? {
+    private fun nextStringOrNull(stopOnComma: Boolean = true): String? {
         return nextString(stopOnComma)?.let { value ->
             if (value == Token.STRING_NULL) {
                 return null

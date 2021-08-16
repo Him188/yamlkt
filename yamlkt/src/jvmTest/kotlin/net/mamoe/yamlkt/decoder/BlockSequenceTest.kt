@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromString
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.Yaml.Default
 import net.mamoe.yamlkt.YamlElement
@@ -215,6 +216,18 @@ internal class BlockSequenceTest {
                 )
             ).toString(),
             Default.decodeMapFromString(yaml).toString()
+        )
+    }
+
+    @Test
+    fun `block seq with negative values`() {
+        assertEquals(
+            listOf(-1),
+            Default.decodeFromString(
+                """
+                - -1
+            """.trimIndent()
+            )
         )
     }
 }
