@@ -14,7 +14,8 @@ val snakeYaml = org.yaml.snakeyaml.Yaml()
 fun <T> Yaml.testDescriptorBased(
     serializer: KSerializer<T>,
     value: T,
-    print: Boolean = false
+    print: Boolean = false,
+    toString: (T) -> String = { it.toString() },
 ) {
     val dump = kotlin.runCatching {
         this.encodeToString(serializer, value)
@@ -30,18 +31,23 @@ $dump
 """.trim()
     )
 
+    val decoded = this.decodeFromString(serializer, dump)
     kotlin.runCatching {
-        assertEquals(value.toString(), this.decodeFromString(serializer, dump).toString())
+        assertEquals(value.run(toString), decoded.run(toString))
     }.getOrElse {
-        throw AssertionError("Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=$value", it)
+        throw AssertionError(
+            "Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=${value.run(toString)}\ndecoded=${decoded.run(toString)}",
+            it
+        )
     }
 }
 
-@Suppress("NOTHING_TO_INLINE")
-inline fun Yaml.testDynamic(
-    value: Any,
-    print: Boolean = false
-) = testDescriptorBased(YamlDynamicSerializer, value, print)
+@Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+inline fun <T : Any> Yaml.testDynamic(
+    value: T,
+    print: Boolean = false,
+    noinline toString: (T) -> String = { it.toString() }
+) = testDescriptorBased(YamlDynamicSerializer as KSerializer<T>, value, print, toString = toString)
 
 val allFlow = Yaml {
     mapSerialization = YamlBuilder.MapSerialization.FLOW_MAP
