@@ -88,4 +88,40 @@ internal class FlowListTest {
         assertEquals(listOf(-1, "--1", "--1"), allFlow.decodeFromString("""[ -1, --1, --1 ]"""))
         assertEquals(listOf(-1, "--1", "--1", 1, -1), allFlow.decodeFromString("""[ -1, --1, --1, 1, -1 ]"""))
     }
+
+    @Serializable
+    data class TestDataA(
+        val a: Int,
+        val b: Int,
+    )
+
+    @Serializable
+    data class TestDataB(
+        val list: List<Int>,
+        val b: Int,
+    )
+
+    @Serializable
+    internal class SvcReqPushMsg(
+        @JvmField val uin: Long,
+        @JvmField val svrip: Int? = 0,
+        @JvmField val mPreviews: Map<String, ByteArray>? = null,
+    )
+
+    @Test
+    fun `test flow class`() {
+        assertEquals(TestDataA(1, 1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: 1, b: 1 } """))
+        assertEquals(TestDataA(-1, -1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: -1, b: -1 } """))
+        assertEquals(TestDataA(-1, 1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: -1, b: 1 } """))
+        assertEquals(TestDataA(1, -1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: 1, b: -1 } """))
+
+        assertEquals(TestDataB(listOf(1, -1), 1), allFlow.decodeFromString(TestDataB.serializer(), """{ list : [1, -1], b: 1 } """))
+        assertEquals(TestDataB(listOf(-1, 1), -1), allFlow.decodeFromString(TestDataB.serializer(), """{ list : [-1, 1], b: -1 } """))
+        println(
+            allFlow.decodeFromString(
+                SvcReqPushMsg.serializer(),
+                """{ uin: 9876540101, uMsgTime: 1629306246, svrip: -102210294, vSyncCookie: [], vUinPairMsg: [], mPreviews: {} }"""
+            )
+        )
+    }
 }

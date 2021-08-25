@@ -50,6 +50,15 @@ internal class YamlDecoder(
         }
     }
 
+    fun TokenStream.isNextWhitespace(): Boolean {
+        this.peekNext {
+            if (!it.isWhitespace() && (it == '-' || Token[it] == null)) {
+                // like `[ --1 ]`, should be string
+                return true
+            }
+        }
+        return false
+    }
 
     enum class Kind {
         FLOW_CLASS,
@@ -489,6 +498,8 @@ internal class YamlDecoder(
 
         override fun decodeNotNullMark(): Boolean {
             return when (val token = tokenStream.nextToken()) {
+                END_OF_FILE -> throw contextualDecodingException("Early EOF. Expected '}'.")
+
                 Token.MAP_END
                 -> {
                     tokenStream.reuseToken(token)
@@ -506,6 +517,16 @@ internal class YamlDecoder(
                 Token.STRING -> {
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     true
+                }
+                Token.MULTILINE_LIST_FLAG -> {
+                    if (tokenStream.endOfInput) throw contextualDecodingException("Early EOF. Expected '}'.")
+
+                    if (tokenStream.isNextWhitespace()) {
+                        tokenStream.reuseToken(tokenStream.readUnquotedString(true, '-'))
+                        true
+                    } else {
+                        throw contextualDecodingException("Illegal token $token")
+                    }
                 }
                 Token.COMMA -> {
                     //tokenStream.reuseToken(token)
@@ -639,12 +660,9 @@ internal class YamlDecoder(
         }
 
         private fun handlePossibleNegativeValues(current: Token) {
-            tokenStream.peekNext {
-                if (!it.isWhitespace() && (it == '-' || Token[it] == null)) {
-                    // like `[ --1 ]`, should be string
-                    tokenStream.reuseToken(tokenStream.readUnquotedString(true, it))
-                    return
-                }
+            if (tokenStream.isNextWhitespace()) {
+                tokenStream.reuseToken(tokenStream.readUnquotedString(true, '-'))
+                return
             }
 
             when (val next = tokenStream.nextToken() ?: throw contextualDecodingException("Unexpected end of text")) {
