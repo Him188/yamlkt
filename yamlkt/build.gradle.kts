@@ -34,14 +34,14 @@ kotlin {
         fun kotlinx(name: String, version: String): String = "org.jetbrains.kotlinx:kotlinx-$name:$version"
 
         all {
-            languageSettings.useExperimentalAnnotation("kotlin.RequiresOptIn")
-            languageSettings.useExperimentalAnnotation("kotlinx.serialization.ExperimentalSerializationApi")
-            languageSettings.useExperimentalAnnotation("kotlin.contracts.ExperimentalContracts")
+            languageSettings.optIn("kotlin.RequiresOptIn")
+            languageSettings.optIn("kotlinx.serialization.ExperimentalSerializationApi")
+            languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
             languageSettings.progressiveMode = true
 
             if (name.endsWith("Test")) {
                 languageSettings.enableLanguageFeature("InlineClasses")
-                languageSettings.useExperimentalAnnotation("kotlin.ExperimentalUnsignedTypes")
+                languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
             }
         }
 

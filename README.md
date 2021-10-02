@@ -20,6 +20,7 @@ Third-party formats for [kotlinx.serialization] is strongly dependent on the ver
 | 0.8.0  | 1.4.10 |           1.0.1            |
 | 0.9.0  | 1.4.30 |          1.1.0-RC          |
 | 0.10.2 | 1.5.20 |           1.2.1            |
+| 0.10.2 | 1.5.31 |           1.3.0            |
 
 #### Gradle
 

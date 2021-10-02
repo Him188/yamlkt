@@ -2,7 +2,6 @@
 
 package net.mamoe.yamlkt
 
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.internal.*
 import kotlin.collections.component1
@@ -251,7 +250,7 @@ public data class YamlLiteral(
 @Serializable(with = YamlNullSerializer::class)
 public object YamlNull : YamlPrimitive() {
     public override val content: Nothing? get() = null
-    public fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
+//    public fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
     public override fun equals(other: Any?): Boolean = other === this
     public override fun hashCode(): Int = 1
 }
