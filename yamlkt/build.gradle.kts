@@ -1,7 +1,7 @@
 @file:Suppress("UNUSED_VARIABLE")
 
 plugins {
-    id("net.mamoe.maven-central-publish")
+    id("me.him188.maven-central-publish")
     kotlin("multiplatform")
     kotlin("plugin.serialization")
     `maven-publish`
@@ -15,7 +15,41 @@ kotlin {
         js {
             useCommonJs()
         }
-        apply(from = rootProject.file("gradle/compile-native-multiplatform.gradle"))
+
+
+        val ideaActive = System.getProperty("idea.active") == "true"
+
+        val nativeMainSets = mutableListOf<org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet>()
+        val nativeTestSets = mutableListOf<org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet>()
+
+        if (ideaActive) {
+            when {
+                org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_MAC) -> if (org.apache.tools.ant.taskdefs.condition.Os.isArch(
+                        "aarch64"
+                    )
+                ) macosArm64("native") else macosX64("native")
+                org.apache.tools.ant.taskdefs.condition.Os.isFamily(org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS) -> mingwX64("native")
+                else -> linuxX64("native")
+            }
+        } else {
+            // 1.6.0
+            val nativeTargets = arrayOf(
+                "androidNativeArm32, androidNativeArm64, androidNativeX86, androidNativeX64",
+                "iosArm32, iosArm64, iosX64, iosSimulatorArm64",
+                "watchosArm32, watchosArm64, watchosX86, watchosX64, watchosSimulatorArm64",
+                "tvosArm64, tvosX64, tvosSimulatorArm64",
+                "macosX64, macosArm64",
+                "linuxArm64, linuxArm32Hfp, linuxMips32, linuxMipsel32, linuxX64",
+                "mingwX64, mingwX86",
+                "wasm32"
+            ).flatMap { it.split(", ") }
+            presets.filter { it.name in nativeTargets }
+                .forEach { preset ->
+                    val target = targetFromPreset(preset, preset.name)
+                    nativeMainSets.add(target.compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME].kotlinSourceSets.first())
+                    nativeTestSets.add(target.compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.TEST_COMPILATION_NAME].kotlinSourceSets.first())
+                }
+        }
 
         /*
         val hostOs = System.getProperty("os.name")
@@ -75,7 +109,6 @@ kotlin {
 }
 
 mavenCentralPublish {
-    packageGroup = "net.mamoe"
     singleDevGithubProject("Him188", "yamlkt")
     licenseFromGitHubProject("Apache-2.0", "master")
 }
