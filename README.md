@@ -35,7 +35,14 @@ dependencies {
     implementation("net.mamoe.yamlkt:yamlkt:0.10.2")
 }
 ```
-**If your project is multiplatform, you need only to add this dependency for commonMain.**  
+**If your project is multiplatform, you need only to add this dependency for commonMain:**  
+```kotlin
+commonMain {
+    dependencies {
+        implementation("net.mamoe.yamlkt:yamlkt:0.10.2")
+    }
+}
+```
 
 
 #### Maven
