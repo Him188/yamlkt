@@ -11,7 +11,11 @@ kotlin {
     explicitApi()
 
     targets {
-        jvm()
+        jvm {
+            compilations.all {
+                kotlinOptions.jvmTarget = "1.6"
+            }
+        }
         js {
             useCommonJs()
         }
