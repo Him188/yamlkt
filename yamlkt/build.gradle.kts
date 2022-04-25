@@ -73,10 +73,9 @@ kotlin {
             languageSettings.optIn("kotlin.contracts.ExperimentalContracts")
             languageSettings.progressiveMode = true
 
-            if (name.endsWith("Test")) {
-                languageSettings.enableLanguageFeature("InlineClasses")
-                languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
-            }
+//            if (name.endsWith("Test")) {
+////                languageSettings.optIn("kotlin.ExperimentalUnsignedTypes")
+//            }
         }
 
         // don't configure nativeMain or nativeTest here. Source set names might be inconsistent on github actions.
