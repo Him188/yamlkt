@@ -344,22 +344,22 @@ internal class YamlDecoder(
             when (val token = tokenStream.nextToken()) {
                 END_OF_FILE -> return READ_DONE // in block map it's ok
 
-                Token.STRING -> {
-                    if (tokenStream.currentIndent < baseIndent) {
-                        Debugging.logCustom { "BlockMapDecoder exit: crt=${tokenStream.currentIndent}, base=$baseIndent" }
-                        tokenStream.reuseToken(tokenStream.strBuff!!)
+                Token.MULTILINE_LIST_FLAG -> {
+                    val next = tokenStream.nextToken()
+                    if (next == END_OF_FILE || tokenStream.leadingSpace != 0) {
+                        // EOF or nested, same as 'else' branch
+                        if (next != null) tokenStream.reuseToken(next)
+                        tokenStream.reuseToken(token)
                         return READ_DONE
                     }
 
-                    if (!checkIndent(tokenStream.currentIndent)) {
-                        return READ_DONE
-                    }
-                    val current = tokenStream.nextToken()
-                    if (current != Token.COLON) {
-                        throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found $current for '${descriptor.serialName}'")
-                    }
-                    tokenStream.reuseToken(tokenStream.strBuff!!)
-                    return index++
+                    val str = tokenStream.readUnquotedString(true, '-')
+//                    tokenStream.reuseToken(next)
+
+                    return processString(descriptor, str)
+                }
+                Token.STRING -> {
+                    return processString(descriptor, tokenStream.strBuff!!)
                 }
                 // nested
                 // Token.LIST_BEGIN, Token.MULTILINE_LIST_FLAG,
@@ -368,6 +368,27 @@ internal class YamlDecoder(
                     return READ_DONE
                 }
             }
+        }
+
+        private fun processString(
+            descriptor: SerialDescriptor,
+            buf: String
+        ): Int {
+            if (tokenStream.currentIndent < baseIndent) {
+                Debugging.logCustom { "BlockMapDecoder exit: crt=${tokenStream.currentIndent}, base=$baseIndent" }
+                tokenStream.reuseToken(tokenStream.strBuff!!)
+                return READ_DONE
+            }
+
+            if (!checkIndent(tokenStream.currentIndent)) {
+                return READ_DONE
+            }
+            val current = tokenStream.nextToken()
+            if (current != Token.COLON) {
+                throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found $current for '${descriptor.serialName}'")
+            }
+            tokenStream.reuseToken(buf)
+            return index++
         }
     }
 
@@ -830,6 +851,10 @@ internal class YamlDecoder(
                     }
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
+                        BlockMapDecoder(tokenStream.currentIndent)
+                    }
+                    Token.MULTILINE_LIST_FLAG -> {
+                        tokenStream.reuseToken(Token.MULTILINE_LIST_FLAG)
                         BlockMapDecoder(tokenStream.currentIndent)
                     }
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")

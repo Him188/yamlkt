@@ -184,6 +184,19 @@ t:
         )
     }
 
+    @Test
+    fun testBlockMapNegativeKeys() {
+        val serializer = MapSerializer(Int.serializer(), Int.serializer())
+        assertEquals(
+            mapOf(-1 to -2), Yaml.decodeFromString(
+                serializer, """
+                        -1: -2
+                    """.trimIndent()
+            )
+        )
+
+    }
+
     /*
     @Test
     fun testForceSpaceAfterColon() {
