@@ -53,6 +53,17 @@ kotlin {
                     nativeMainSets.add(target.compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.MAIN_COMPILATION_NAME].kotlinSourceSets.first())
                     nativeTestSets.add(target.compilations[org.jetbrains.kotlin.gradle.plugin.KotlinCompilation.TEST_COMPILATION_NAME].kotlinSourceSets.first())
                 }
+            sourceSets {
+                if (!ideaActive) {
+                    configure(nativeMainSets) {
+                        dependsOn(sourceSets.maybeCreate("nativeMain"))
+                    }
+
+                    configure(nativeTestSets) {
+                        dependsOn(sourceSets.maybeCreate("nativeTest"))
+                    }
+                }
+            }
         }
 
         /*
