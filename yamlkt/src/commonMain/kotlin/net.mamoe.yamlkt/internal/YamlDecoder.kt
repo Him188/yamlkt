@@ -357,6 +357,11 @@ internal class YamlDecoder(
                     val current = tokenStream.nextToken()
                     if (current != Token.COLON) {
                         throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found $current for '${descriptor.serialName}'")
+                    } else if(!tokenStream.endOfInput) {
+                        val char = tokenStream.source[tokenStream.cur]
+                        if(!char.isWhitespace()) {
+                            throw tokenStream.contextualDecodingException("Expected whitespace after COLON but found $char for '${descriptor.serialName}'")
+                        }
                     }
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return index++
