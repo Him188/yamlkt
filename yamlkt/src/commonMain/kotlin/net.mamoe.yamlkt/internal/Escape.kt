@@ -244,12 +244,29 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     // Advance past indent, keeping track of how deep it is
     var lineIndent = countSkipIf { it == ' ' }
 
-    // Save base level indent of the string
-    val foldingIndent = lineIndent
-    // If the indent is 0, or if it's less than the current indent, we've reached the end of the string already
-    if (foldingIndent == 0 || foldingIndent < currentIndent) {
+    // If line is blank, may still be part of the string;
+    // keep reading lines until we get one that is not blank or one that is not indented
+    var prependedNewlineCount = 0
+    while(!endOfInput && source[cur] == '\n') {
+        prependedNewlineCount++
+        // Advance line break
+        cur++
+        // Count indent again
+        lineIndent = countSkipIf { it == ' ' }
+    }
+
+    // If the line indent is less than the current indent, we may have reached the end of the string already
+    if (lineIndent < currentIndent) {
         return takeStringBufTrimEnd()
     }
+
+    // Prepend any newlines
+    for(i in 0 until prependedNewlineCount) {
+        append('\n')
+    }
+
+    // Save base level indent of the string
+    val foldingIndent = lineIndent
 
     var lineNumber = 0
     var previousLineLength = -1

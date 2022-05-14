@@ -201,4 +201,33 @@ class MultilineStringTest {
         val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun testMultilineFoldedStringWithLeadingNewline() {
+        val yaml = """
+            key: >
+            
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("\n$line1 $line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineFoldedStringWithLeadingNewlines() {
+        val yaml = """
+            key: >
+            
+            
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("\n\n$line1 $line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
 }
