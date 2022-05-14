@@ -257,6 +257,10 @@ private fun TokenStream.takeMultilineFoldedString(): String {
 
     // If the line indent is less than the current indent, we may have reached the end of the string already
     if (lineIndent < currentIndent) {
+        // Back up to avoid breaking other strings
+        if(!endOfInput) {
+            cur -= (lineIndent + 1)
+        }
         return takeStringBufTrimEnd()
     }
 
