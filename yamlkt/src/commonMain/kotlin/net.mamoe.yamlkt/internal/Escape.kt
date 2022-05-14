@@ -228,13 +228,13 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     }
 
     // Advance to the next non-blank link, keeping its indent and the number of lines advanced
-    var (lineIndent, prependedNewlineCount) = advanceToNextNonBlankLine()
+    val (firstLineIndent, prependedNewlineCount) = advanceToNextNonBlankLine()
 
     // If the line indent is less than the current indent, we may have reached the end of the string already
-    if (lineIndent < currentIndent) {
+    if (firstLineIndent < currentIndent) {
         // Back up to avoid breaking other strings
         if(!endOfInput) {
-            cur -= (lineIndent + 1)
+            cur -= (firstLineIndent + 1)
         }
         return takeStringBufTrimEnd()
     }
@@ -244,33 +244,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
         append('\n')
     }
 
-    // Save base level indent of the string
-    val foldingIndent = lineIndent
-
-    var lineNumber = 0
-    var previousLineLength = -1
-    while (lineIndent >= foldingIndent && !endOfInput) {
-        // Take the rest of the line as part of the string
-        val lineLength = takeLineForMultlineFoldedString(lineNumber, foldingIndent, lineIndent, previousLineLength)
-        // Advance indent for next iteration
-        lineIndent = countSkipIf { it == ' ' }
-        // Increment line number
-        lineNumber++
-        // Stash line length
-        previousLineLength = lineLength
-    }
-
-    // If at least one line exists, append a newline
-    if (lineNumber > 0) {
-        if (!trimEnd) {
-            append('\n')
-        }
-    }
-
-    // Back up to the previous line so as not to break additional strings
-    if(!endOfInput) {
-        cur -= (lineIndent + 1)
-    }
+    takeLinesForMultilineFoldedString(firstLineIndent)
 
     return if (trimEnd) {
         // Trim all trailing whitespace when trim flag set
@@ -279,6 +253,32 @@ private fun TokenStream.takeMultilineFoldedString(): String {
         takeStringBufTrimEnd()
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
+    }
+}
+
+private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int) {
+    var lineNumber = 0
+    var previousLineLength = -1
+    var currentLineIndent = foldingIndent
+    while (currentLineIndent >= foldingIndent && !endOfInput) {
+        // Take the rest of the line as part of the string
+        val lineLength = takeLineForMultlineFoldedString(lineNumber, foldingIndent, currentLineIndent, previousLineLength)
+        // Advance indent for next iteration
+        currentLineIndent = countSkipIf { it == ' ' }
+        // Increment line number
+        lineNumber++
+        // Stash line length
+        previousLineLength = lineLength
+    }
+
+    // If at least one line exists, append a newline
+    if (lineNumber > 0) {
+        append('\n')
+    }
+
+    // Back up to the previous line so as not to break additional strings
+    if (!endOfInput) {
+        cur -= (currentLineIndent + 1)
     }
 }
 
