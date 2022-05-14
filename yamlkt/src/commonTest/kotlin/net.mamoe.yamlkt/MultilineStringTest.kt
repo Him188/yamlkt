@@ -244,4 +244,17 @@ class MultilineStringTest {
         val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun testMultilineFoldedStringWithOneEmpty() {
+        val yaml = """
+            string1: >
+            string2: >
+             foo
+        """.trimIndent()
+
+        val expected = TestTwoStringData("", "foo\n")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
 }
