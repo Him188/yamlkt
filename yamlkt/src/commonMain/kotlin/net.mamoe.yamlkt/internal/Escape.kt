@@ -242,7 +242,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     }
 
     // Advance past indent, keeping track of how deep it is
-    var indent = advanceIndent()
+    var indent = countSkipIf { it == ' ' }
 
     // Save base level indent of the string
     val stringIndent = indent
@@ -291,7 +291,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
             cur++
         }
         // Advance indent for next iteration
-        indent = advanceIndent()
+        indent = countSkipIf { it == ' ' }
         // Increment line number
         line++
         // Stash line length
@@ -318,15 +318,6 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
     }
-}
-
-private fun TokenStream.advanceIndent(): Int {
-    val startIndent = cur
-    while (!endOfInput && source[cur] == ' ') {
-        cur++
-    }
-    val newIndent = cur - startIndent
-    return newIndent
 }
 
 private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initialIntent: Int, addCaret: Boolean = true): Boolean {
