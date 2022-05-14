@@ -255,7 +255,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     var previousLineLength = -1
     while (lineIndent >= foldingIndent && !endOfInput) {
         // Take the rest of the line as part of the string
-        val lineLength = takeLineForMultilineString(lineNumber, foldingIndent, lineIndent, previousLineLength)
+        val lineLength = takeLineForMultlineFoldedString(lineNumber, foldingIndent, lineIndent, previousLineLength)
         // Advance indent for next iteration
         lineIndent = countSkipIf { it == ' ' }
         // Increment line number
@@ -286,7 +286,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     }
 }
 
-private fun TokenStream.takeLineForMultilineString(
+private fun TokenStream.takeLineForMultlineFoldedString(
     lineNumber: Int,
     foldingIndent: Int,
     lineIndent: Int,
