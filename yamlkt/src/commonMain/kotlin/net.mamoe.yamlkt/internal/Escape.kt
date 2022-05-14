@@ -218,7 +218,7 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
 }
 
 private fun TokenStream.takeMultilineFoldedString(): String {
-    val (trimEnd, keepNewlines) = takeChompCharacter()
+    val (trimEnd, keepTrailingNewlines) = takeChompCharacter()
 
     advanceToEndOfLineThrowIfNotWhitespace()
 
@@ -244,35 +244,45 @@ private fun TokenStream.takeMultilineFoldedString(): String {
         append('\n')
     }
 
-    takeLinesForMultilineFoldedString(firstLineIndent)
+    takeLinesForMultilineFoldedString(firstLineIndent, keepTrailingNewlines)
 
     return if (trimEnd) {
         // Trim all trailing whitespace when trim flag set
         takeStringBufTrimEnd().trimEnd()
-    } else if(keepNewlines) {
+    } else if(keepTrailingNewlines) {
         takeStringBufTrimEnd()
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
     }
 }
 
-private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int) {
+private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int, keepTrailingLines: Boolean) {
     var lineNumber = 0
-    var previousLineLength = -1
     var currentLineIndent = foldingIndent
+    var previousLineBlank = true
+    var trailingBlankLines = 0
     while (currentLineIndent >= foldingIndent && !endOfInput) {
         // Take the rest of the line as part of the string
-        val lineLength = takeLineForMultlineFoldedString(lineNumber, foldingIndent, currentLineIndent, previousLineLength)
-        // Advance indent for next iteration
-        currentLineIndent = countSkipIf { it == ' ' }
+        takeLineForMultlineFoldedString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
+        val (nextIndent, blankLineCount) = advanceToNextNonBlankLine()
+        previousLineBlank = blankLineCount > 0
+        trailingBlankLines = blankLineCount
+        currentLineIndent = nextIndent
+        if( blankLineCount > 0) {
+            append('\n')
+        }
         // Increment line number
         lineNumber++
-        // Stash line length
-        previousLineLength = lineLength
+    }
+
+    if(keepTrailingLines) {
+        for(i in 0 until trailingBlankLines) {
+            append('\n')
+        }
     }
 
     // If at least one line exists, append a newline
-    if (lineNumber > 0) {
+    if (lineNumber > 0 && currentLineIndent >= foldingIndent) {
         append('\n')
     }
 
@@ -314,21 +324,21 @@ private fun TokenStream.takeChompCharacter(): Pair<Boolean, Boolean> {
     // Fist character, if not a newline, is the chomp flag
     val startChar = if (!endOfInput) source[cur] else '\n'
     val trimEnd = startChar == '-'
-    val keepNewlines = startChar == '+'
+    val keepTrailingNewlines = startChar == '+'
 
     // Advance past chomp flag
-    if (keepNewlines || trimEnd) {
+    if (keepTrailingNewlines || trimEnd) {
         cur++
     }
 
-    return Pair(trimEnd, keepNewlines)
+    return Pair(trimEnd, keepTrailingNewlines)
 }
 
 private fun TokenStream.takeLineForMultlineFoldedString(
     lineNumber: Int,
     foldingIndent: Int,
     lineIndent: Int,
-    previousLineLength: Int
+    previousLineBlank: Boolean
 ): Int {
     val lineStart = cur
 
@@ -348,12 +358,9 @@ private fun TokenStream.takeLineForMultlineFoldedString(
                 append(' ')
             }
         } else {
-            if (lineLength > 0 && previousLineLength != 0) {
+            if (lineLength > 0 && !previousLineBlank) {
                 // Regular line breaks get a leading space if not empty and previous line not blank
                 append(' ')
-            } else if (lineLength == 0) {
-                // If empty, append a newline
-                append('\n')
             }
         }
     }

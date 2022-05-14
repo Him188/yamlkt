@@ -56,6 +56,8 @@ class MultilineStringTest {
         assertEquals(expected, actual)
     }
 
+    //region Folded strings
+
     @Test
     fun testMultilineFoldedStringWithNoLineBreak() {
         val yaml = """
@@ -157,7 +159,7 @@ class MultilineStringTest {
               
         """.trimIndent()
 
-        val expected = DecoderTest.TestStringData("$line1 $line2\n\n")
+        val expected = DecoderTest.TestStringData("$line1 $line2\n\n\n")
         val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
@@ -257,4 +259,213 @@ class MultilineStringTest {
         val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
+
+    //endregion
+
+
+    //region Literal strings
+
+    @Test
+    fun testMultilineLiteralStringWithNoLineBreak() {
+        val yaml = """
+            key: | $line1
+        """.trimIndent()
+
+        assertFailsWith<YamlDecodingException> {
+            Yaml.decodeFromString(testStringDataSerializer, yaml)
+        }
+    }
+
+    @Test
+    fun testMultilineLiteralStringEmpty() {
+        val yaml = """
+            key: |
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralString() {
+        val yaml = """
+            key: |
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithSpacesAfterBracket() {
+        val yaml = """
+            key: |  
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithLeadingSpace() {
+        val yaml = """
+            key: |
+              $line1
+               $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n $line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithTrailingNewlines() {
+        val yaml = """
+            key: |
+              $line1
+              $line2
+              
+              
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithStrippedNewlines() {
+        val yaml = """
+            key: |-
+              $line1
+              $line2
+              
+              
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithKeptNewlines() {
+        val yaml = """
+            key: |+
+              $line1
+              $line2
+              
+              
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2\n\n\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithBlankLines() {
+        val yaml = """
+            key: |
+              $line1
+              
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("$line1\n$line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithAdditionalContent() {
+        val yaml = """
+            string1: |
+              foo
+            string2: bar
+        """.trimIndent()
+        val expected = TestTwoStringData("foo\n", "bar")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithMultipleLiteralStrings() {
+        val yaml = """
+            string1: |+
+              foo
+              
+            string2: |-
+              bar
+        """.trimIndent()
+        val expected = TestTwoStringData("foo\n\n", "bar")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithLeadingNewline() {
+        val yaml = """
+            key: |
+            
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("\n$line1 $line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithLeadingNewlines() {
+        val yaml = """
+            key: |
+            
+            
+              $line1
+              $line2
+        """.trimIndent()
+
+        val expected = DecoderTest.TestStringData("\n\n$line1 $line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithOnlyLeadingNewlines() {
+        val yaml = """
+            string1: |
+            
+            string2: |
+             foo
+        """.trimIndent()
+
+        val expected = TestTwoStringData("", "foo\n")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithOneEmpty() {
+        val yaml = """
+            string1: |
+            string2: |
+             foo
+        """.trimIndent()
+
+        val expected = TestTwoStringData("", "foo\n")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    //endregion
 }
