@@ -218,42 +218,17 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
 }
 
 private fun TokenStream.takeMultilineFoldedString(): String {
-    // Fist character, if not a newline, is the chomp flag
-    val startChar = if (!endOfInput) source[cur] else '\n'
-    val trimEnd = startChar == '-'
-    val keepNewlines = startChar == '+'
-    // Advance past chomp flag
-    if (keepNewlines || trimEnd) {
-        cur++
-    }
+    val (trimEnd, keepNewlines) = takeChompCharacter()
 
-    // Advance through whitespace 'till end of line
-    while (!endOfInput && source[cur] == ' ' && source[cur] != '\n') {
-        cur++
-    }
-    // Throw if non-whitespace encountered
-    if (!endOfInput && source[cur] != '\n') {
-        throw contextualDecodingException("Only whitespace allowed after '>'")
-    }
+    advanceToEndOfLineThrowIfNotWhitespace()
 
     // Advance to first post-fold line
     if (!endOfInput) {
         cur++
     }
 
-    // Advance past indent, keeping track of how deep it is
-    var lineIndent = countSkipIf { it == ' ' }
-
-    // If line is blank, may still be part of the string;
-    // keep reading lines until we get one that is not blank or one that is not indented
-    var prependedNewlineCount = 0
-    while(!endOfInput && source[cur] == '\n') {
-        prependedNewlineCount++
-        // Advance line break
-        cur++
-        // Count indent again
-        lineIndent = countSkipIf { it == ' ' }
-    }
+    // Advance to the next non-blank link, keeping its indent and the number of lines advanced
+    var (lineIndent, prependedNewlineCount) = advanceToNextNonBlankLine()
 
     // If the line indent is less than the current indent, we may have reached the end of the string already
     if (lineIndent < currentIndent) {
@@ -305,6 +280,48 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
     }
+}
+
+private fun TokenStream.advanceToNextNonBlankLine(): Pair<Int, Int> {
+    // Advance past indent, keeping track of how deep it is
+    var lineIndent = countSkipIf { it == ' ' }
+
+    // If line is blank, may still be part of the string;
+    // keep reading lines until we get one that is not blank or one that is not indented
+    var prependedNewlineCount = 0
+    while (!endOfInput && source[cur] == '\n') {
+        prependedNewlineCount++
+        // Advance line break
+        cur++
+        // Count indent again
+        lineIndent = countSkipIf { it == ' ' }
+    }
+    return Pair(lineIndent, prependedNewlineCount)
+}
+
+private fun TokenStream.advanceToEndOfLineThrowIfNotWhitespace() {
+    // Advance through whitespace 'till end of line
+    while (!endOfInput && source[cur] == ' ' && source[cur] != '\n') {
+        cur++
+    }
+    // Throw if non-whitespace encountered
+    if (!endOfInput && source[cur] != '\n') {
+        throw contextualDecodingException("Only whitespace allowed after '>'")
+    }
+}
+
+private fun TokenStream.takeChompCharacter(): Pair<Boolean, Boolean> {
+    // Fist character, if not a newline, is the chomp flag
+    val startChar = if (!endOfInput) source[cur] else '\n'
+    val trimEnd = startChar == '-'
+    val keepNewlines = startChar == '+'
+
+    // Advance past chomp flag
+    if (keepNewlines || trimEnd) {
+        cur++
+    }
+
+    return Pair(trimEnd, keepNewlines)
 }
 
 private fun TokenStream.takeLineForMultlineFoldedString(
