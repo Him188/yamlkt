@@ -242,64 +242,30 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     }
 
     // Advance past indent, keeping track of how deep it is
-    var indent = countSkipIf { it == ' ' }
+    var lineIndent = countSkipIf { it == ' ' }
 
     // Save base level indent of the string
-    val stringIndent = indent
+    val foldingIndent = lineIndent
     // If the indent is 0, or if it's less than the current indent, we've reached the end of the string already
-    if (stringIndent == 0 || stringIndent < currentIndent) {
+    if (foldingIndent == 0 || foldingIndent < currentIndent) {
         return takeStringBufTrimEnd()
     }
 
-    var line = 0
+    var lineNumber = 0
     var previousLineLength = -1
-    while (indent >= stringIndent && !endOfInput) {
-        val lineStart = cur
-
-        // Advance to end of line
-        var lineLength = 0
-        while (!endOfInput && source[cur] != '\n') {
-            lineLength++
-            cur++
-        }
-
-        // After first line, special cases
-        if (line > 0) {
-            // Extra leading spaces get a newline _and_ the leading spaces
-            if (indent > stringIndent) {
-                append('\n')
-                for (i in indent downTo stringIndent + 1) {
-                    append(' ')
-                }
-            } else {
-                if(lineLength > 0 && previousLineLength != 0) {
-                    // Regular line breaks get a leading space if not empty and previous line not blank
-                    append(' ')
-                } else if(lineLength == 0) {
-                    // If empty, append a newline
-                    append('\n')
-                }
-            }
-        }
-
-        // Append line to string buffer if not empty
-        if(lineLength > 0) {
-            append(source, lineStart, cur - 1)
-        }
-        // Advance to next line
-        if (!endOfInput) {
-            cur++
-        }
+    while (lineIndent >= foldingIndent && !endOfInput) {
+        // Take the rest of the line as part of the string
+        val lineLength = takeLineForMultilineString(lineNumber, foldingIndent, lineIndent, previousLineLength)
         // Advance indent for next iteration
-        indent = countSkipIf { it == ' ' }
+        lineIndent = countSkipIf { it == ' ' }
         // Increment line number
-        line++
+        lineNumber++
         // Stash line length
         previousLineLength = lineLength
     }
 
     // If at least one line exists, append a newline
-    if (line > 0) {
+    if (lineNumber > 0) {
         if (!trimEnd) {
             append('\n')
         }
@@ -307,7 +273,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
 
     // Back up to the previous line so as not to break additional strings
     if(!endOfInput) {
-        cur -= (indent + 1)
+        cur -= (lineIndent + 1)
     }
 
     return if (trimEnd) {
@@ -318,6 +284,51 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
     }
+}
+
+private fun TokenStream.takeLineForMultilineString(
+    lineNumber: Int,
+    foldingIndent: Int,
+    lineIndent: Int,
+    previousLineLength: Int
+): Int {
+    val lineStart = cur
+
+    // Advance to end of line
+    var lineLength = 0
+    while (!endOfInput && source[cur] != '\n') {
+        lineLength++
+        cur++
+    }
+
+    // After first line, special cases
+    if (lineNumber > 0) {
+        // Extra leading spaces get a newline _and_ the leading spaces
+        if (lineIndent > foldingIndent) {
+            append('\n')
+            for (i in lineIndent downTo foldingIndent + 1) {
+                append(' ')
+            }
+        } else {
+            if (lineLength > 0 && previousLineLength != 0) {
+                // Regular line breaks get a leading space if not empty and previous line not blank
+                append(' ')
+            } else if (lineLength == 0) {
+                // If empty, append a newline
+                append('\n')
+            }
+        }
+    }
+
+    // Append line to string buffer if not empty
+    if (lineLength > 0) {
+        append(source, lineStart, cur - 1)
+    }
+    // Advance to next line
+    if (!endOfInput) {
+        cur++
+    }
+    return lineLength
 }
 
 private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initialIntent: Int, addCaret: Boolean = true): Boolean {
