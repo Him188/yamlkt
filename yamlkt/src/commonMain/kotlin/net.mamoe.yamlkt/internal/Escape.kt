@@ -305,6 +305,11 @@ private fun TokenStream.takeMultilineFoldedString(): String {
         }
     }
 
+    // Back up to the previous line so as not to break additional strings
+    if(!endOfInput) {
+        cur -= (indent + 1)
+    }
+
     return if (trimEnd) {
         // Trim all trailing whitespace when trim flag set
         takeStringBufTrimEnd().trimEnd()

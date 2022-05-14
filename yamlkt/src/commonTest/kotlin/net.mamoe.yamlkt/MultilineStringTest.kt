@@ -1,17 +1,23 @@
 package net.mamoe.yamlkt
 
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlin.test.*
+
+@Serializable
+data class TestTwoStringData(val string1: String, val string2: String)
 
 class MultilineStringTest {
     private val line1 = "This is a multiline string"
     private val line2 = "This is the second line"
 
-    private lateinit var serializer: KSerializer<DecoderTest.TestStringData>
+    private lateinit var testStringDataSerializer: KSerializer<DecoderTest.TestStringData>
+    private lateinit var testTwoStringDataSerializer: KSerializer<TestTwoStringData>
 
     @BeforeTest
-    fun createSerializer() {
-        serializer = DecoderTest.TestStringData.serializer()
+    fun createSerializers() {
+        testStringDataSerializer = DecoderTest.TestStringData.serializer()
+        testTwoStringDataSerializer = TestTwoStringData.serializer()
     }
 
     @Test
@@ -22,7 +28,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -34,7 +40,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -46,7 +52,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1\n $line2")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -57,7 +63,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         assertFailsWith<YamlDecodingException> {
-            Yaml.decodeFromString(serializer, yaml)
+            Yaml.decodeFromString(testStringDataSerializer, yaml)
         }
     }
 
@@ -68,7 +74,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -81,7 +87,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -94,7 +100,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -107,7 +113,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1\n $line2\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -122,7 +128,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -137,7 +143,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -152,7 +158,7 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1 $line2\n\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 
@@ -166,7 +172,33 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = DecoderTest.TestStringData("$line1\n$line2\n")
-        val actual = Yaml.decodeFromString(serializer, yaml)
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineFoldedStringWithAdditionalContent() {
+        val yaml = """
+            string1: >
+              foo
+            string2: bar
+        """.trimIndent()
+        val expected = TestTwoStringData("foo\n", "bar")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineFoldedStringWithMultipleFoldedStrings() {
+        val yaml = """
+            string1: >+
+              foo
+              
+            string2: >-
+              bar
+        """.trimIndent()
+        val expected = TestTwoStringData("foo\n\n", "bar")
+        val actual = Yaml.decodeFromString(testTwoStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
 }
