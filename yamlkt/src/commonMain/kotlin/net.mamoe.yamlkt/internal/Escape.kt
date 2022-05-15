@@ -173,10 +173,10 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
                 }
             }
             '|' -> {
-                return takeMultilineLiteralString()
+                return readMultilineString(TokenStream::readLinesForMultilineLiteralString)
             }
             '>' -> {
-                return takeMultilineFoldedString()
+                return readMultilineString(TokenStream::readLinesForMultilineFoldedString)
             }
             '[' -> {
                 reuseToken(Token.LIST_BEGIN)
@@ -219,7 +219,7 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
     return takeStringBufTrimEnd()
 }
 
-private fun TokenStream.takeMultilineFoldedString(): String {
+private fun TokenStream.readMultilineString(readLines: TokenStream.(foldingIndent: Int, keepTrailingLines: Boolean) -> Unit): String {
     val (trimEnd, keepTrailingNewlines) = takeChompCharacter()
 
     advanceToEndOfLineThrowIfNotWhitespace()
@@ -246,7 +246,7 @@ private fun TokenStream.takeMultilineFoldedString(): String {
         append('\n')
     }
 
-    takeLinesForMultilineFoldedString(firstLineIndent, keepTrailingNewlines)
+    readLines(firstLineIndent, keepTrailingNewlines)
 
     return if (trimEnd) {
         // Trim all trailing whitespace when trim flag set
@@ -258,18 +258,20 @@ private fun TokenStream.takeMultilineFoldedString(): String {
     }
 }
 
-private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int, keepTrailingLines: Boolean) {
+private fun TokenStream.readLinesForMultilineFoldedString(foldingIndent: Int, keepTrailingLines: Boolean) {
     var lineNumber = 0
     var currentLineIndent = foldingIndent
     var previousLineBlank = true
     var trailingBlankLines = 0
     while (currentLineIndent >= foldingIndent && !endOfInput) {
         // Take the rest of the line as part of the string
-        takeLineForMultlineFoldedString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
+        readLineForMultilineFoldedString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
         val (nextIndent, blankLineCount) = advanceToNextNonBlankLine()
         previousLineBlank = blankLineCount > 0
         trailingBlankLines = blankLineCount
         currentLineIndent = nextIndent
+        // Append a new line if there is at least one blank line. Only one newline is appended because
+        // the string is folded
         if( blankLineCount > 0) {
             append('\n')
         }
@@ -277,8 +279,18 @@ private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int, ke
         lineNumber++
     }
 
-    if(keepTrailingLines) {
-        for(i in 0 until trailingBlankLines) {
+    finishMultilineString(foldingIndent, currentLineIndent, lineNumber, keepTrailingLines, trailingBlankLines)
+}
+
+private fun TokenStream.finishMultilineString(
+    foldingIndent: Int,
+    currentLineIndent: Int,
+    lineNumber: Int,
+    keepTrailingLines: Boolean,
+    trailingBlankLines: Int
+) {
+    if (keepTrailingLines) {
+        for (i in 0 until trailingBlankLines) {
             append('\n')
         }
     }
@@ -294,7 +306,7 @@ private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int, ke
     }
 }
 
-private fun TokenStream.takeLineForMultlineFoldedString(
+private fun TokenStream.readLineForMultilineFoldedString(
     lineNumber: Int,
     foldingIndent: Int,
     lineIndent: Int,
@@ -336,46 +348,7 @@ private fun TokenStream.takeLineForMultlineFoldedString(
     return lineLength
 }
 
-private fun TokenStream.takeMultilineLiteralString(): String {
-    val (trimEnd, keepTrailingNewlines) = takeChompCharacter()
-
-    advanceToEndOfLineThrowIfNotWhitespace()
-
-    // Advance to first post-fold line
-    if (!endOfInput) {
-        cur++
-    }
-
-    // Advance to the next non-blank link, keeping its indent and the number of lines advanced
-    val (firstLineIndent, prependedNewlineCount) = advanceToNextNonBlankLine()
-
-    // If the line indent is less than the current indent, we may have reached the end of the string already
-    if (firstLineIndent < currentIndent) {
-        // Back up to avoid breaking other strings
-        if(!endOfInput) {
-            cur -= (firstLineIndent + 1)
-        }
-        return takeStringBufTrimEnd()
-    }
-
-    // Prepend any newlines
-    for(i in 0 until prependedNewlineCount) {
-        append('\n')
-    }
-
-    takeLinesForMultilineLiteralString(firstLineIndent, keepTrailingNewlines)
-
-    return if (trimEnd) {
-        // Trim all trailing whitespace when trim flag set
-        takeStringBufTrimEnd().trimEnd()
-    } else if(keepTrailingNewlines) {
-        takeStringBufTrimEnd()
-    } else {
-        takeStringBufTrimEnd().trimEnd() + "\n"
-    }
-}
-
-private fun TokenStream.takeLineForMultlineLiteralString(
+private fun TokenStream.readLineForMultilineLiteralString(
     lineNumber: Int,
     foldingIndent: Int,
     lineIndent: Int,
@@ -394,7 +367,7 @@ private fun TokenStream.takeLineForMultlineLiteralString(
     if (lineNumber > 0) {
         // Newlines are maintained
         append('\n')
-        // Extra leading spaces get a newline _and_ the leading spaces
+        // Prepend extra leading spaces
         if (lineIndent > foldingIndent) {
             for (i in lineIndent downTo foldingIndent + 1) {
                 append(' ')
@@ -413,40 +386,27 @@ private fun TokenStream.takeLineForMultlineLiteralString(
     return lineLength
 }
 
-private fun TokenStream.takeLinesForMultilineLiteralString(foldingIndent: Int, keepTrailingLines: Boolean) {
+private fun TokenStream.readLinesForMultilineLiteralString(foldingIndent: Int, keepTrailingLines: Boolean) {
     var lineNumber = 0
     var currentLineIndent = foldingIndent
     var previousLineBlank = true
     var trailingBlankLines = 0
     while (currentLineIndent >= foldingIndent && !endOfInput) {
         // Take the rest of the line as part of the string
-        takeLineForMultlineLiteralString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
+        readLineForMultilineLiteralString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
         val (nextIndent, blankLineCount) = advanceToNextNonBlankLine()
         previousLineBlank = blankLineCount > 0
         trailingBlankLines = blankLineCount
         currentLineIndent = nextIndent
-        if( blankLineCount > 0) {
+        // Append a new line for each blank line since string is literal
+        for(i in 0 until blankLineCount) {
             append('\n')
         }
         // Increment line number
         lineNumber++
     }
 
-    if(keepTrailingLines) {
-        for(i in 0 until trailingBlankLines) {
-            append('\n')
-        }
-    }
-
-    // If at least one line exists, append a newline
-    if (lineNumber > 0 && currentLineIndent >= foldingIndent) {
-        append('\n')
-    }
-
-    // Back up to the previous line so as not to break additional strings
-    if (!endOfInput) {
-        cur -= (currentLineIndent + 1)
-    }
+    finishMultilineString(foldingIndent, currentLineIndent, lineNumber, keepTrailingLines, trailingBlankLines)
 }
 
 private fun TokenStream.advanceToNextNonBlankLine(): Pair<Int, Int> {

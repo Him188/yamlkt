@@ -376,7 +376,7 @@ class MultilineStringTest {
     }
 
     @Test
-    fun testMultilineLiteralStringWithBlankLines() {
+    fun testMultilineLiteralStringWithTwoBlankLines() {
         val yaml = """
             key: |
               $line1
@@ -385,6 +385,21 @@ class MultilineStringTest {
         """.trimIndent()
 
         val expected = TestStringData("$line1\n\n$line2\n")
+        val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun testMultilineLiteralStringWithThreeBlankLines() {
+        val yaml = """
+            key: |
+              $line1
+              
+              
+              $line2
+        """.trimIndent()
+
+        val expected = TestStringData("$line1\n\n\n$line2\n")
         val actual = Yaml.decodeFromString(testStringDataSerializer, yaml)
         assertEquals(expected, actual)
     }
