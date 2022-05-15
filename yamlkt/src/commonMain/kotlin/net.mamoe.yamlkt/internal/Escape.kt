@@ -172,7 +172,9 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
                     return doEnd()
                 }
             }
-            '|' -> TODO("MULTILINE STRING")
+            '|' -> {
+                return takeMultilineLiteralString()
+            }
             '>' -> {
                 return takeMultilineFoldedString()
             }
@@ -292,48 +294,6 @@ private fun TokenStream.takeLinesForMultilineFoldedString(foldingIndent: Int, ke
     }
 }
 
-private fun TokenStream.advanceToNextNonBlankLine(): Pair<Int, Int> {
-    // Advance past indent, keeping track of how deep it is
-    var lineIndent = countSkipIf { it == ' ' }
-
-    // If line is blank, may still be part of the string;
-    // keep reading lines until we get one that is not blank or one that is not indented
-    var prependedNewlineCount = 0
-    while (!endOfInput && source[cur] == '\n') {
-        prependedNewlineCount++
-        // Advance line break
-        cur++
-        // Count indent again
-        lineIndent = countSkipIf { it == ' ' }
-    }
-    return Pair(lineIndent, prependedNewlineCount)
-}
-
-private fun TokenStream.advanceToEndOfLineThrowIfNotWhitespace() {
-    // Advance through whitespace 'till end of line
-    while (!endOfInput && source[cur] == ' ' && source[cur] != '\n') {
-        cur++
-    }
-    // Throw if non-whitespace encountered
-    if (!endOfInput && source[cur] != '\n') {
-        throw contextualDecodingException("Only whitespace allowed after '>'")
-    }
-}
-
-private fun TokenStream.takeChompCharacter(): Pair<Boolean, Boolean> {
-    // Fist character, if not a newline, is the chomp flag
-    val startChar = if (!endOfInput) source[cur] else '\n'
-    val trimEnd = startChar == '-'
-    val keepTrailingNewlines = startChar == '+'
-
-    // Advance past chomp flag
-    if (keepTrailingNewlines || trimEnd) {
-        cur++
-    }
-
-    return Pair(trimEnd, keepTrailingNewlines)
-}
-
 private fun TokenStream.takeLineForMultlineFoldedString(
     lineNumber: Int,
     foldingIndent: Int,
@@ -374,6 +334,161 @@ private fun TokenStream.takeLineForMultlineFoldedString(
         cur++
     }
     return lineLength
+}
+
+private fun TokenStream.takeMultilineLiteralString(): String {
+    val (trimEnd, keepTrailingNewlines) = takeChompCharacter()
+
+    advanceToEndOfLineThrowIfNotWhitespace()
+
+    // Advance to first post-fold line
+    if (!endOfInput) {
+        cur++
+    }
+
+    // Advance to the next non-blank link, keeping its indent and the number of lines advanced
+    val (firstLineIndent, prependedNewlineCount) = advanceToNextNonBlankLine()
+
+    // If the line indent is less than the current indent, we may have reached the end of the string already
+    if (firstLineIndent < currentIndent) {
+        // Back up to avoid breaking other strings
+        if(!endOfInput) {
+            cur -= (firstLineIndent + 1)
+        }
+        return takeStringBufTrimEnd()
+    }
+
+    // Prepend any newlines
+    for(i in 0 until prependedNewlineCount) {
+        append('\n')
+    }
+
+    takeLinesForMultilineLiteralString(firstLineIndent, keepTrailingNewlines)
+
+    return if (trimEnd) {
+        // Trim all trailing whitespace when trim flag set
+        takeStringBufTrimEnd().trimEnd()
+    } else if(keepTrailingNewlines) {
+        takeStringBufTrimEnd()
+    } else {
+        takeStringBufTrimEnd().trimEnd() + "\n"
+    }
+}
+
+private fun TokenStream.takeLineForMultlineLiteralString(
+    lineNumber: Int,
+    foldingIndent: Int,
+    lineIndent: Int,
+    previousLineBlank: Boolean
+): Int {
+    val lineStart = cur
+
+    // Advance to end of line
+    var lineLength = 0
+    while (!endOfInput && source[cur] != '\n') {
+        lineLength++
+        cur++
+    }
+
+    // After first line, special cases
+    if (lineNumber > 0) {
+        // Newlines are maintained
+        append('\n')
+        // Extra leading spaces get a newline _and_ the leading spaces
+        if (lineIndent > foldingIndent) {
+            for (i in lineIndent downTo foldingIndent + 1) {
+                append(' ')
+            }
+        }
+    }
+
+    // Append line to string buffer if not empty
+    if (lineLength > 0) {
+        append(source, lineStart, cur - 1)
+    }
+    // Advance to next line
+    if (!endOfInput) {
+        cur++
+    }
+    return lineLength
+}
+
+private fun TokenStream.takeLinesForMultilineLiteralString(foldingIndent: Int, keepTrailingLines: Boolean) {
+    var lineNumber = 0
+    var currentLineIndent = foldingIndent
+    var previousLineBlank = true
+    var trailingBlankLines = 0
+    while (currentLineIndent >= foldingIndent && !endOfInput) {
+        // Take the rest of the line as part of the string
+        takeLineForMultlineLiteralString(lineNumber, foldingIndent, currentLineIndent, previousLineBlank)
+        val (nextIndent, blankLineCount) = advanceToNextNonBlankLine()
+        previousLineBlank = blankLineCount > 0
+        trailingBlankLines = blankLineCount
+        currentLineIndent = nextIndent
+        if( blankLineCount > 0) {
+            append('\n')
+        }
+        // Increment line number
+        lineNumber++
+    }
+
+    if(keepTrailingLines) {
+        for(i in 0 until trailingBlankLines) {
+            append('\n')
+        }
+    }
+
+    // If at least one line exists, append a newline
+    if (lineNumber > 0 && currentLineIndent >= foldingIndent) {
+        append('\n')
+    }
+
+    // Back up to the previous line so as not to break additional strings
+    if (!endOfInput) {
+        cur -= (currentLineIndent + 1)
+    }
+}
+
+private fun TokenStream.advanceToNextNonBlankLine(): Pair<Int, Int> {
+    // Advance past indent, keeping track of how deep it is
+    var lineIndent = countSkipIf { it == ' ' }
+
+    // If line is blank, may still be part of the string;
+    // keep reading lines until we get one that is not blank or one that is not indented
+    var prependedNewlineCount = 0
+    while (!endOfInput && source[cur] == '\n') {
+        prependedNewlineCount++
+        // Advance line break
+        cur++
+        // Count indent again
+        lineIndent = countSkipIf { it == ' ' }
+    }
+    return Pair(lineIndent, prependedNewlineCount)
+}
+
+private fun TokenStream.advanceToEndOfLineThrowIfNotWhitespace() {
+    // Advance through whitespace 'till end of line
+    while (!endOfInput && source[cur] == ' ' && source[cur] != '\n') {
+        cur++
+    }
+    // Throw if non-whitespace encountered
+    if (!endOfInput && source[cur] != '\n') {
+        throw contextualDecodingException("Only whitespace allowed after '>'")
+    }
+}
+
+private fun TokenStream.takeChompCharacter(): Pair<Boolean, Boolean> {
+    // Fist character, if not a newline, is the chomp flag
+    val startChar = if (!endOfInput) source[cur] else '\n'
+    val trimEnd = startChar == '-'
+    val keepTrailingNewlines = startChar == '+'
+
+    // Advance past chomp flag
+    if (keepTrailingNewlines || trimEnd) {
+        cur++
+    }
+
+    return Pair(trimEnd, keepTrailingNewlines)
 }
 
 private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initialIntent: Int, addCaret: Boolean = true): Boolean {
