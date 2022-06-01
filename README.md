@@ -68,7 +68,7 @@ This library supports:
 The features that aren't yet supported:
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
-- Multiline string (`|`, `>`, `\`)
+- Multiline string (`|` and `>` are partially supported; `\` is not)
 
 ## Learn to use
 
