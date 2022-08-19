@@ -12,6 +12,9 @@ This project is in alpha state.
 
 Third-party formats for [kotlinx.serialization] is strongly dependent on the versions of `kotlinx-serialization-core` and Kotlin compiler.
 
+The table below shows recommended version parings.
+Note that normally you may use higher versions within the minor version range, e.g. preferring `1.3.3` or `1.3.0` over `1.3.2`.
+
 | yamlkt | Kotlin | kotlinx-serialization-core |
 |:------:|:------:|:--------------------------:|
 | 0.3.3  | 1.3.70 |           0.20.0           |
@@ -21,6 +24,10 @@ Third-party formats for [kotlinx.serialization] is strongly dependent on the ver
 | 0.9.0  | 1.4.30 |          1.1.0-RC          |
 | 0.10.2 | 1.5.20 |           1.2.1            |
 | 0.10.2 | 1.5.31 |           1.3.0            |
+| 0.11.0 | 1.6.21 |           1.3.3            |
+| 0.12.0 | 1.6.21 |           1.3.3            |
+| 0.12.0 | 1.7.10 |           1.3.3            |
+
 
 #### Gradle
 
@@ -32,14 +39,14 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("net.mamoe.yamlkt:yamlkt:0.10.2")
+    implementation("net.mamoe.yamlkt:yamlkt:0.12.0")
 }
 ```
 **If your project is multiplatform, you need only to add this dependency for commonMain:**  
 ```kotlin
 commonMain {
     dependencies {
-        implementation("net.mamoe.yamlkt:yamlkt:0.10.2")
+        implementation("net.mamoe.yamlkt:yamlkt:0.12.0")
     }
 }
 ```
@@ -53,7 +60,7 @@ Only JVM target is available for Maven.
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
     <artifactId>yamlkt-jvm</artifactId>
-    <version>0.10.2</version>
+    <version>0.12.0</version>
 </dependency>
 ```
 
