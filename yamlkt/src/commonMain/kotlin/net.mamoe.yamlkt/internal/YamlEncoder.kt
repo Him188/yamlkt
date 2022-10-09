@@ -575,7 +575,7 @@ internal class YamlEncoder(
 
         final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
             if (value == null) {
-                encodeStringElement(descriptor, index, configuration.nullSerialization.value)
+                encodeSerializableUnquotedStringElement(descriptor, index, configuration.nullSerialization.value)
             } else encodeSerializableElement(descriptor, index, serializer, value)
         }
 
@@ -589,7 +589,7 @@ internal class YamlEncoder(
         final override fun encodeFloat(value: Float) = encodeValue(value.toString())
         final override fun encodeInt(value: Int) = encodeValue(value.toString())
         final override fun encodeLong(value: Long) = encodeValue(value.toString())
-        final override fun encodeNull() = encodeValue(configuration.nullSerialization.value)
+        final override fun encodeNull() = encodeUnquotedString(configuration.nullSerialization.value)
         final override fun encodeShort(value: Short) = encodeValue(value.toString())
         final override fun encodeString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
         fun encodeUnquotedString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, YamlBuilder.StringSerialization.NONE))
