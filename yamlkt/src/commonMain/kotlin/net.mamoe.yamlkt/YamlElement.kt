@@ -315,7 +315,7 @@ public data class YamlMap(
         @JvmStatic
         @JvmName("fromStringToElementMap")
         public operator fun invoke(map: Map<out String?, YamlElement>): YamlMap {
-            return YamlMap(map.mapKeys { it.toYamlElement() })
+            return YamlMap(map.mapKeys { it.key.toYamlElement() })
         }
 
         @JvmStatic
@@ -333,7 +333,7 @@ public data class YamlMap(
         @JvmStatic
         @JvmName("fromElementToAnyMap")
         public operator fun invoke(map: Map<out YamlElement, Any?>): YamlMap {
-            return YamlMap(map.mapValues { it.toYamlElement() })
+            return YamlMap(map.mapValues { it.value.toYamlElement() })
         }
     }
 }
