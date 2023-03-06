@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="yamlkt-js-0.12.0">
+    <output-path>$PROJECT_DIR$/yamlkt/build/libs</output-path>
+    <root id="archive" name="yamlkt-js-0.12.0.jar">
+      <element id="module-output" name="yamlkt.yamlkt.jsMain" />
+    </root>
+  </artifact>
+</component>

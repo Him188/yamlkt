@@ -16,11 +16,19 @@ kotlin {
     targets {
         jvm {
             compilations.all {
-                kotlinOptions.jvmTarget = "1.6"
+                kotlinOptions.jvmTarget = "1.8"
             }
         }
-        js {
-            useCommonJs()
+        js(IR) {
+            compilations.all {
+                kotlinOptions {
+                    moduleKind = "umd"
+                    sourceMap = true
+                    metaInfo = true
+                }
+            }
+            browser()
+            nodejs()
         }
 
 
@@ -44,7 +52,7 @@ kotlin {
                 "watchosArm32, watchosArm64, watchosX86, watchosX64, watchosSimulatorArm64",
                 "tvosArm64, tvosX64, tvosSimulatorArm64",
                 "macosX64, macosArm64",
-                "linuxArm64, linuxArm32Hfp, linuxMips32, linuxMipsel32, linuxX64",
+                "linuxArm64, linuxArm32Hfp, linuxX64",
                 "mingwX64, mingwX86",
 //                "wasm32"
             ).flatMap { it.split(", ") }
