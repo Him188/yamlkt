@@ -1,0 +1,18 @@
+{
+  "name": "yamlkt",
+  "version": "0.12.0",
+  "private": true,
+  "workspaces": [
+    "packages/yamlkt-yamlkt",
+    "packages/yamlkt-yamlkt-test",
+    "packages_imported/kotlin/1.8.0",
+    "packages_imported/kotlin-test-js-runner/1.8.0",
+    "packages_imported/kotlin-test/1.8.0"
+  ],
+  "resolutions": {},
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

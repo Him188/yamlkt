@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.encoder.TestEncoderEscape" tests="5" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.008">
+  <properties/>
+  <testcase name="testNewLineEscape[jvm]" classname="net.mamoe.yamlkt.encoder.TestEncoderEscape" time="0.001"/>
+  <testcase name="testUnicodeEscape[jvm]" classname="net.mamoe.yamlkt.encoder.TestEncoderEscape" time="0.0"/>
+  <testcase name="colonEscape[jvm]" classname="net.mamoe.yamlkt.encoder.TestEncoderEscape" time="0.0"/>
+  <testcase name="colonEscapeWithChinese[jvm]" classname="net.mamoe.yamlkt.encoder.TestEncoderEscape" time="0.005"/>
+  <testcase name="spaceEscape[jvm]" classname="net.mamoe.yamlkt.encoder.TestEncoderEscape" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

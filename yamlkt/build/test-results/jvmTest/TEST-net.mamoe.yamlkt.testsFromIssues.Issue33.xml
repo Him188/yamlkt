@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.testsFromIssues.Issue33" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.014">
+  <properties/>
+  <testcase name="testYaml[jvm]" classname="net.mamoe.yamlkt.testsFromIssues.Issue33" time="0.014"/>
+  <system-out><![CDATA[writeValueHead, elementName=test
+encodeSerializableElement0, elementName=test
+encodeValue, 125
+writeValueHead, elementName=test5
+encodeSerializableElement0, elementName=test5
+encodeValue, -125
+writeValueHead, elementName=test2
+encodeSerializableElement0, elementName=test2
+writeValueHead, elementName=test3
+encodeSerializableElement0, elementName=test3
+writeValueHead, elementName=test4
+encodeSerializableElement0, elementName=test4
+endStructure0
+test: 125
+test5: -125
+test2: 
+  - -125
+  - 125
+  - 116
+  - 101
+  - 115
+  - 116
+test3: 125
+test4: 254
+net.mamoe.yamlkt.testsFromIssues.Issue33.TestData {
+test: 125
+test5: -125
+kotlin.ByteArray by Yaml Block Class indented 0 {
+0: -125
+1: 125
+2: 116
+3: 101
+4: 115
+5: 116
+}
+ = 125
+254}
+TestData(test=125, test5=-125, test2=[-125, 125, 116, 101, 115, 116], test3=125, test4=254)
+{ test: 125, test5: -125, test2: [ -125, 125, 116, 101, 115, 116 ], test3: 125, test4: 254 }
+net.mamoe.yamlkt.testsFromIssues.Issue33.TestData {
+test: 125
+test5: -125
+kotlin.ByteArray by Yaml Flow Class {
+0: -125
+1: 125
+2: 116
+3: 101
+4: 115
+5: 116
+}
+ = 125
+254}
+TestData(test=125, test5=-125, test2=[-125, 125, 116, 101, 115, 116], test3=125, test4=254)
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,10 @@
+{
+  "name": "kotlin-test-js-runner",
+  "version": "1.8.0",
+  "customFields": {},
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.testsFromIssues.Issue6" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.002">
+  <properties/>
+  <testcase name="testClass[jvm]" classname="net.mamoe.yamlkt.testsFromIssues.Issue6" time="0.001"/>
+  <testcase name="testEnum[jvm]" classname="net.mamoe.yamlkt.testsFromIssues.Issue6" time="0.001"/>
+  <system-out><![CDATA[writeValueHead, elementName=musicApi
+encodeSerializableElement0, elementName=musicApi
+encodeValue, QQ
+writeValueHead, elementName=testString
+encodeSerializableElement0, elementName=testString
+encodeValue, 1
+endStructure0
+writeValueHead, elementName=musicApi
+encodeSerializableElement0, elementName=musicApi
+encodeValue, QQ
+endStructure0
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

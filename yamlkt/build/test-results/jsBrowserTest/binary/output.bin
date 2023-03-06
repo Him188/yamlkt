@@ -1,0 +1,421 @@
+[log] 1
+
+[log] 1.0
+	[log] 12
+[log] 12.0
+[log] 12.1
+[log] 12.1
+[log] 0
+
+[log] 0.0
+	[log] -1
+[log] -1.0
+
+[log] -12
+[log] -12.0
+[log] -12.1
+[log] -12.1
+[log] 1
+[log] 1
+	[log] 12
+	[log] 12
+[log] 0
+[log] 0
+	[log] -1
+	[log] -1
+
+[log] -12
+
+[log] -12
+[log] 1.0xx
+[log] 1.0xx
+[log] 2147483647
+[log] 2147483647
+[log] -2147483648
+[log] -2147483648
+[log] 4294967296
+[log] 4294967296
+[log] -2147483649
+[log] -2147483649
+$[log] writeValueHead, elementName=i
+0[log] encodeSerializableElement0, elementName=i
+[log] endStructure0
++[log] [Serialized form] i: [ 2147483657 ]
+
+*[log] net.mamoe.yamlkt.ContainerForList {
+)[log]     kotlin.collections.ArrayList {
+[log]         2147483657    }
+[log] }
+D[log] [Restored form] ContainerForList(i=MyList(list=[2147483657]))
+$[log] writeValueHead, elementName=i
+0[log] encodeSerializableElement0, elementName=i
+[log] endStructure0
+1[log] net.mamoe.yamlkt.UnsignedInBoxedPosition {
+H[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = 2147483657
+[log]     }
+[log] }
+&[log] writeValueHead, elementName=int
+2[log] encodeSerializableElement0, elementName=int
+[log] encodeValue, -2147483639
+.[log] writeValueHead, elementName=intNullable
+:[log] encodeSerializableElement0, elementName=intNullable
+[log] encodeValue, -2147483639
+'[log] writeValueHead, elementName=uint
+3[log] encodeSerializableElement0, elementName=uint
+/[log] writeValueHead, elementName=uintNullable
+;[log] encodeSerializableElement0, elementName=uintNullable
++[log] writeValueHead, elementName=boxedInt
+7[log] encodeSerializableElement0, elementName=boxedInt
+,[log] writeValueHead, elementName=boxedUInt
+8[log] encodeSerializableElement0, elementName=boxedUInt
+3[log] writeValueHead, elementName=boxedNullableInt
+?[log] encodeSerializableElement0, elementName=boxedNullableInt
+4[log] writeValueHead, elementName=boxedNullableUInt
+@[log] encodeSerializableElement0, elementName=boxedNullableUInt
+[log] endStructure0
+([log] net.mamoe.yamlkt.MixedPositions {
+[log]     int: -2147483639
+#[log]     -2147483639 = 2147483657
+V[log]     2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = -2147483639
+[log]     }
+H[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]         2147483657    }
+H[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = <null>
+#[log]         -2147483639 = <null>
+[log]     }
+H[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+"[log]         <null> = 2147483657
+[log]         <null>    }
+[log] }
+<[log] net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+B[log]     key: This is a multiline string This is the second line
+[log] }
+<[log] net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+B[log]     key: This is a multiline string This is the second line
+[log] }
+ <[log] net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+ C[log]     key: This is a multiline string
+ This is the second line
+ [log] }
+!<[log] net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+"@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+"[log]         key: 
+"[log]     }
+#@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+#G[log]         key: This is a multiline string This is the second line
+
+#[log]     }
+$@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+$G[log]         key: This is a multiline string This is the second line
+
+$[log]     }
+%@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+%H[log]         key: This is a multiline string
+ This is the second line
+
+%[log]     }
+&@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+&G[log]         key: This is a multiline string This is the second line
+
+&[log]     }
+'@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+'F[log]         key: This is a multiline string This is the second line
+'[log]     }
+(@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+(I[log]         key: This is a multiline string This is the second line
+
+
+
+([log]     }
+)@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+)G[log]         key: This is a multiline string
+This is the second line
+
+)[log]     }
+*C[log]     net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+*[log]         string1: foo
+
+*[log]         string2: bar
+*[log]     }
++C[log]     net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
++[log]         string1: foo
+
+
++[log]         string2: bar
++[log]     }
+,@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+,H[log]         key: 
+This is a multiline string This is the second line
+
+,[log]     }
+-@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+-I[log]         key: 
+
+This is a multiline string This is the second line
+
+-[log]     }
+.C[log]     net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+.[log]         string1: 
+.[log]         string2: foo
+
+.[log]     }
+/C[log]     net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+/[log]         string1: 
+/[log]         string2: foo
+
+/[log]     }
+0@[log]     net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+1D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+1[log]             key: 
+1[log]         }
+2D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+2K[log]             key: This is a multiline string
+This is the second line
+
+2[log]         }
+3D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+3K[log]             key: This is a multiline string
+This is the second line
+
+3[log]         }
+4D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+4L[log]             key: This is a multiline string
+ This is the second line
+
+4[log]         }
+5D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+5K[log]             key: This is a multiline string
+This is the second line
+
+5[log]         }
+6D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+6J[log]             key: This is a multiline string
+This is the second line
+6[log]         }
+7D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+7M[log]             key: This is a multiline string
+This is the second line
+
+
+
+7[log]         }
+8D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+8L[log]             key: This is a multiline string
+
+This is the second line
+
+8[log]         }
+9D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+9M[log]             key: This is a multiline string
+
+
+This is the second line
+
+9[log]         }
+:G[log]         net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+: [log]             string1: foo
+
+:[log]             string2: bar
+:[log]         }
+;G[log]         net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+;![log]             string1: foo
+
+
+;[log]             string2: bar
+;[log]         }
+<D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+<L[log]             key: 
+This is a multiline string
+This is the second line
+
+<[log]         }
+=D[log]         net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+=M[log]             key: 
+
+This is a multiline string
+This is the second line
+
+=[log]         }
+>G[log]         net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+>[log]             string1: 
+> [log]             string2: foo
+
+>[log]         }
+?G[log]         net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+?[log]             string1: 
+? [log]             string2: foo
+
+?[log]         }
+A@0[log]         writeValueHead, elementName=fruit
+A@<[log]         encodeSerializableElement0, elementName=fruit
+A@/[log]         writeValueHead, elementName=type
+A@;[log]         encodeSerializableElement0, elementName=type
+A@D[log]         encodeValue, net.mamoe.yamlkt.PolymorphismTest.Banana
+A@0[log]         writeValueHead, elementName=value
+A@<[log]         encodeSerializableElement0, elementName=value
+A@/[log]         writeValueHead, elementName=prop
+A@;[log]         encodeSerializableElement0, elementName=prop
+A@ [log]         encodeValue, prop
+A@[log]         endStructure0
+A@[log]         endStructure0
+A@[log]         endStructure0
+A@X[log] fruit: 
+  type: net.mamoe.yamlkt.PolymorphismTest.Banana
+  value: 
+    prop: prop
+A@7[log]         net.mamoe.yamlkt.PolymorphismTest.Poly {
+A@\[log]             kotlinx.serialization.Polymorphic<Fruit> by Yaml Block Class indented 0 {
+A@E[log]                 type: net.mamoe.yamlkt.PolymorphismTest.Banana
+A@`[log]                 net.mamoe.yamlkt.PolymorphismTest.Banana by Yaml Block Class indented 2 {
+A@%[log]                     prop: prop
+A@[log]                 }
+A@[log]             }
+A@[log]         }
+CBD[log]         net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+CBG[log]             YamlNullableDynamic by Yaml Block Class indented 0 {
+CBN[log]                 YamlNullableDynamic by Yaml Block Sequence indented 1 {
+CB[log]                 }
+CBN[log]                 YamlNullableDynamic by Yaml Block Sequence indented 1 {
+CB[log]                 }
+CBN[log]                 YamlNullableDynamic by Yaml Block Sequence indented 1 {
+CB[log]                 }
+CBN[log]                 YamlNullableDynamic by Yaml Block Sequence indented 1 {
+CB[log]                 }
+CB[log]             }
+CB[log]         }
+CB[log]     }
+CD@[log]     net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+CDC[log]         YamlNullableDynamic by Yaml Block Class indented 0 {
+CD>[log]             YamlNullableDynamic by Yaml Flow Sequence {
+CD[log]             }
+CD>[log]             YamlNullableDynamic by Yaml Flow Sequence {
+CD[log]             }
+CD>[log]             YamlNullableDynamic by Yaml Flow Sequence {
+CD[log]             }
+CD>[log]             YamlNullableDynamic by Yaml Flow Sequence {
+CD[log]             }
+CD[log]         }
+CD[log]     }
+CD[log] }
+CE<[log] net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+CE?[log]     YamlNullableDynamic by Yaml Block Class indented 0 {
+CEA[log]         YamlNullableDynamic by Yaml Block Map indented 2 {
+CE[log]         }
+CEA[log]         YamlNullableDynamic by Yaml Block Map indented 2 {
+CE[log]         }
+CEA[log]         YamlNullableDynamic by Yaml Block Map indented 2 {
+CE[log]         }
+CEA[log]         YamlNullableDynamic by Yaml Block Map indented 2 {
+CE[log]         }
+CE[log]     }
+CE[log] }
+CE[log] }
+CF[log] YamlNullableDynamic {
+CF9[log] YamlNullableDynamic by Yaml Block Map indented 0 {
+CF[log] }
+CF9[log] YamlNullableDynamic by Yaml Block Map indented 0 {
+CF=[log]     YamlNullableDynamic by Yaml Block Map indented 2 {
+CF[log]     }
+CF=[log]     YamlNullableDynamic by Yaml Block Map indented 2 {
+CF[log]     }
+CF=[log]     YamlNullableDynamic by Yaml Block Map indented 2 {
+CF[log]     }
+CF=[log]     YamlNullableDynamic by Yaml Block Map indented 2 {
+CF[log]     }
+CF[log] }
+CF[log] }
+CF[log] }
+CF[log] }
+HG[log] YamlMap {
+HG1[log] YamlElement by Yaml Block Map indented 0 {
+HG[log] }
+HG1[log] YamlElement by Yaml Block Map indented 0 {
+HG[log] }
+HG[log] }
+HG[log] }
+HI[log] YamlList {
+HI*[log] YamlElement by Yaml Flow Sequence {
+HI[log] }
+HI*[log] YamlElement by Yaml Flow Sequence {
+HI[log] }
+HI*[log] YamlElement by Yaml Flow Sequence {
+HI[log] }
+HI[log] }
+HI[log] }
+HJ[log] YamlLiteral {
+HJ[log] }
+HJ[log] YamlLiteral {
+HJ[log] }
+HJ[log] YamlLiteral {
+HJ[log] }
+HK[log] YamlLiteral {
+HK[log] YamlLiteral {
+HL[log] YamlNull {
+HL[log] }
+HL[log] YamlNull {
+HL[log] }
+HL[log] YamlNull {
+HL[log] YamlNull {
+POH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PO[log] v: 
+
+PO[log] }
+PQH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PQ[log] v: Don't
+PQ[log] }
+PRH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PR[log] v: te st
+PR[log] }
+PSH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PS[log] v: te st
+PS[log] }
+PTH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PT[log] v: test
+PT[log] }
+PUH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PU[log] v: te
+st
+PU[log] }
+PVH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PV[log] v: te
+
+
+
+
+st
+PV[log] }
+PWH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PW[log] v:  st
+PW[log] }
+PXH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PX[log] v: 
+st
+PX[log] }
+PYH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PY[log] v: \n
+PY[log] }
+PYH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PY[log] v: p\n
+PY[log] }
+PYH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PY[log] v: p\\n
+PY[log] }
+PYH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PY[log] v: \n
+PY[log] }
+PZH[log] net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+PZ†[log] v: Several lines of text, containing "double quotes". Escapes (like \n) work.
+In addition, newlines can be escaped to prevent them from being converted to a space.
+Newlines can also be added by leaving a blank line. Leading whitespace on lines is ignored.
+PZ[log] }
+\[[log] YamlNullableDynamic {
+\[[log] }
+\][log] YamlNullableDynamic {
+\][log] }
+\^[log] YamlNullableDynamic {
+\^[log] }
+`_[log] YamlNullableDynamic {
+`_[log] }

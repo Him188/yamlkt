@@ -1,0 +1,10 @@
+{
+  "name": "yamlkt-yamlkt",
+  "version": "0.12.0",
+  "main": "kotlin/yamlkt-yamlkt.js",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

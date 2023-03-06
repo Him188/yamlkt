@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.DecoderEscapeTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.011">
+  <properties/>
+  <testcase name="escape16bit[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.007"/>
+  <testcase name="escape32bit[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.002"/>
+  <testcase name="escape64bit[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.001"/>
+  <testcase name="escapeColon[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.001"/>
+  <testcase name="escapeNewlineDoubleQuoted[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.0"/>
+  <testcase name="escapeMapping[jvm]" classname="net.mamoe.yamlkt.decoder.DecoderEscapeTest" time="0.0"/>
+  <system-out><![CDATA[YamlNullableDynamic {
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

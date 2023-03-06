@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.NullabilityTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.006">
+  <properties/>
+  <testcase name="testNullableFail[jvm]" classname="net.mamoe.yamlkt.decoder.NullabilityTest" time="0.003"/>
+  <testcase name="testNullable[jvm]" classname="net.mamoe.yamlkt.decoder.NullabilityTest" time="0.001"/>
+  <testcase name="testNullable2[jvm]" classname="net.mamoe.yamlkt.decoder.NullabilityTest" time="0.0"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.decoder.NullabilityTest.User {
+name: cssxsh
+<null>net.mamoe.yamlkt.decoder.NullabilityTest.User {
+name: cssxsh
+ = cssxsh@gmail.com
+}
+net.mamoe.yamlkt.decoder.NullabilityTest.User {
+name: cssxsh
+cssxsh@gmail.com}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

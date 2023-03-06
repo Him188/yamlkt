@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class net.mamoe.yamlkt.InlineClassesTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class net.mamoe.yamlkt.InlineClassesTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/net.mamoe.yamlkt.html">net.mamoe.yamlkt</a> &gt; InlineClassesTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">10</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.112s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">testMixedPositions[js, browser, ChromeHeadless110.0.5481.177, MacOS10.15.7]</td>
+<td class="success">testMixedPositions</td>
+<td class="success">0.039s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testMixedPositions[js, node]</td>
+<td class="success">testMixedPositions</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainer[js, node]</td>
+<td class="success">testSimpleContainer</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainer[js, browser, ChromeHeadless110.0.5481.177, MacOS10.15.7]</td>
+<td class="success">testSimpleContainer</td>
+<td class="success">0.008s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForList[js, node]</td>
+<td class="success">testSimpleContainerForList</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForList[js, browser, ChromeHeadless110.0.5481.177, MacOS10.15.7]</td>
+<td class="success">testSimpleContainerForList</td>
+<td class="success">0.034s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer[js, node]</td>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer</td>
+<td class="success">0s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer[js, browser, ChromeHeadless110.0.5481.177, MacOS10.15.7]</td>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUnsignedInBoxedPosition[js, browser, ChromeHeadless110.0.5481.177, MacOS10.15.7]</td>
+<td class="success">testUnsignedInBoxedPosition</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUnsignedInBoxedPosition[js, node]</td>
+<td class="success">testUnsignedInBoxedPosition</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>[log] writeValueHead, elementName=i
+[log] encodeSerializableElement0, elementName=i
+[log] endStructure0
+[log] [Serialized form] i: [ 2147483657 ]
+
+[log] net.mamoe.yamlkt.ContainerForList {
+[log]     kotlin.collections.ArrayList {
+[log]         2147483657    }
+[log] }
+[log] [Restored form] ContainerForList(i=MyList(list=[2147483657]))
+[log] writeValueHead, elementName=i
+[log] encodeSerializableElement0, elementName=i
+[log] endStructure0
+[log] net.mamoe.yamlkt.UnsignedInBoxedPosition {
+[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = 2147483657
+[log]     }
+[log] }
+[log] writeValueHead, elementName=int
+[log] encodeSerializableElement0, elementName=int
+[log] encodeValue, -2147483639
+[log] writeValueHead, elementName=intNullable
+[log] encodeSerializableElement0, elementName=intNullable
+[log] encodeValue, -2147483639
+[log] writeValueHead, elementName=uint
+[log] encodeSerializableElement0, elementName=uint
+[log] writeValueHead, elementName=uintNullable
+[log] encodeSerializableElement0, elementName=uintNullable
+[log] writeValueHead, elementName=boxedInt
+[log] encodeSerializableElement0, elementName=boxedInt
+[log] writeValueHead, elementName=boxedUInt
+[log] encodeSerializableElement0, elementName=boxedUInt
+[log] writeValueHead, elementName=boxedNullableInt
+[log] encodeSerializableElement0, elementName=boxedNullableInt
+[log] writeValueHead, elementName=boxedNullableUInt
+[log] encodeSerializableElement0, elementName=boxedNullableUInt
+[log] endStructure0
+[log] net.mamoe.yamlkt.MixedPositions {
+[log]     int: -2147483639
+[log]     -2147483639 = 2147483657
+[log]     2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = -2147483639
+[log]     }
+[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]         2147483657    }
+[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]  = &lt;null&gt;
+[log]         -2147483639 = &lt;null&gt;
+[log]     }
+[log]     kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+[log]         &lt;null&gt; = 2147483657
+[log]         &lt;null&gt;    }
+[log] }
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+[Serialized form] i: [ 2147483657 ]
+
+net.mamoe.yamlkt.ContainerForList {
+    kotlin.collections.ArrayList {
+        2147483657    }
+}
+[Restored form] ContainerForList(i=MyList(list=[2147483657]))
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+net.mamoe.yamlkt.UnsignedInBoxedPosition {
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = 2147483657
+    }
+}
+writeValueHead, elementName=int
+encodeSerializableElement0, elementName=int
+encodeValue, -2147483639
+writeValueHead, elementName=intNullable
+encodeSerializableElement0, elementName=intNullable
+encodeValue, -2147483639
+writeValueHead, elementName=uint
+encodeSerializableElement0, elementName=uint
+writeValueHead, elementName=uintNullable
+encodeSerializableElement0, elementName=uintNullable
+writeValueHead, elementName=boxedInt
+encodeSerializableElement0, elementName=boxedInt
+writeValueHead, elementName=boxedUInt
+encodeSerializableElement0, elementName=boxedUInt
+writeValueHead, elementName=boxedNullableInt
+encodeSerializableElement0, elementName=boxedNullableInt
+writeValueHead, elementName=boxedNullableUInt
+encodeSerializableElement0, elementName=boxedNullableUInt
+endStructure0
+net.mamoe.yamlkt.MixedPositions {
+    int: -2147483639
+    -2147483639 = 2147483657
+    2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = -2147483639
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        2147483657    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = &lt;null&gt;
+        -2147483639 = &lt;null&gt;
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        &lt;null&gt; = 2147483657
+        &lt;null&gt;    }
+}
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 7.3</a> at Mar 5, 2023, 7:47:04 PM</p>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.DecoderFailTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.017">
+  <properties/>
+  <testcase name="ensureMapWithNoSpaceAfterColonFails[jvm]" classname="net.mamoe.yamlkt.DecoderFailTest" time="0.017"/>
+  <testcase name="testBadNumber[jvm]" classname="net.mamoe.yamlkt.DecoderFailTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+{
+  "name": "kotlin",
+  "version": "1.8.0",
+  "customFields": {},
+  "main": "kotlin.js",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

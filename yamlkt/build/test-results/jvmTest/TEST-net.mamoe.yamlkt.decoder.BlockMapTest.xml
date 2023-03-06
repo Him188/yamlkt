@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.BlockMapTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.016">
+  <properties/>
+  <testcase name="test descriptor block map[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.003"/>
+  <testcase name="test dynamic block map[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.0"/>
+  <testcase name="test descriptor block map nested 2[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.002"/>
+  <testcase name="test dynamic block map nested 1[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.004"/>
+  <testcase name="test dynamic block map nested 2[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.002"/>
+  <testcase name="testNullValue[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.003"/>
+  <testcase name="test dynamic block map null[jvm]" classname="net.mamoe.yamlkt.decoder.BlockMapTest" time="0.0"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.decoder.BlockMapTest.Config {
+net.mamoe.yamlkt.decoder.BlockMapTest.Config.Bot by Yaml Block Class indented 8 {
+    account: 12345678910
+    password: =w==w==w=
+}
+net.mamoe.yamlkt.decoder.BlockMapTest.Config.Owner by Yaml Block Class indented 8 {
+    account: 12345678910
+}
+}
+Config(bot=Bot(account=12345678910, password==w==w==w=), owner=Owner(account=12345678910))
+YamlMap {
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+}
+}
+kotlin.collections.LinkedHashMap {
+tkotlin.collections.ArrayList by Yaml Block Map indented 4 {
+kotlin.collections.LinkedHashMap by Yaml Block Sequence indented 7 {
+ = part_no
+    A4786 = descrip
+    Water Bucket (Filled) = price
+    1.47 = quantity
+    4}
+}
+}
+YamlMap {
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+}
+}
+}
+}
+YamlMap {
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+YamlElement by Yaml Block Sequence indented 1 {
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+YamlElement by Yaml Block Map indented 2 {
+}
+}
+}
+}
+}
+}
+}
+net.mamoe.yamlkt.decoder.BlockMapTest.TestData {
+ = <null>
+nonnull: value
+<null> = <null>
+}
+YamlMap {
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

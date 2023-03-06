@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class net.mamoe.yamlkt.decoder.BlockSequenceTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class net.mamoe.yamlkt.decoder.BlockSequenceTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/net.mamoe.yamlkt.decoder.html">net.mamoe.yamlkt.decoder</a> &gt; BlockSequenceTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">9</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.122s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">block seq with negative values[jvm]</td>
+<td class="success">block seq with negative values</td>
+<td class="success">0.101s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nested descriptor block sequence[jvm]</td>
+<td class="success">nested descriptor block sequence</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nested descriptor block sequence2[jvm]</td>
+<td class="success">nested descriptor block sequence2</td>
+<td class="success">0s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nested dynamic block sequence[jvm]</td>
+<td class="success">nested dynamic block sequence</td>
+<td class="success">0.001s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">nested dynamic block sequence2[jvm]</td>
+<td class="success">nested dynamic block sequence2</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">simple descriptor block sequence[jvm]</td>
+<td class="success">simple descriptor block sequence</td>
+<td class="success">0s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">simple dynamic block sequence[jvm]</td>
+<td class="success">simple dynamic block sequence</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testMixedNestingList[jvm]</td>
+<td class="success">testMixedNestingList</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testNestedList[jvm]</td>
+<td class="success">testNestedList</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+kotlin.collections.ArrayList by Yaml Block Class indented 20 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 1
+item2: A
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 2
+item2: B
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 23 {
+item1: 3
+item2: C
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 1
+item2: A
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 20 {
+}
+YamlNullableDynamic by Yaml Block Map indented 20 {
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Block Sequence indented 23 {
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+}
+}
+}
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+kotlin.collections.ArrayList by Yaml Block Class indented 12 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 1
+item2: A
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 2
+item2: B
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 3
+item2: C
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 12 {
+}
+YamlNullableDynamic by Yaml Block Map indented 12 {
+YamlNullableDynamic by Yaml Block Sequence indented 13 {
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 13 {
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+kotlin.collections.ArrayList {
+ = -1
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+part_nox}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+ = test
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+pp}
+}
+[[part_nox], [test], [pp]]
+YamlList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+YamlElement by Yaml Block Sequence indented 1 {
+}
+YamlElement by Yaml Block Sequence indented 1 {
+}
+YamlElement by Yaml Block Sequence indented 1 {
+}
+}
+}
+[part_nox,test,pp]
+kotlin.collections.ArrayList {
+YamlElement by Yaml Block Sequence indented 29 {
+}
+YamlElement by Yaml Block Sequence indented 29 {
+}
+YamlElement by Yaml Block Sequence indented 29 {
+}
+}
+[part_nox, test, pp]
+kotlin.collections.ArrayList {
+kotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+ = pp
+s = ss
+p}
+kotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+ = pp
+s = ss
+p}
+}
+[{pp=s, ss=p}, {pp=s, ss=p}]
+YamlList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 25 {
+YamlElement by Yaml Block Sequence indented 25 {
+}
+YamlElement by Yaml Block Sequence indented 25 {
+}
+YamlElement by Yaml Block Sequence indented 25 {
+}
+}
+}
+[part_nox,test,pp]
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 7.3</a> at Mar 5, 2023, 7:32:06 PM</p>
+</div>
+</div>
+</body>
+</html>

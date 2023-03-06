@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.testsFromIssues.Issue5" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.001">
+  <properties/>
+  <testcase name="test[jvm]" classname="net.mamoe.yamlkt.testsFromIssues.Issue5" time="0.001"/>
+  <system-out><![CDATA[writeValueHead, elementName=tt
+encodeSerializableUnquotedStringImpl, elementName=tt
+encodeValue, null
+endStructure0
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

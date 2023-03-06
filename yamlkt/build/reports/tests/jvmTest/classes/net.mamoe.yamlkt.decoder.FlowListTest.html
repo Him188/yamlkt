@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class net.mamoe.yamlkt.decoder.FlowListTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class net.mamoe.yamlkt.decoder.FlowListTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/net.mamoe.yamlkt.decoder.html">net.mamoe.yamlkt.decoder</a> &gt; FlowListTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">4</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.039s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">nullable list[jvm]</td>
+<td class="success">nullable list</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">test flow class[jvm]</td>
+<td class="success">test flow class</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">test nested block sequence with negative values[jvm]</td>
+<td class="success">test nested block sequence with negative values</td>
+<td class="success">0.029s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testFlowListWithDescriptor[jvm]</td>
+<td class="success">testFlowListWithDescriptor</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>net.mamoe.yamlkt.decoder.FlowListTest.TestListData {
+kotlin.collections.ArrayList by Yaml Block Class indented 8 {
+net.mamoe.yamlkt.decoder.FlowListTest.Item by Yaml Flow Sequence {
+id: Open
+}
+net.mamoe.yamlkt.decoder.FlowListTest.Item by Yaml Flow Sequence {
+id: OpenNew
+label: Open New
+}
+&lt;null&gt;}
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+a: 1
+b: 1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+a: -1
+b: -1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+a: -1
+b: 1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+a: 1
+b: -1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataB {
+kotlin.collections.ArrayList by Yaml Flow Class {
+ = 1
+-1}
+b: 1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestDataB {
+kotlin.collections.ArrayList by Yaml Flow Class {
+ = -1
+1}
+b: -1
+}
+net.mamoe.yamlkt.decoder.FlowListTest.SvcReqPushMsg {
+uin: 9876540101
+YamlNullableDynamic by Yaml Flow Class {
+}
+ = -102210294
+YamlNullableDynamic by Yaml Flow Class {
+}
+}
+YamlNullableDynamic by Yaml Flow Class {
+}
+}
+kotlin.collections.LinkedHashMap by Yaml Flow Class {
+}
+}
+net.mamoe.yamlkt.decoder.FlowListTest$SvcReqPushMsg@4cee7fa0
+kotlin.collections.ArrayList {
+-1}
+kotlin.collections.ArrayList {
+ = -1
+}
+kotlin.collections.ArrayList {
+-1}
+kotlin.collections.ArrayList {
+ = -1
+}
+kotlin.collections.ArrayList {
+-1}
+kotlin.collections.ArrayList {
+ = -1
+}
+kotlin.collections.ArrayList {
+-1 = 2
+}
+kotlin.collections.ArrayList {
+-1 = -2
+}
+kotlin.collections.ArrayList {
+2 = -1
+-2}
+kotlin.collections.ArrayList {
+ = 2
+-1 = 2
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+-1}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+ = -1
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+-1}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+ = -1
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+-1}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+ = -1
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+-1 = 2
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+-1 = -2
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+2 = -1
+-2}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+ = 2
+-1 = 2
+}
+}
+kotlin.Unit {
+kotlin.collections.ArrayList {
+--1}
+kotlin.collections.ArrayList {
+ = --1
+--1}
+kotlin.collections.ArrayList {
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+}
+kotlin.collections.ArrayList {
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+}
+net.mamoe.yamlkt.decoder.FlowListTest.TestNestedListData {
+kotlin.collections.ArrayList by Yaml Block Class indented 4 {
+kotlin.collections.ArrayList by Yaml Flow Sequence {
+ = test
+test = test
+}
+}
+}
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 7.3</a> at Mar 5, 2023, 7:32:06 PM</p>
+</div>
+</div>
+</body>
+</html>

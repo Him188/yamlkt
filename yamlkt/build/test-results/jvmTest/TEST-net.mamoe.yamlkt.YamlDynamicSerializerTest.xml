@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.YamlDynamicSerializerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.01">
+  <properties/>
+  <testcase name="testDynamicAsMultilineList[jvm]" classname="net.mamoe.yamlkt.YamlDynamicSerializerTest" time="0.007"/>
+  <testcase name="testDynamicAsMap[jvm]" classname="net.mamoe.yamlkt.YamlDynamicSerializerTest" time="0.001"/>
+  <testcase name="testDynamicAsList[jvm]" classname="net.mamoe.yamlkt.YamlDynamicSerializerTest" time="0.0"/>
+  <testcase name="testDynamicAsTopLevel[jvm]" classname="net.mamoe.yamlkt.YamlDynamicSerializerTest" time="0.001"/>
+  <system-out><![CDATA[        net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+            YamlNullableDynamic by Yaml Block Class indented 0 {
+                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+                }
+                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+                }
+                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+                }
+                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+                }
+            }
+        }
+    }
+    net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+        YamlNullableDynamic by Yaml Block Class indented 0 {
+            YamlNullableDynamic by Yaml Block Map indented 2 {
+            }
+            YamlNullableDynamic by Yaml Block Map indented 2 {
+            }
+            YamlNullableDynamic by Yaml Block Map indented 2 {
+            }
+            YamlNullableDynamic by Yaml Block Map indented 2 {
+            }
+        }
+    }
+}
+net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+    YamlNullableDynamic by Yaml Block Class indented 0 {
+        YamlNullableDynamic by Yaml Flow Sequence {
+        }
+        YamlNullableDynamic by Yaml Flow Sequence {
+        }
+        YamlNullableDynamic by Yaml Flow Sequence {
+        }
+        YamlNullableDynamic by Yaml Flow Sequence {
+        }
+    }
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+    YamlNullableDynamic by Yaml Block Map indented 2 {
+    }
+    YamlNullableDynamic by Yaml Block Map indented 2 {
+    }
+    YamlNullableDynamic by Yaml Block Map indented 2 {
+    }
+    YamlNullableDynamic by Yaml Block Map indented 2 {
+    }
+}
+}
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

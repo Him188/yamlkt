@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: Kotlin JavaScript StdLib
+Kotlin-Runtime-Component: Main
+Kotlin-Version: 1.8
+Implementation-Version: 1.8.0-release-345(1.8.0)
+Implementation-Vendor: JetBrains
+

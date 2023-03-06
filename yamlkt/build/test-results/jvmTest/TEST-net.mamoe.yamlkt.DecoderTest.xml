@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.DecoderTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.017">
+  <properties/>
+  <testcase name="testSimpleClass[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.003"/>
+  <testcase name="testSimpleMultilineList[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.004"/>
+  <testcase name="testSimpleStructure[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.002"/>
+  <testcase name="testYamlMap[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.001"/>
+  <testcase name="testJsonMap[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.0"/>
+  <testcase name="testSquareList[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.001"/>
+  <testcase name="testNested[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.002"/>
+  <testcase name="testBooleanCasting[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.001"/>
+  <testcase name="testNonStrictNumberCasting[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.001"/>
+  <testcase name="testNonStrictNullCasting[jvm]" classname="net.mamoe.yamlkt.DecoderTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

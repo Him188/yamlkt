@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.PolymorphismTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.003">
+  <properties/>
+  <testcase name="test simple dump[jvm]" classname="net.mamoe.yamlkt.decoder.PolymorphismTest" time="0.003"/>
+  <system-out><![CDATA[writeValueHead, elementName=fruit
+encodeSerializableElement0, elementName=fruit
+writeValueHead, elementName=type
+encodeSerializableElement0, elementName=type
+encodeValue, net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+writeValueHead, elementName=value
+encodeSerializableElement0, elementName=value
+writeValueHead, elementName=prop
+encodeSerializableElement0, elementName=prop
+encodeValue, prop
+endStructure0
+endStructure0
+endStructure0
+fruit: 
+  type: net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+  value: 
+    prop: prop
+net.mamoe.yamlkt.decoder.PolymorphismTest.Poly {
+kotlinx.serialization.Polymorphic<Fruit> by Yaml Block Class indented 0 {
+type: net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+net.mamoe.yamlkt.decoder.PolymorphismTest.Banana by Yaml Block Class indented 2 {
+prop: prop
+}
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

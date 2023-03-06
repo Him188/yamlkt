@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.FullYamlTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.002">
+  <properties/>
+  <testcase name="testFullYaml[jvm]" classname="net.mamoe.yamlkt.decoder.FullYamlTest" time="0.002"/>
+  <system-out><![CDATA[YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+BlockMapDecoder exit: crt=0, base=4
+}
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+YamlNullableDynamic by Yaml Block Map indented 6 {
+}
+BlockMapDecoder exit: crt=0, base=6
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+}
+}
+}
+}
+{receipt=Oz-Ware Purchase Invoice, date=2012-08-06, customer={first_name=Dorothy, family_name=Gale}, items=[{part_no=A4786, descrip=Water Bucket (Filled), price=1.47, quantity=4}, {part_no=E1628, descrip=High Heeled "Ruby" Slippers, size=8, price=133.7, quantity=1}], bill-to={street=123 Tornado Alley, city=East Centerville, state=KS}}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.encoder.BasicEncoderTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.009">
+  <properties/>
+  <testcase name="testDynamicMap[jvm]" classname="net.mamoe.yamlkt.encoder.BasicEncoderTest" time="0.001"/>
+  <testcase name="testDynamic[jvm]" classname="net.mamoe.yamlkt.encoder.BasicEncoderTest" time="0.001"/>
+  <testcase name="testDescriptorBased[jvm]" classname="net.mamoe.yamlkt.encoder.BasicEncoderTest" time="0.007"/>
+  <system-out><![CDATA[writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, apple
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+encodeValue, banana
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, test
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+encodeValue, sss
+endStructure0
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+}
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+net.mamoe.yamlkt.encoder.BasicEncoderTest.Data2 {
+kotlin.collections.LinkedHashMap by Yaml Flow Class {
+ = bob
+2}
+}
+net.mamoe.yamlkt.encoder.BasicEncoderTest.Data {
+v1: value1
+number: 123456
+kotlin.collections.LinkedHashMap by Yaml Flow Class {
+ = bob
+2}
+kotlin.collections.ArrayList by Yaml Flow Class {
+ = value1
+value2}
+net.mamoe.yamlkt.encoder.BasicEncoderTest.Data by Yaml Flow Class {
+v1: 
+number: 111
+kotlin.collections.LinkedHashMap by Yaml Flow Class {
+ = bob
+2}
+kotlin.collections.ArrayList by Yaml Flow Class {
+ = value1
+value2}
+ = <null>
+<null>}
+kotlin.ByteArray by Yaml Flow Class {
+0: 116
+1: 101
+2: 115
+3: 116
+4: 32
+5: 98
+6: 121
+7: 116
+8: 101
+9: 65
+10: 114
+11: 114
+12: 97
+13: 121
+}
+}
+writeValueHead, elementName=v1
+encodeSerializableElement0, elementName=v1
+encodeValue, value1
+writeValueHead, elementName=number
+encodeSerializableElement0, elementName=number
+encodeValue, 123456
+writeValueHead, elementName=map
+encodeSerializableElement0, elementName=map
+writeValueHead, elementName=list
+encodeSerializableElement0, elementName=list
+writeValueHead, elementName=anotherData
+encodeSerializableElement0, elementName=anotherData
+writeValueHead, elementName=v1
+encodeSerializableElement0, elementName=v1
+encodeValue, ''
+writeValueHead, elementName=number
+encodeSerializableElement0, elementName=number
+encodeValue, 111
+writeValueHead, elementName=map
+encodeSerializableElement0, elementName=map
+writeValueHead, elementName=list
+encodeSerializableElement0, elementName=list
+writeValueHead, elementName=anotherData
+encodeSerializableUnquotedStringImpl, elementName=anotherData
+encodeValue, null
+writeValueHead, elementName=byteArray
+encodeSerializableUnquotedStringImpl, elementName=byteArray
+encodeValue, null
+endStructure0
+writeValueHead, elementName=byteArray
+encodeSerializableElement0, elementName=byteArray
+endStructure0
+net.mamoe.yamlkt.encoder.BasicEncoderTest.Data {
+v1: value1
+number: 123456
+kotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+ = bob
+2}
+kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = value1
+value2}
+net.mamoe.yamlkt.encoder.BasicEncoderTest.Data by Yaml Block Class indented 0 {
+v1: 
+number: 111
+kotlin.collections.LinkedHashMap by Yaml Block Class indented 2 {
+ = bob
+2}
+kotlin.collections.ArrayList by Yaml Block Class indented 2 {
+ = value1
+value2}
+ = <null>
+<null>}
+kotlin.ByteArray by Yaml Block Class indented 0 {
+0: 116
+1: 101
+2: 115
+3: 116
+4: 32
+5: 98
+6: 121
+7: 116
+8: 101
+9: 65
+10: 114
+11: 114
+12: 97
+13: 121
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

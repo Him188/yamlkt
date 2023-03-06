@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.AdjustDynamicStringTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.379">
+  <properties/>
+  <testcase name="test integer[jvm]" classname="net.mamoe.yamlkt.AdjustDynamicStringTest" time="0.358"/>
+  <testcase name="test boundaries[jvm]" classname="net.mamoe.yamlkt.AdjustDynamicStringTest" time="0.005"/>
+  <testcase name="test double[jvm]" classname="net.mamoe.yamlkt.AdjustDynamicStringTest" time="0.007"/>
+  <testcase name="test string[jvm]" classname="net.mamoe.yamlkt.AdjustDynamicStringTest" time="0.009"/>
+  <system-out><![CDATA[1
+1
+12
+12
+0
+0
+-1
+-1
+-12
+-12
+2147483647
+2147483647
+-2147483648
+-2147483648
+4294967296
+4294967296
+-2147483649
+-2147483649
+1.0
+1.0
+12.0
+12.0
+12.1
+12.1
+0.0
+0.0
+-1.0
+-1.0
+-12.0
+-12.0
+-12.1
+-12.1
+1.0xx
+1.0xx
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

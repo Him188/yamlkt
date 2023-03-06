@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.testsFromIssues.Issue17" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.001">
+  <properties/>
+  <testcase name="testYaml[jvm]" classname="net.mamoe.yamlkt.testsFromIssues.Issue17" time="0.001"/>
+  <system-out><![CDATA[writeValueHead, elementName=test
+encodeSerializableElement0, elementName=test
+encodeValue, testString
+writeValueHead, elementName=test2
+encodeSerializableElement0, elementName=test2
+encodeValue, '--some "text {{.val}}\t{{.another}}"'
+writeValueHead, elementName=test3
+encodeSerializableElement0, elementName=test3
+encodeValue, '${testString}'
+endStructure0
+test: testString
+test2: '--some "text {{.val}}\t{{.another}}"'
+test3: '${testString}'
+net.mamoe.yamlkt.testsFromIssues.Issue17.TestData {
+test: testString
+test2: --some "text {{.val}}\t{{.another}}"
+test3: ${testString}
+}
+TestData(test=testString, test2=--some "text {{.val}}\t{{.another}}", test3=${testString})
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

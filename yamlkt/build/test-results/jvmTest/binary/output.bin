@@ -1,0 +1,2255 @@
+1
+1
+12
+12
+0
+0
+-1
+-1
+-12
+-12
+2147483647
+2147483647
+-2147483648
+-2147483648
+4294967296
+4294967296
+-2147483649
+-2147483649
+1.0
+1.0
+12.0
+12.0
+12.1
+12.1
+0.0
+0.0
+-1.0
+-1.0
+-12.0
+-12.0
+-12.1
+-12.1
+1.0xx
+1.0xx
+writeValueHead, elementName=i
+*encodeSerializableElement0, elementName=i
+endStructure0
+$[Serialized form] i: [ 2147483657 ]
+
+$net.mamoe.yamlkt.ContainerForList {
+#    kotlin.collections.ArrayList {
+        2147483657    }
+}
+>[Restored form] ContainerForList(i=MyList(list=[2147483657]))
+writeValueHead, elementName=i
+*encodeSerializableElement0, elementName=i
+endStructure0
++net.mamoe.yamlkt.UnsignedInBoxedPosition {
+B    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = 2147483657
+    }
+}
+ writeValueHead, elementName=int
+,encodeSerializableElement0, elementName=int
+encodeValue, -2147483639
+(writeValueHead, elementName=intNullable
+4encodeSerializableElement0, elementName=intNullable
+encodeValue, -2147483639
+!writeValueHead, elementName=uint
+-encodeSerializableElement0, elementName=uint
+)writeValueHead, elementName=uintNullable
+5encodeSerializableElement0, elementName=uintNullable
+%writeValueHead, elementName=boxedInt
+1encodeSerializableElement0, elementName=boxedInt
+&writeValueHead, elementName=boxedUInt
+2encodeSerializableElement0, elementName=boxedUInt
+-writeValueHead, elementName=boxedNullableInt
+9encodeSerializableElement0, elementName=boxedNullableInt
+.writeValueHead, elementName=boxedNullableUInt
+:encodeSerializableElement0, elementName=boxedNullableUInt
+endStructure0
+"net.mamoe.yamlkt.MixedPositions {
+    int: -2147483639
+    -2147483639 = 2147483657
+P    2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = -2147483639
+    }
+B    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        2147483657    }
+B    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+
+ = <null>
+        -2147483639 = <null>
+    }
+B    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        <null> = 2147483657
+        <null>    }
+}
+writeValueHead, elementName=i
+*encodeSerializableElement0, elementName=i
+endStructure0
+*net.mamoe.yamlkt.SimpleContainerForUInt {
+ = 2147483657
+}
+6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+$    key: This is a multiline string
+This is the second line
+
+
+
+}
+6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+$    key: This is a multiline string
+This is the second line
+
+}
+ 6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+ $    key: This is a multiline string
+ This is the second line
+ 
+ }
+!6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+!<    key: This is a multiline string This is the second line
+!}
+"9net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+"    string1: foo
+"
+"    string2: bar
+"}
+#6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+#
+    key: 
+#
+#This is a multiline string
+#This is the second line
+#
+#}
+$6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+$$    key: This is a multiline string
+$ This is the second line
+$
+$}
+%6net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+&:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+&        key: 
+&    }
+':    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+'(        key: This is a multiline string
+'This is the second line
+'
+'    }
+(:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+(@        key: This is a multiline string This is the second line
+(    }
+):    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+)@        key: This is a multiline string This is the second line
+)
+)    }
+*:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+*        key: 
+*This is a multiline string
+*This is the second line
+*
+*    }
++:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
++(        key: This is a multiline string
++
++
++This is the second line
++
++    }
+,=    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+,        string1: 
+,        string2: foo
+,
+,    }
+-:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+-(        key: This is a multiline string
+-
+-This is the second line
+-
+-    }
+.=    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+.        string1: foo
+.
+.
+.        string2: bar
+.    }
+/:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+/(        key: This is a multiline string
+/This is the second line
+/    }
+0=    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+0        string1: foo
+0
+0
+0        string2: bar
+0    }
+1:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+1        key: 
+13This is a multiline string This is the second line
+1
+1    }
+2:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+2@        key: This is a multiline string This is the second line
+2
+2    }
+3:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+3        key: 
+3    }
+4:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+4@        key: This is a multiline string This is the second line
+4
+4
+4
+4    }
+5:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+5@        key: This is a multiline string This is the second line
+5
+5    }
+6:    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+7A        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+7            string1: 
+7            string2: foo
+7
+7
+        }
+8>        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+8D            key: This is a multiline string This is the second line
+8
+        }
+9>        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+9,            key: This is a multiline string
+9 This is the second line
+9
+        }
+:A        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+:            string1: 
+:            string2: foo
+:
+:
+        }
+;A        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+;            string1: foo
+;
+;            string2: bar
+;
+        }
+<>        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+<            key: 
+<
+<3This is a multiline string This is the second line
+<
+<
+        }
+=>        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+=,            key: This is a multiline string
+= This is the second line
+=
+=
+        }
+>>        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+>,            key: This is a multiline string
+>This is the second line
+>
+>
+        }
+?A        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+?            string1: 
+?            string2: foo
+?
+?
+        }
+A@>        net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+A@A            YamlNullableDynamic by Yaml Block Class indented 0 {
+A@H                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+A@                }
+A@H                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+A@                }
+A@H                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+A@                }
+A@H                YamlNullableDynamic by Yaml Block Sequence indented 1 {
+A@                }
+A@            }
+A@
+        }
+A@    }
+AB:    net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+AB=        YamlNullableDynamic by Yaml Block Class indented 0 {
+AB?            YamlNullableDynamic by Yaml Block Map indented 2 {
+AB            }
+AB?            YamlNullableDynamic by Yaml Block Map indented 2 {
+AB            }
+AB?            YamlNullableDynamic by Yaml Block Map indented 2 {
+AB            }
+AB?            YamlNullableDynamic by Yaml Block Map indented 2 {
+AB            }
+AB
+        }
+AB    }
+AB}
+AC6net.mamoe.yamlkt.YamlDynamicSerializerTest.TestData {
+AC9    YamlNullableDynamic by Yaml Block Class indented 0 {
+AC4        YamlNullableDynamic by Yaml Flow Sequence {
+AC
+        }
+AC4        YamlNullableDynamic by Yaml Flow Sequence {
+AC
+        }
+AC4        YamlNullableDynamic by Yaml Flow Sequence {
+AC
+        }
+AC4        YamlNullableDynamic by Yaml Flow Sequence {
+AC
+        }
+AC    }
+AC}
+AC}
+ADYamlNullableDynamic {
+AD3YamlNullableDynamic by Yaml Block Map indented 0 {
+AD}
+AD3YamlNullableDynamic by Yaml Block Map indented 0 {
+AD7    YamlNullableDynamic by Yaml Block Map indented 2 {
+AD    }
+AD7    YamlNullableDynamic by Yaml Block Map indented 2 {
+AD    }
+AD7    YamlNullableDynamic by Yaml Block Map indented 2 {
+AD    }
+AD7    YamlNullableDynamic by Yaml Block Map indented 2 {
+AD    }
+AD}
+AD}
+AD}
+AD}
+FE
+YamlMap {
+FE+YamlElement by Yaml Block Map indented 0 {
+FE}
+FE+YamlElement by Yaml Block Map indented 0 {
+FE}
+FE}
+FE}
+FGYamlLiteral {
+FGYamlLiteral {
+FHYamlLiteral {
+FH}
+FHYamlLiteral {
+FH}
+FHYamlLiteral {
+FH}
+FIYamlList {
+FI$YamlElement by Yaml Flow Sequence {
+FI}
+FI$YamlElement by Yaml Flow Sequence {
+FI}
+FI$YamlElement by Yaml Flow Sequence {
+FI}
+FI}
+FI}
+FJYamlNull {
+FJ}
+FJYamlNull {
+FJ}
+FJYamlNull {
+FJYamlNull {
+NM/net.mamoe.yamlkt.decoder.BlockMapTest.Config {
+NMRnet.mamoe.yamlkt.decoder.BlockMapTest.Config.Bot by Yaml Block Class indented 8 {
+NM    account: 12345678910
+NM    password: =w==w==w=
+NM}
+NMTnet.mamoe.yamlkt.decoder.BlockMapTest.Config.Owner by Yaml Block Class indented 8 {
+NM    account: 12345678910
+NM}
+NM}
+NM[Config(bot=Bot(account=12345678910, password==w==w==w=), owner=Owner(account=12345678910))
+NO
+YamlMap {
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO+YamlElement by Yaml Block Map indented 0 {
+NO}
+NO}
+NO}
+NP#kotlin.collections.LinkedHashMap {
+NP=tkotlin.collections.ArrayList by Yaml Block Map indented 4 {
+NPEkotlin.collections.LinkedHashMap by Yaml Block Sequence indented 7 {
+NP = part_no
+NP    A4786 = descrip
+NP"    Water Bucket (Filled) = price
+NP    1.47 = quantity
+NP    4}
+NP}
+NP}
+NQ
+YamlMap {
+NQ+YamlElement by Yaml Block Map indented 0 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 0 {
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ+YamlElement by Yaml Block Map indented 2 {
+NQ}
+NQ}
+NQ}
+NQ}
+NQ}
+NR
+YamlMap {
+NR+YamlElement by Yaml Block Map indented 0 {
+NR}
+NR+YamlElement by Yaml Block Map indented 0 {
+NR0YamlElement by Yaml Block Sequence indented 1 {
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR+YamlElement by Yaml Block Map indented 2 {
+NR}
+NR}
+NR}
+NR}
+NR}
+NR}
+NR}
+NS1net.mamoe.yamlkt.decoder.BlockMapTest.TestData {
+NS
+ = <null>
+NSnonnull: value
+NS<null> = <null>
+NS}
+NT
+YamlMap {
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT+YamlElement by Yaml Block Map indented 0 {
+NT}
+NT}
+NT}
+VUkotlin.collections.ArrayList {
+VUAkotlin.collections.ArrayList by Yaml Block Sequence indented 9 {
+VWkotlin.collections.ArrayList {
+VWAkotlin.collections.ArrayList by Yaml Block Sequence indented 5 {
+VW	sss = ss
+VW}
+VWAkotlin.collections.ArrayList by Yaml Block Sequence indented 5 {
+VW	sss = ss
+VW}
+VW}
+VXkotlin.collections.ArrayList {
+VXAkotlin.collections.ArrayList by Yaml Block Sequence indented 9 {
+VX
+sss - ss}
+VX}
+ZY6net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+ZY?kotlin.collections.ArrayList by Yaml Block Class indented 20 {
+ZYBkotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+ZYRnet.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+ZY	item1: 1
+ZY	item2: A
+ZY}
+ZYRnet.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+ZY	item1: 2
+ZY	item2: B
+ZY}
+ZY}
+ZYBkotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+ZY_net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 23 {
+ZY	item1: 3
+ZY	item2: C
+ZY}
+ZY}
+ZYBkotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+ZYRnet.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+ZY	item1: 1
+ZY	item2: A
+ZY}
+ZY}
+ZY}
+ZY}
+ZYYamlNullableDynamic {
+ZY4YamlNullableDynamic by Yaml Block Map indented 20 {
+ZY}
+ZY4YamlNullableDynamic by Yaml Block Map indented 20 {
+ZY9YamlNullableDynamic by Yaml Block Sequence indented 21 {
+ZY,YamlNullableDynamic by Yaml Flow Sequence {
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY}
+ZY}
+ZY,YamlNullableDynamic by Yaml Flow Sequence {
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY9YamlNullableDynamic by Yaml Block Sequence indented 21 {
+ZY9YamlNullableDynamic by Yaml Block Sequence indented 23 {
+ZY4YamlNullableDynamic by Yaml Block Map indented 24 {
+ZY}
+ZY4YamlNullableDynamic by Yaml Block Map indented 24 {
+ZY}
+ZY4YamlNullableDynamic by Yaml Block Map indented 24 {
+ZY}
+ZY4YamlNullableDynamic by Yaml Block Map indented 24 {
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY9YamlNullableDynamic by Yaml Block Sequence indented 21 {
+ZY,YamlNullableDynamic by Yaml Flow Sequence {
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY'YamlNullableDynamic by Yaml Flow Map {
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+ZY}
+Z[YamlNullableDynamic {
+Z[8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[}
+Z[}
+Z[8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[3YamlNullableDynamic by Yaml Block Map indented 2 {
+Z[}
+Z[}
+Z[}
+Z[}
+Z[}
+Z\6net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+Z\?kotlin.collections.ArrayList by Yaml Block Class indented 12 {
+Z\Bkotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+Z\_net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+Z\	item1: 1
+Z\	item2: A
+Z\}
+Z\_net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+Z\	item1: 2
+Z\	item2: B
+Z\}
+Z\}
+Z\Bkotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+Z\_net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+Z\	item1: 3
+Z\	item2: C
+Z\}
+Z\}
+Z\}
+Z\}
+Z\YamlNullableDynamic {
+Z\4YamlNullableDynamic by Yaml Block Map indented 12 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 12 {
+Z\9YamlNullableDynamic by Yaml Block Sequence indented 13 {
+Z\9YamlNullableDynamic by Yaml Block Sequence indented 15 {
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\}
+Z\}
+Z\9YamlNullableDynamic by Yaml Block Sequence indented 15 {
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z\9YamlNullableDynamic by Yaml Block Sequence indented 13 {
+Z\9YamlNullableDynamic by Yaml Block Sequence indented 15 {
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\4YamlNullableDynamic by Yaml Block Map indented 16 {
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z\}
+Z]kotlin.collections.ArrayList {
+Z] = -1
+Z]}
+Z^kotlin.collections.ArrayList {
+Z^Bkotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+Z^
+part_nox}
+Z^Bkotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+Z^ = test
+Z^}
+Z^Bkotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+Z^pp}
+Z^}
+Z^[[part_nox], [test], [pp]]
+Z_YamlList {
+Z_Akotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+Z_0YamlElement by Yaml Block Sequence indented 1 {
+Z_}
+Z_0YamlElement by Yaml Block Sequence indented 1 {
+Z_}
+Z_0YamlElement by Yaml Block Sequence indented 1 {
+Z_}
+Z_}
+Z_}
+Z_[part_nox,test,pp]
+Z`kotlin.collections.ArrayList {
+Z`1YamlElement by Yaml Block Sequence indented 29 {
+Z`}
+Z`1YamlElement by Yaml Block Sequence indented 29 {
+Z`}
+Z`1YamlElement by Yaml Block Sequence indented 29 {
+Z`}
+Z`}
+Z`[part_nox, test, pp]
+Zakotlin.collections.ArrayList {
+ZaEkotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+Za = pp
+Zas = ss
+Zap}
+ZaEkotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+Za = pp
+Zas = ss
+Zap}
+Za}
+Za[{pp=s, ss=p}, {pp=s, ss=p}]
+ZbYamlList {
+ZbBkotlin.collections.ArrayList by Yaml Block Sequence indented 25 {
+Zb1YamlElement by Yaml Block Sequence indented 25 {
+Zb}
+Zb1YamlElement by Yaml Block Sequence indented 25 {
+Zb}
+Zb1YamlElement by Yaml Block Sequence indented 25 {
+Zb}
+Zb}
+Zb}
+Zb[part_nox,test,pp]
+fe"writeValueHead, elementName=fruit
+fe.encodeSerializableElement0, elementName=fruit
+fe!writeValueHead, elementName=type
+fe-encodeSerializableElement0, elementName=type
+fe<encodeValue, net.mamoe.yamlkt.decoder.ContextualTest.Banana
+fe"writeValueHead, elementName=value
+fe.encodeSerializableElement0, elementName=value
+fe!writeValueHead, elementName=prop
+fe-encodeSerializableElement0, elementName=prop
+feencodeValue, prop
+feendStructure0
+feendStructure0
+feendStructure0
+hgYamlNullableDynamic {
+hg}
+hgYamlNullableDynamic {
+hg3YamlNullableDynamic by Yaml Block Map indented 0 {
+hgYamlNullableDynamic {
+hg3YamlNullableDynamic by Yaml Block Map indented 0 {
+hgYamlNullableDynamic {
+hg3YamlNullableDynamic by Yaml Block Map indented 0 {
+hiYamlNullableDynamic {
+hi}
+hiYamlNullableDynamic {
+hi3YamlNullableDynamic by Yaml Block Map indented 0 {
+hiYamlNullableDynamic {
+hi3YamlNullableDynamic by Yaml Block Map indented 0 {
+hiYamlNullableDynamic {
+hi3YamlNullableDynamic by Yaml Block Map indented 0 {
+hjYamlNullableDynamic {
+hj}
+hjYamlNullableDynamic {
+hj3YamlNullableDynamic by Yaml Block Map indented 0 {
+hjYamlNullableDynamic {
+hj3YamlNullableDynamic by Yaml Block Map indented 0 {
+hjYamlNullableDynamic {
+hj3YamlNullableDynamic by Yaml Block Map indented 0 {
+hkYamlNullableDynamic {
+hk}
+hlYamlNullableDynamic {
+hl}
+hmYamlNullableDynamic {
+hm}
+hmYamlNullableDynamic {
+hm}
+hmYamlNullableDynamic {
+hm}
+hmYamlNullableDynamic {
+hm}
+onlist:
+on- 1
+on- 1
+on- 1
+on- 1
+on- 1
+onlist2:
+on	- "test"
+on:net.mamoe.yamlkt.decoder.DeserializerTest.TestListsData {
+on>kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+on = 1
+on1 = 1
+on1 = 1
+on}
+on>kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ontest}
+on}
+opdata:
+op
+  "food":
+op  - "banana"
+op  - "apple"
+op
+  "book":
+op  - "book1"
+op?net.mamoe.yamlkt.decoder.DeserializerTest.TestMapAndListData {
+opBkotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+op = food
+op<kotlin.collections.ArrayList by Yaml Block Map indented 2 {
+opbanana = apple
+op}
+op@bookkotlin.collections.ArrayList by Yaml Block Map indented 2 {
+op	 = book1
+op}
+op}
+op}
+oq
+negative:
+oq  "coconut":
+oq  - - 1
+oq    - 1
+oq    - 1
+oq    - 1
+oq    - 1
+oq  - - 1
+oq    - 1
+oq    - 1
+oq    - 1
+oq    - 1
+oq  "banana":
+oq  - - 2
+oq    - 2
+oqEnet.mamoe.yamlkt.decoder.DeserializerTest.TestMapAndNestedListData {
+oqBkotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+oqCcoconutkotlin.collections.ArrayList by Yaml Block Map indented 2 {
+oqAkotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+oq = 1
+oq1 = 1
+oq1 = 1
+oq}
+oqAkotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+oq1 = 1
+oq1 = 1
+oq1}
+oq}
+oq
+ = banana
+oq<kotlin.collections.ArrayList by Yaml Block Map indented 2 {
+oqAkotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+oq2 = 2
+oq}
+oq}
+oq}
+oq}
+orCnet.mamoe.yamlkt.decoder.DeserializerTest.TestPrimitiveTypesData {
+ornegative: 1
+orint: 1
+or	short: 1
+orbyte: 1
+orlong: 1
+orboolean: true
+orfloat: 1.0
+ordouble: 1.0
+orchar: c
+orstring: test
+orquotedString: test
+or}
+osdata:
+os  "coconut":
+os    "foo": 111
+os    "bar": 222
+os  "banana":
+os    "sss": 333
+os    "bbb": 6666
+os>net.mamoe.yamlkt.decoder.DeserializerTest.TestNestedMapData {
+osBkotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+osGcoconutkotlin.collections.LinkedHashMap by Yaml Block Map indented 2 {
+os = foo
+os
+111 = bar
+os'222BlockMapDecoder exit: crt=2, base=4
+os}
+os
+ = banana
+os@kotlin.collections.LinkedHashMap by Yaml Block Map indented 2 {
+os
+sss = 333
+osbbb = 6666
+os}
+os}
+os}
+ot
+negative:
+ot- - 1
+ot  - 1
+ot  - 1
+ot  - 1
+ot  - 1
+ot- - 2
+ot  - 2
+ot  - 2
+ot  - 2
+ot- - 4
+ot  - 4
+ot  - 4
+ot@net.mamoe.yamlkt.decoder.DeserializerTest.TestNestedListsData {
+ot>kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+otAkotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+ot1 = 1
+ot1 = 1
+ot1}
+otAkotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+ot = 2
+ot2 = 2
+ot2}
+otAkotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+ot = 4
+ot4 = 4
+ot}
+ot}
+ot}
+vu5net.mamoe.yamlkt.decoder.FlowListTest.TestListData {
+vu>kotlin.collections.ArrayList by Yaml Block Class indented 8 {
+vuCnet.mamoe.yamlkt.decoder.FlowListTest.Item by Yaml Flow Sequence {
+vu	id: Open
+vu}
+vuCnet.mamoe.yamlkt.decoder.FlowListTest.Item by Yaml Flow Sequence {
+vuid: OpenNew
+vulabel: Open New
+vu}
+vu<null>}
+vu}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+vwa: 1
+vwb: 1
+vw}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+vwa: -1
+vwb: -1
+vw}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+vwa: -1
+vwb: 1
+vw}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataA {
+vwa: 1
+vwb: -1
+vw}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataB {
+vw2kotlin.collections.ArrayList by Yaml Flow Class {
+vw = 1
+vw-1}
+vwb: 1
+vw}
+vw2net.mamoe.yamlkt.decoder.FlowListTest.TestDataB {
+vw2kotlin.collections.ArrayList by Yaml Flow Class {
+vw = -1
+vw1}
+vwb: -1
+vw}
+vw6net.mamoe.yamlkt.decoder.FlowListTest.SvcReqPushMsg {
+vwuin: 9876540101
+vw)YamlNullableDynamic by Yaml Flow Class {
+vw}
+vw = -102210294
+vw)YamlNullableDynamic by Yaml Flow Class {
+vw}
+vw}
+vw)YamlNullableDynamic by Yaml Flow Class {
+vw}
+vw}
+vw6kotlin.collections.LinkedHashMap by Yaml Flow Class {
+vw}
+vw}
+vw=net.mamoe.yamlkt.decoder.FlowListTest$SvcReqPushMsg@4cee7fa0
+vxkotlin.collections.ArrayList {
+vx-1}
+vxkotlin.collections.ArrayList {
+vx = -1
+vx}
+vxkotlin.collections.ArrayList {
+vx-1}
+vxkotlin.collections.ArrayList {
+vx = -1
+vx}
+vxkotlin.collections.ArrayList {
+vx-1}
+vxkotlin.collections.ArrayList {
+vx = -1
+vx}
+vxkotlin.collections.ArrayList {
+vx-1 = 2
+vx}
+vxkotlin.collections.ArrayList {
+vx-1 = -2
+vx}
+vxkotlin.collections.ArrayList {
+vx2 = -1
+vx-2}
+vxkotlin.collections.ArrayList {
+vx = 2
+vx-1 = 2
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx-1}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx = -1
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx-1}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx = -1
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx-1}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx = -1
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx-1 = 2
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx-1 = -2
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx2 = -1
+vx-2}
+vx}
+vxkotlin.collections.ArrayList {
+vx5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vx = 2
+vx-1 = 2
+vx}
+vx}
+vxkotlin.Unit {
+vxkotlin.collections.ArrayList {
+vx--1}
+vxkotlin.collections.ArrayList {
+vx = --1
+vx--1}
+vxkotlin.collections.ArrayList {
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx}
+vxkotlin.collections.ArrayList {
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx,YamlNullableDynamic by Yaml Flow Sequence {
+vx}
+vx}
+vy;net.mamoe.yamlkt.decoder.FlowListTest.TestNestedListData {
+vy>kotlin.collections.ArrayList by Yaml Block Class indented 4 {
+vy5kotlin.collections.ArrayList by Yaml Flow Sequence {
+vy = test
+vytest = test
+vy}
+vy}
+vy}
+{z
+YamlMap {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z$YamlElement by Yaml Flow Sequence {
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{zYamlElement by Yaml Flow Map {
+{z}
+{z}
+{z}
+{z}
+{z}
+{z}
+{z}
+{z}
+{z}
+{zÊ{menu:{header:SVG Viewer,items:[{id:Open},{id:OpenNew,label:Open New},null,{id:ZoomIn,label:Zoom In},{id:ZoomOut,label:Zoom Out},{id:OriginalView,label:Original View},null,{id:Quality},{id:Pause},{id:Mute},null,{id:Find,label:Find...},{id:FindAgain,label:Find Again},{id:Copy},{id:CopyAgain,label:Copy Again},{id:CopySVG,label:Copy SVG},{id:ViewSVG,label:View SVG},{id:ViewSource,label:View Source},{id:SaveAs,label:Save As},null,{id:Help},{id:About,label:About Adobe CVG Viewer...}]}}
+{|0net.mamoe.yamlkt.decoder.FlowMapTest.TestData {
+{|
+name: Bob
+{|}
+{}
+YamlMap {
+{}YamlElement by Yaml Flow Map {
+{}}
+{}YamlElement by Yaml Flow Map {
+{}}
+{}YamlElement by Yaml Flow Map {
+{}}
+{}YamlElement by Yaml Flow Map {
+{}}
+{}}
+{}}
+{~YamlNullableDynamic {
+{~'YamlNullableDynamic by Yaml Flow Map {
+{~}
+{~'YamlNullableDynamic by Yaml Flow Map {
+{~}
+{~}
+{~}
+{YamlNullableDynamic {
+{'YamlNullableDynamic by Yaml Flow Map {
+{}
+{'YamlNullableDynamic by Yaml Flow Map {
+{}
+{}
+{}
+{{name=Bob}
+{ÄYamlNullableDynamic {
+{Ä3YamlNullableDynamic by Yaml Block Map indented 0 {
+{Ä}
+{Ä3YamlNullableDynamic by Yaml Block Map indented 0 {
+{Ä}
+{Ä}
+{Ä}
+{Ä{123456789=123456789}
+{Å0net.mamoe.yamlkt.decoder.FlowMapTest.TestData {
+{Å
+name: Bob
+{Å}
+{Ç
+YamlMap {
+{ÇYamlElement by Yaml Flow Map {
+{Ç}
+{ÇYamlElement by Yaml Flow Map {
+{Ç}
+{ÇYamlElement by Yaml Flow Map {
+{Ç}
+{ÇYamlElement by Yaml Flow Map {
+{Ç}
+{Ç}
+{Ç}
+{Ç{null:null,name:Bob}
+{É
+YamlMap {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É$YamlElement by Yaml Flow Sequence {
+{É}
+{É$YamlElement by Yaml Flow Sequence {
+{É}
+{É}
+{É}
+{É}
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{ÉYamlElement by Yaml Flow Map {
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É}
+{É{glossary:{title:example glossary,		"GlossDiv":{title:S,			"GlossList":{GlossEntry:{ID:SGML,					"SortAs":SGML,					"GlossTerm":Standard Generalized Markup Language,					"Acronym":SGML,					"Abbrev":ISO 8879:1986,					"GlossDef":{para:A meta-markup language, used to create markup languages such as DocBook.,						"GlossSeeAlso":[GML,XML]},					"GlossSee":markup}}}}}
+ÖÑYamlNullableDynamic {
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ$BlockMapDecoder exit: crt=0, base=4
+ÖÑ}
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 6 {
+ÖÑ}
+ÖÑ$BlockMapDecoder exit: crt=0, base=6
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 0 {
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ3YamlNullableDynamic by Yaml Block Map indented 4 {
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ}
+ÖÑ—{receipt=Oz-Ware Purchase Invoice, date=2012-08-06, customer={first_name=Dorothy, family_name=Gale}, items=[{part_no=A4786, descrip=Water Bucket (Filled), price=1.47, quantity=4}, {part_no=E1628, descrip=High Heeled "Ruby" Slippers, size=8, price=133.7, quantity=1}], bill-to={street=123 Tornado Alley, city=East Centerville, state=KS}}
+áÜ
+123 = 123
+áà
+123 = 123
+äâ0net.mamoe.yamlkt.decoder.NullabilityTest.User {
+äâname: cssxsh
+äâ<null>äã0net.mamoe.yamlkt.decoder.NullabilityTest.User {
+äãname: cssxsh
+äã = cssxsh@gmail.com
+äã}
+äå0net.mamoe.yamlkt.decoder.NullabilityTest.User {
+äåname: cssxsh
+äåcssxsh@gmail.com}
+éç"writeValueHead, elementName=fruit
+éç.encodeSerializableElement0, elementName=fruit
+éç!writeValueHead, elementName=type
+éç-encodeSerializableElement0, elementName=type
+éç>encodeValue, net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+éç"writeValueHead, elementName=value
+éç.encodeSerializableElement0, elementName=value
+éç!writeValueHead, elementName=prop
+éç-encodeSerializableElement0, elementName=prop
+éçencodeValue, prop
+éçendStructure0
+éçendStructure0
+éçendStructure0
+éçfruit: 
+éç9  type: net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+éç
+  value: 
+éç    prop: prop
+éç1net.mamoe.yamlkt.decoder.PolymorphismTest.Poly {
+éçJkotlinx.serialization.Polymorphic<Fruit> by Yaml Block Class indented 0 {
+éç7type: net.mamoe.yamlkt.decoder.PolymorphismTest.Banana
+éçRnet.mamoe.yamlkt.decoder.PolymorphismTest.Banana by Yaml Block Class indented 2 {
+éçprop: prop
+éç}
+éç}
+éç}
+êè1net.mamoe.yamlkt.decoder.TestMissingField.Item {
+êè	id: Open
+êè}
+íë5net.mamoe.yamlkt.decoder.TestMissingStructure.Data {
+íë}
+íì5net.mamoe.yamlkt.decoder.TestMissingStructure.Data {
+íì5YamlNullableDynamic by Yaml Block Class indented 0 {
+íì}
+íì}
+íî5net.mamoe.yamlkt.decoder.TestMissingStructure.Data {
+íî)YamlNullableDynamic by Yaml Flow Class {
+íî}
+íî}
+íï5net.mamoe.yamlkt.decoder.TestMissingStructure.Data {
+íï}
+óñ.net.mamoe.yamlkt.decoder.TestNewStream.Data {
+óñs: test
+óñ}
+óñData(s=test)
+ôò<net.mamoe.yamlkt.decoder.TestSkippingUnknownElements.Data {
+ôò5YamlNullableDynamic by Yaml Block Class indented 8 {
+ôò}
+ôò5YamlNullableDynamic by Yaml Block Class indented 8 {
+ôò}
+ôò5YamlNullableDynamic by Yaml Block Class indented 8 {
+ôò9YamlNullableDynamic by Yaml Block Sequence indented 11 {
+ôò}
+ôò9YamlNullableDynamic by Yaml Block Sequence indented 11 {
+ôò}
+ôò}
+ôò}
+ôò
+useful: 1
+ôò}
+ôö<net.mamoe.yamlkt.decoder.TestSkippingUnknownElements.Data {
+ôö)YamlNullableDynamic by Yaml Flow Class {
+ôö}
+ôö)YamlNullableDynamic by Yaml Flow Class {
+ôö}
+ôö)YamlNullableDynamic by Yaml Flow Class {
+ôö'YamlNullableDynamic by Yaml Flow Map {
+ôö}
+ôö'YamlNullableDynamic by Yaml Flow Map {
+ôö}
+ôö}
+ôö}
+ôö
+useful: 1
+ôö}
+úõwriteValueHead, elementName=0
+úõ*encodeSerializableElement0, elementName=0
+úõencodeValue, apple
+úõwriteValueHead, elementName=1
+úõ*encodeSerializableElement0, elementName=1
+úõencodeValue, banana
+úõwriteValueHead, elementName=2
+úõ*encodeSerializableElement0, elementName=2
+úõencodeValue, test
+úõwriteValueHead, elementName=3
+úõ*encodeSerializableElement0, elementName=3
+úõencodeValue, sss
+úõendStructure0
+úõYamlNullableDynamic {
+úõ3YamlNullableDynamic by Yaml Block Map indented 0 {
+úõ}
+úõ3YamlNullableDynamic by Yaml Block Map indented 0 {
+úõ}
+úõ3YamlNullableDynamic by Yaml Block Map indented 0 {
+úõ}
+úõ3YamlNullableDynamic by Yaml Block Map indented 0 {
+úõ}
+úõ}
+úõ}
+úùYamlNullableDynamic {
+úù}
+úùYamlNullableDynamic {
+úù}
+úùYamlNullableDynamic {
+úù}
+úùYamlNullableDynamic {
+úù}
+úùYamlNullableDynamic {
+úù8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+úù}
+úù8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+úù}
+úù}
+úù}
+úùYamlNullableDynamic {
+úù8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+úù}
+úù}
+úù}
+úûYamlNullableDynamic {
+úû'YamlNullableDynamic by Yaml Flow Map {
+úû}
+úû'YamlNullableDynamic by Yaml Flow Map {
+úû}
+úû}
+úû}
+úû2net.mamoe.yamlkt.encoder.BasicEncoderTest.Data2 {
+úû6kotlin.collections.LinkedHashMap by Yaml Flow Class {
+úû = bob
+úû2}
+úû}
+úû1net.mamoe.yamlkt.encoder.BasicEncoderTest.Data {
+úûv1: value1
+úûnumber: 123456
+úû6kotlin.collections.LinkedHashMap by Yaml Flow Class {
+úû = bob
+úû2}
+úû2kotlin.collections.ArrayList by Yaml Flow Class {
+úû
+ = value1
+úûvalue2}
+úûDnet.mamoe.yamlkt.encoder.BasicEncoderTest.Data by Yaml Flow Class {
+úûv1: 
+úûnumber: 111
+úû6kotlin.collections.LinkedHashMap by Yaml Flow Class {
+úû = bob
+úû2}
+úû2kotlin.collections.ArrayList by Yaml Flow Class {
+úû
+ = value1
+úûvalue2}
+úû
+ = <null>
+úû<null>}
+úû&kotlin.ByteArray by Yaml Flow Class {
+úû0: 116
+úû1: 101
+úû2: 115
+úû3: 116
+úû4: 32
+úû5: 98
+úû6: 121
+úû7: 116
+úû8: 101
+úû9: 65
+úû10: 114
+úû11: 114
+úû12: 97
+úû13: 121
+úû}
+úû}
+úûwriteValueHead, elementName=v1
+úû+encodeSerializableElement0, elementName=v1
+úûencodeValue, value1
+úû#writeValueHead, elementName=number
+úû/encodeSerializableElement0, elementName=number
+úûencodeValue, 123456
+úû writeValueHead, elementName=map
+úû,encodeSerializableElement0, elementName=map
+úû!writeValueHead, elementName=list
+úû-encodeSerializableElement0, elementName=list
+úû(writeValueHead, elementName=anotherData
+úû4encodeSerializableElement0, elementName=anotherData
+úûwriteValueHead, elementName=v1
+úû+encodeSerializableElement0, elementName=v1
+úûencodeValue, ''
+úû#writeValueHead, elementName=number
+úû/encodeSerializableElement0, elementName=number
+úûencodeValue, 111
+úû writeValueHead, elementName=map
+úû,encodeSerializableElement0, elementName=map
+úû!writeValueHead, elementName=list
+úû-encodeSerializableElement0, elementName=list
+úû(writeValueHead, elementName=anotherData
+úû>encodeSerializableUnquotedStringImpl, elementName=anotherData
+úûencodeValue, null
+úû&writeValueHead, elementName=byteArray
+úû<encodeSerializableUnquotedStringImpl, elementName=byteArray
+úûencodeValue, null
+úûendStructure0
+úû&writeValueHead, elementName=byteArray
+úû2encodeSerializableElement0, elementName=byteArray
+úûendStructure0
+úû1net.mamoe.yamlkt.encoder.BasicEncoderTest.Data {
+úûv1: value1
+úûnumber: 123456
+úûBkotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+úû = bob
+úû2}
+úû>kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+úû
+ = value1
+úûvalue2}
+úûPnet.mamoe.yamlkt.encoder.BasicEncoderTest.Data by Yaml Block Class indented 0 {
+úûv1: 
+úûnumber: 111
+úûBkotlin.collections.LinkedHashMap by Yaml Block Class indented 2 {
+úû = bob
+úû2}
+úû>kotlin.collections.ArrayList by Yaml Block Class indented 2 {
+úû
+ = value1
+úûvalue2}
+úû
+ = <null>
+úû<null>}
+úû2kotlin.ByteArray by Yaml Block Class indented 0 {
+úû0: 116
+úû1: 101
+úû2: 115
+úû3: 116
+úû4: 32
+úû5: 98
+úû6: 121
+úû7: 116
+úû8: 101
+úû9: 65
+úû10: 114
+úû11: 114
+úû12: 97
+úû13: 121
+úû}
+úû}
+†ü/net.mamoe.yamlkt.encoder.BlockMapTest.MyData {
+†üvalue2: 1234
+†üInet.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Flow Class {
+†üv: 123
+†ü}
+†ü2kotlin.collections.ArrayList by Yaml Flow Class {
+†üLnet.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Flow Sequence {
+†üv: 123
+†ü}
+†ü}
+†ü}
+†üB{ value2: 1234, myOtherData: { v: 123 }, myList: [ { v: 123 } ] }
+†ü#writeValueHead, elementName=value2
+†ü/encodeSerializableElement0, elementName=value2
+†üencodeValue, 1234
+†ü(writeValueHead, elementName=myOtherData
+†ü4encodeSerializableElement0, elementName=myOtherData
+†üwriteValueHead, elementName=v
+†ü*encodeSerializableElement0, elementName=v
+†üencodeValue, 123
+†üendStructure0
+†ü#writeValueHead, elementName=myList
+†ü/encodeSerializableElement0, elementName=myList
+†üwriteValueHead, elementName=v
+†ü*encodeSerializableElement0, elementName=v
+†üencodeValue, 123
+†üendStructure0
+†üendStructure0
+†ü/net.mamoe.yamlkt.encoder.BlockMapTest.MyData {
+†üvalue2: 1234
+†üUnet.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Block Class indented 0 {
+†üv: 123
+†ü}
+†ü>kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+†üXnet.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Block Sequence indented 3 {
+†üv: 123
+†ü}
+†ü}
+†ü}
+†°endStructure0
+•§#writeValueHead, elementName=value1
+•§/encodeSerializableElement0, elementName=value1
+•§encodeValue, vv
+•§#writeValueHead, elementName=value2
+•§/encodeSerializableElement0, elementName=value2
+•§encodeValue, ss
+•§endStructure0
+•§```
+•§# testA
+•§value1: vv
+•§# testA
+•§# ff
+•§value2: ss
+•§```
+•§9net.mamoe.yamlkt.encoder.CommentEncodeTest.CommentTest {
+•§value1: vv
+•§value2: ss
+•§}
+•¶"writeValueHead, elementName=inner
+•¶.encodeSerializableElement0, elementName=inner
+•¶#writeValueHead, elementName=value1
+•¶/encodeSerializableElement0, elementName=value1
+•¶encodeValue, vv
+•¶#writeValueHead, elementName=value2
+•¶/encodeSerializableElement0, elementName=value2
+•¶encodeValue, ss
+•¶endStructure0
+•¶endStructure0
+•¶```
+•¶inner: 
+•¶
+  # testA
+•¶  value1: vv
+•¶
+  # testA
+•¶  # ff
+•¶  value2: ss
+•¶```
+•¶8net.mamoe.yamlkt.encoder.CommentEncodeTest.OuterClass {
+•¶Xnet.mamoe.yamlkt.encoder.CommentEncodeTest.CommentTest by Yaml Block Class indented 0 {
+•¶value1: vv
+•¶value2: ss
+•¶}
+•¶}
+®ßwriteValueHead, elementName=0
+®ß*encodeSerializableElement0, elementName=0
+®ßencodeValue, apple
+®ßwriteValueHead, elementName=1
+®ß*encodeSerializableElement0, elementName=1
+®ßwriteValueHead, elementName=2
+®ß*encodeSerializableElement0, elementName=2
+®ßencodeValue, test
+®ßwriteValueHead, elementName=3
+®ß*encodeSerializableElement0, elementName=3
+®ßwriteValueHead, elementName=0
+®ß*encodeSerializableElement0, elementName=0
+®ßencodeValue, ba
+®ßwriteValueHead, elementName=1
+®ß*encodeSerializableElement0, elementName=1
+®ßwriteValueHead, elementName=0
+®ß*encodeSerializableElement0, elementName=0
+®ßencodeValue, ba
+®ßwriteValueHead, elementName=1
+®ß*encodeSerializableElement0, elementName=1
+®ßencodeValue, na
+®ßwriteValueHead, elementName=2
+®ß*encodeSerializableElement0, elementName=2
+®ßencodeValue, fa
+®ßwriteValueHead, elementName=3
+®ß*encodeSerializableElement0, elementName=3
+®ßencodeValue, pa
+®ßendStructure0
+®ßwriteValueHead, elementName=2
+®ß*encodeSerializableElement0, elementName=2
+®ßencodeValue, fa
+®ßwriteValueHead, elementName=3
+®ß*encodeSerializableElement0, elementName=3
+®ßwriteValueHead, elementName=0
+®ß*encodeSerializableElement0, elementName=0
+®ßencodeValue, ba
+®ßwriteValueHead, elementName=1
+®ß*encodeSerializableElement0, elementName=1
+®ßencodeValue, na
+®ßwriteValueHead, elementName=2
+®ß*encodeSerializableElement0, elementName=2
+®ßencodeValue, fa
+®ßwriteValueHead, elementName=3
+®ß*encodeSerializableElement0, elementName=3
+®ßendStructure0
+®ßendStructure0
+®ßendStructure0
+®ß```
+®ßapple: 
+®ß- ba
+®ß- na
+®ß- na
+®ßtest: 
+®ß  ba: 
+®ß    ba: na
+®ß    fa: pa
+®ß  fa: 
+®ß    ba: na
+®ß	    fa: 
+®ß    - test
+®ß
+    - ppp
+®ß```
+®ßYamlNullableDynamic {
+®ß3YamlNullableDynamic by Yaml Block Map indented 0 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 0 {
+®ß8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+®ß}
+®ß8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+®ß}
+®ß8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+®ß}
+®ß}
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 0 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 0 {
+®ß3YamlNullableDynamic by Yaml Block Map indented 2 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 2 {
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß$BlockMapDecoder exit: crt=2, base=4
+®ß}
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 2 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 2 {
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß}
+®ß3YamlNullableDynamic by Yaml Block Map indented 4 {
+®ß8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®ß}
+®ß8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®ß}
+®ß}
+®ß}
+®ß}
+®ß}
+®ß}
+®ß}
+®ß}
+®ß}
+®©```
+®©_{ apple: [ ba, na, na ] ,test: { ba: { ba: na ,fa: pa } ,fa: { ba: na ,fa: [ test, ppp ] } } }
+®©```
+®©YamlNullableDynamic {
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©,YamlNullableDynamic by Yaml Flow Sequence {
+®©}
+®©,YamlNullableDynamic by Yaml Flow Sequence {
+®©}
+®©,YamlNullableDynamic by Yaml Flow Sequence {
+®©}
+®©}
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©}
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©}
+®©'YamlNullableDynamic by Yaml Flow Map {
+®©,YamlNullableDynamic by Yaml Flow Sequence {
+®©}
+®©,YamlNullableDynamic by Yaml Flow Sequence {
+®©}
+®©}
+®©}
+®©}
+®©}
+®©}
+®©}
+®©}
+®©}
+®™writeValueHead, elementName=0
+®™*encodeSerializableElement0, elementName=0
+®™encodeValue, test
+®™writeValueHead, elementName=1
+®™*encodeSerializableElement0, elementName=1
+®™encodeValue, p
+®™writeValueHead, elementName=2
+®™*encodeSerializableElement0, elementName=2
+®™encodeValue, tests
+®™writeValueHead, elementName=3
+®™*encodeSerializableElement0, elementName=3
+®™writeValueHead, elementName=0
+®™*encodeSerializableElement0, elementName=0
+®™encodeValue, test
+®™writeValueHead, elementName=1
+®™*encodeSerializableElement0, elementName=1
+®™encodeValue, p
+®™writeValueHead, elementName=2
+®™*encodeSerializableElement0, elementName=2
+®™encodeValue, tests
+®™writeValueHead, elementName=3
+®™*encodeSerializableElement0, elementName=3
+®™endStructure0
+®™endStructure0
+®™```
+®™
+- test: p
+®™
+  tests: 
+®™
+  - apple
+®™  - test: p
+®™    tests: 
+®™    - apple
+®™    - test
+®™
+- - apple
+®™  - - - apple
+®™      - test
+®™    - - apple
+®™      - test
+®™```
+®™YamlNullableDynamic {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+®™3YamlNullableDynamic by Yaml Block Map indented 2 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 2 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 2 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 2 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 3 {
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 3 {
+®™3YamlNullableDynamic by Yaml Block Map indented 4 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 4 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 4 {
+®™}
+®™3YamlNullableDynamic by Yaml Block Map indented 4 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 1 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 3 {
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 3 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 7 {
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 7 {
+®™}
+®™}
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 5 {
+®™8YamlNullableDynamic by Yaml Block Sequence indented 7 {
+®™}
+®™8YamlNullableDynamic by Yaml Block Sequence indented 7 {
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+®™}
+ª∫Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª∫	v: te st
+ª∫}
+ªºBnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ªº	v: Don't
+ªº}
+ªΩBnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ªΩ	v: te st
+ªΩ}
+ªæBnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ªæNv: Several lines of text, containing "double quotes". Escapes (like \n) work.
+ªæVIn addition, newlines can be escaped to prevent them from being converted to a space.
+ªæ\Newlines can also be added by leaving a blank line. Leading whitespace on lines is ignored.
+ªæ}
+ªøBnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ªøv: te
+ªøst
+ªø}
+ª¿Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¿v: \n
+ª¿}
+ª¿Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¿v: p\n
+ª¿}
+ª¿Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¿v: p\\n
+ª¿}
+ª¿Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¿v: \n
+ª¿}
+ª¡Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¡v: 
+ª¡
+ª¡}
+ª¬Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª¬v: te
+ª¬
+ª¬
+ª¬
+ª¬
+ª¬st
+ª¬}
+ª√Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª√v:  st
+ª√}
+ªƒBnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ªƒv: 
+ªƒst
+ªƒ}
+ª≈Bnet.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+ª≈v: test
+ª≈}
+«∆YamlNullableDynamic {
+«∆}
+«»YamlNullableDynamic {
+«»}
+«…YamlNullableDynamic {
+«…}
+À YamlNullableDynamic {
+À }
+ÕÃ!writeValueHead, elementName=test
+ÕÃ-encodeSerializableElement0, elementName=test
+ÕÃencodeValue, testString
+ÕÃ"writeValueHead, elementName=test2
+ÕÃ.encodeSerializableElement0, elementName=test2
+ÕÃ4encodeValue, '--some "text {{.val}}\t{{.another}}"'
+ÕÃ"writeValueHead, elementName=test3
+ÕÃ.encodeSerializableElement0, elementName=test3
+ÕÃencodeValue, '${testString}'
+ÕÃendStructure0
+ÕÃtest: testString
+ÕÃ.test2: '--some "text {{.val}}\t{{.another}}"'
+ÕÃtest3: '${testString}'
+ÕÃ4net.mamoe.yamlkt.testsFromIssues.Issue17.TestData {
+ÕÃtest: testString
+ÕÃ,test2: --some "text {{.val}}\t{{.another}}"
+ÕÃtest3: ${testString}
+ÕÃ}
+ÕÃ[TestData(test=testString, test2=--some "text {{.val}}\t{{.another}}", test3=${testString})
+œŒ!writeValueHead, elementName=test
+œŒ-encodeSerializableElement0, elementName=test
+œŒencodeValue, 125
+œŒ"writeValueHead, elementName=test5
+œŒ.encodeSerializableElement0, elementName=test5
+œŒencodeValue, -125
+œŒ"writeValueHead, elementName=test2
+œŒ.encodeSerializableElement0, elementName=test2
+œŒ"writeValueHead, elementName=test3
+œŒ.encodeSerializableElement0, elementName=test3
+œŒ"writeValueHead, elementName=test4
+œŒ.encodeSerializableElement0, elementName=test4
+œŒendStructure0
+œŒ
+test: 125
+œŒtest5: -125
+œŒtest2: 
+œŒ	  - -125
+œŒ  - 125
+œŒ  - 116
+œŒ  - 101
+œŒ  - 115
+œŒ  - 116
+œŒtest3: 125
+œŒtest4: 254
+œŒ4net.mamoe.yamlkt.testsFromIssues.Issue33.TestData {
+œŒ
+test: 125
+œŒtest5: -125
+œŒ2kotlin.ByteArray by Yaml Block Class indented 0 {
+œŒ0: -125
+œŒ1: 125
+œŒ2: 116
+œŒ3: 101
+œŒ4: 115
+œŒ5: 116
+œŒ}
+œŒ = 125
+œŒ254}
+œŒ\TestData(test=125, test5=-125, test2=[-125, 125, 116, 101, 115, 116], test3=125, test4=254)
+œŒ]{ test: 125, test5: -125, test2: [ -125, 125, 116, 101, 115, 116 ], test3: 125, test4: 254 }
+œŒ4net.mamoe.yamlkt.testsFromIssues.Issue33.TestData {
+œŒ
+test: 125
+œŒtest5: -125
+œŒ&kotlin.ByteArray by Yaml Flow Class {
+œŒ0: -125
+œŒ1: 125
+œŒ2: 116
+œŒ3: 101
+œŒ4: 115
+œŒ5: 116
+œŒ}
+œŒ = 125
+œŒ254}
+œŒ\TestData(test=125, test5=-125, test2=[-125, 125, 116, 101, 115, 116], test3=125, test4=254)
+—–writeValueHead, elementName=tt
+—–5encodeSerializableUnquotedStringImpl, elementName=tt
+—–encodeValue, null
+—–endStructure0
+”“%writeValueHead, elementName=musicApi
+”“1encodeSerializableElement0, elementName=musicApi
+”“encodeValue, QQ
+”“'writeValueHead, elementName=testString
+”“3encodeSerializableElement0, elementName=testString
+”“encodeValue, 1
+”“endStructure0
+”‘%writeValueHead, elementName=musicApi
+”‘1encodeSerializableElement0, elementName=musicApi
+”‘encodeValue, QQ
+”‘endStructure0

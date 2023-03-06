@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.encoder.CommentEncodeTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.006">
+  <properties/>
+  <testcase name="testComments[jvm]" classname="net.mamoe.yamlkt.encoder.CommentEncodeTest" time="0.004"/>
+  <testcase name="testCommentsWithHierarchy[jvm]" classname="net.mamoe.yamlkt.encoder.CommentEncodeTest" time="0.002"/>
+  <system-out><![CDATA[writeValueHead, elementName=value1
+encodeSerializableElement0, elementName=value1
+encodeValue, vv
+writeValueHead, elementName=value2
+encodeSerializableElement0, elementName=value2
+encodeValue, ss
+endStructure0
+```
+# testA
+value1: vv
+# testA
+# ff
+value2: ss
+```
+net.mamoe.yamlkt.encoder.CommentEncodeTest.CommentTest {
+value1: vv
+value2: ss
+}
+writeValueHead, elementName=inner
+encodeSerializableElement0, elementName=inner
+writeValueHead, elementName=value1
+encodeSerializableElement0, elementName=value1
+encodeValue, vv
+writeValueHead, elementName=value2
+encodeSerializableElement0, elementName=value2
+encodeValue, ss
+endStructure0
+endStructure0
+```
+inner: 
+  # testA
+  value1: vv
+  # testA
+  # ff
+  value2: ss
+```
+net.mamoe.yamlkt.encoder.CommentEncodeTest.OuterClass {
+net.mamoe.yamlkt.encoder.CommentEncodeTest.CommentTest by Yaml Block Class indented 0 {
+value1: vv
+value2: ss
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

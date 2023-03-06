@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.escaping.UnquotedMultilineTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.0">
+  <properties/>
+  <testcase name="example[jvm]" classname="net.mamoe.yamlkt.escaping.UnquotedMultilineTest" time="0.0"/>
+  <system-out><![CDATA[YamlNullableDynamic {
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

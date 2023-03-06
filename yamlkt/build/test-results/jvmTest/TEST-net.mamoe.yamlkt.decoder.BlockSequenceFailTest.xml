@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.BlockSequenceFailTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.004">
+  <properties/>
+  <testcase name="nested descriptor block sequence3[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceFailTest" time="0.001"/>
+  <testcase name="nested descriptor block sequence4[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceFailTest" time="0.003"/>
+  <testcase name="nested descriptor block sequence7[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceFailTest" time="0.0"/>
+  <system-out><![CDATA[kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 9 {
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 5 {
+sss = ss
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 5 {
+sss = ss
+}
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 9 {
+sss - ss}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

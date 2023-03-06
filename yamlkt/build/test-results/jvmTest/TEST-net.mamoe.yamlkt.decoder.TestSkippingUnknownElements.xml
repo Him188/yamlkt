@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.TestSkippingUnknownElements" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.002">
+  <properties/>
+  <testcase name="skip in block map[jvm]" classname="net.mamoe.yamlkt.decoder.TestSkippingUnknownElements" time="0.0"/>
+  <testcase name="skip in flow map[jvm]" classname="net.mamoe.yamlkt.decoder.TestSkippingUnknownElements" time="0.001"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.decoder.TestSkippingUnknownElements.Data {
+YamlNullableDynamic by Yaml Block Class indented 8 {
+}
+YamlNullableDynamic by Yaml Block Class indented 8 {
+}
+YamlNullableDynamic by Yaml Block Class indented 8 {
+YamlNullableDynamic by Yaml Block Sequence indented 11 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 11 {
+}
+}
+}
+useful: 1
+}
+net.mamoe.yamlkt.decoder.TestSkippingUnknownElements.Data {
+YamlNullableDynamic by Yaml Flow Class {
+}
+YamlNullableDynamic by Yaml Flow Class {
+}
+YamlNullableDynamic by Yaml Flow Class {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+useful: 1
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

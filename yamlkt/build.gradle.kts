@@ -16,11 +16,19 @@ kotlin {
     targets {
         jvm {
             compilations.all {
-                kotlinOptions.jvmTarget = "1.6"
+                kotlinOptions.jvmTarget = "1.8"
             }
         }
-        js {
-            useCommonJs()
+        js(IR) {
+            compilations.all {
+                kotlinOptions {
+                    moduleKind = "umd"
+                    sourceMap = true
+                    metaInfo = true
+                }
+            }
+            browser()
+            nodejs()
         }
 
 

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.009">
+  <properties/>
+  <testcase name="testDoubleQuoteNoEscapeLineSeparator[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.006"/>
+  <testcase name="testSingleQuoteEscapeSingleQuotes[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.001"/>
+  <testcase name="testDoubleQuoteLeadingContactLines[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testEscapeExample[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.001"/>
+  <testcase name="testDoubleQuoteBlankLine[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testNoEscape[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testEscape[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testDoubleQuoteBlankLine2[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testDoubleQuoteBlankLine3[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testDoubleQuoteBlankLine4[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <testcase name="testDoubleQuoteLeadingEscapeNewline[jvm]" classname="net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest" time="0.0"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: te st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: Don't
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: te st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: Several lines of text, containing "double quotes". Escapes (like \n) work.
+In addition, newlines can be escaped to prevent them from being converted to a space.
+Newlines can also be added by leaving a blank line. Leading whitespace on lines is ignored.
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: te
+st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: \n
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: p\n
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: p\\n
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: \n
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: 
+
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: te
+
+
+
+
+st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v:  st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: 
+st
+}
+net.mamoe.yamlkt.escaping.DoubleQuotationMultilineTest.TestData {
+v: test
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

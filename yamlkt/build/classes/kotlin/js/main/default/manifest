@@ -1,0 +1,8 @@
+builtins_platform=JS
+unique_name=net.mamoe.yamlkt\:yamlkt
+compiler_version=1.8.0
+depends=org.jetbrains.kotlinx\:kotlinx-serialization-core kotlin
+jsOutputName=yamlkt-yamlkt
+abi_version=1.7.0
+metadata_version=1.4.1
+ir_version=1.0.0

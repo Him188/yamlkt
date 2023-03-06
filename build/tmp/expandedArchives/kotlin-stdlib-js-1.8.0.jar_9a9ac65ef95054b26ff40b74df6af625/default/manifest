@@ -1,0 +1,7 @@
+builtins_platform=JS
+unique_name=kotlin
+ir_version=1.0.0
+compiler_version=1.8.0-dev-2843
+jsOutputName=kotlin-kotlin-stdlib-js-ir
+abi_version=1.7.0
+metadata_version=1.4.1

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.HexConverterTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.004">
+  <properties/>
+  <testcase name="hexToLong[jvm]" classname="net.mamoe.yamlkt.HexConverterTest" time="0.001"/>
+  <testcase name="binToLong[jvm]" classname="net.mamoe.yamlkt.HexConverterTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

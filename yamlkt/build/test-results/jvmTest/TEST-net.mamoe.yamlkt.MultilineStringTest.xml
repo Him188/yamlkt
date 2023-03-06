@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.MultilineStringTest" tests="34" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.043">
+  <properties/>
+  <testcase name="testMultilineLiteralStringWithKeptNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.009"/>
+  <testcase name="testMultilineLiteralStringWithSpacesAfterBracket[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineFoldedStringWithBlankLines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineSingleQuotedString[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineFoldedStringWithAdditionalContent[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineLiteralStringWithLeadingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringWithLeadingSpace[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineFoldedStringWithNoLineBreak[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringEmpty[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralString[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineFoldedStringWithStrippedNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedStringWithSpacesAfterBracket[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineLiteralStringWithLeadingNewline[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineLiteralStringWithThreeBlankLines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedStringWithOneEmpty[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringWithTwoBlankLines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedStringWithMultipleFoldedStrings[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineLiteralStringWithStrippedNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringWithMultipleLiteralStrings[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineFoldedStringWithLeadingNewline[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedString[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedStringEmpty[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineFoldedStringWithKeptNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineFoldedStringWithTrailingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineLiteralStringWithNoLineBreak[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.002"/>
+  <testcase name="testMultilineFoldedStringWithOnlyLeadingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineUnquotedString[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineDoubleQuotedString[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineLiteralStringWithOnlyLeadingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringWithAdditionalContent[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineFoldedStringWithLeadingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineFoldedStringWithLeadingSpace[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <testcase name="testMultilineLiteralStringWithTrailingNewlines[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.0"/>
+  <testcase name="testMultilineLiteralStringWithOneEmpty[jvm]" classname="net.mamoe.yamlkt.MultilineStringTest" time="0.001"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: This is a multiline string
+This is the second line
+
+
+
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: This is a multiline string
+This is the second line
+
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: This is a multiline string
+This is the second line
+
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: This is a multiline string This is the second line
+}
+net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+    string1: foo
+
+    string2: bar
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: 
+
+This is a multiline string
+This is the second line
+
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    key: This is a multiline string
+ This is the second line
+
+}
+net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: 
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string
+This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string This is the second line
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: 
+This is a multiline string
+This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string
+
+
+This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+        string1: 
+        string2: foo
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string
+
+This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+        string1: foo
+
+
+        string2: bar
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string
+This is the second line
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+        string1: foo
+
+
+        string2: bar
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: 
+This is a multiline string This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: 
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string This is the second line
+
+
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        key: This is a multiline string This is the second line
+
+    }
+    net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+            string1: 
+            string2: foo
+
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+            key: This is a multiline string This is the second line
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+            key: This is a multiline string
+ This is the second line
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+            string1: 
+            string2: foo
+
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+            string1: foo
+
+            string2: bar
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+            key: 
+
+This is a multiline string This is the second line
+
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+            key: This is a multiline string
+ This is the second line
+
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestStringData {
+            key: This is a multiline string
+This is the second line
+
+        }
+        net.mamoe.yamlkt.MultilineStringTest.TestTwoStringData {
+            string1: 
+            string2: foo
+
+        }
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.TestMissingField" tests="1" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.001">
+  <properties/>
+  <testcase name="missing field in flow map[jvm]" classname="net.mamoe.yamlkt.decoder.TestMissingField" time="0.001"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.decoder.TestMissingField.Item {
+id: Open
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

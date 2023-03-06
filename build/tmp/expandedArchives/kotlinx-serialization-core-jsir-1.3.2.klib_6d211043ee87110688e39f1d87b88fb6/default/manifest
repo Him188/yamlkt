@@ -1,0 +1,8 @@
+builtins_platform=JS
+unique_name=org.jetbrains.kotlinx\:kotlinx-serialization-core
+compiler_version=1.6.10
+depends=kotlin
+jsOutputName=kotlinx-serialization-kotlinx-serialization-core-js-ir
+abi_version=1.6.0
+metadata_version=1.4.1
+ir_version=1.0.0

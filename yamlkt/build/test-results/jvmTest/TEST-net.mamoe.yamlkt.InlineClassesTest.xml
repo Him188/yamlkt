@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.InlineClassesTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.023">
+  <properties/>
+  <testcase name="testSimpleContainerForMyTypeWithCustomSerializer[jvm]" classname="net.mamoe.yamlkt.InlineClassesTest" time="0.007"/>
+  <testcase name="testSimpleContainerForList[jvm]" classname="net.mamoe.yamlkt.InlineClassesTest" time="0.004"/>
+  <testcase name="testUnsignedInBoxedPosition[jvm]" classname="net.mamoe.yamlkt.InlineClassesTest" time="0.003"/>
+  <testcase name="testMixedPositions[jvm]" classname="net.mamoe.yamlkt.InlineClassesTest" time="0.006"/>
+  <testcase name="testSimpleContainer[jvm]" classname="net.mamoe.yamlkt.InlineClassesTest" time="0.002"/>
+  <system-out><![CDATA[writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+[Serialized form] i: [ 2147483657 ]
+
+net.mamoe.yamlkt.ContainerForList {
+    kotlin.collections.ArrayList {
+        2147483657    }
+}
+[Restored form] ContainerForList(i=MyList(list=[2147483657]))
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+net.mamoe.yamlkt.UnsignedInBoxedPosition {
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = 2147483657
+    }
+}
+writeValueHead, elementName=int
+encodeSerializableElement0, elementName=int
+encodeValue, -2147483639
+writeValueHead, elementName=intNullable
+encodeSerializableElement0, elementName=intNullable
+encodeValue, -2147483639
+writeValueHead, elementName=uint
+encodeSerializableElement0, elementName=uint
+writeValueHead, elementName=uintNullable
+encodeSerializableElement0, elementName=uintNullable
+writeValueHead, elementName=boxedInt
+encodeSerializableElement0, elementName=boxedInt
+writeValueHead, elementName=boxedUInt
+encodeSerializableElement0, elementName=boxedUInt
+writeValueHead, elementName=boxedNullableInt
+encodeSerializableElement0, elementName=boxedNullableInt
+writeValueHead, elementName=boxedNullableUInt
+encodeSerializableElement0, elementName=boxedNullableUInt
+endStructure0
+net.mamoe.yamlkt.MixedPositions {
+    int: -2147483639
+    -2147483639 = 2147483657
+    2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = -2147483639
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        2147483657    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = <null>
+        -2147483639 = <null>
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        <null> = 2147483657
+        <null>    }
+}
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+net.mamoe.yamlkt.SimpleContainerForUInt {
+ = 2147483657
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

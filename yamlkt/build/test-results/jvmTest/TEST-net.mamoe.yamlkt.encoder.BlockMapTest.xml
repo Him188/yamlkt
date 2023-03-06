@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.encoder.BlockMapTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="1.022">
+  <properties/>
+  <testcase name="test nested class[jvm]" classname="net.mamoe.yamlkt.encoder.BlockMapTest" time="1.019"/>
+  <testcase name="test empty class[jvm]" classname="net.mamoe.yamlkt.encoder.BlockMapTest" time="0.002"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.encoder.BlockMapTest.MyData {
+value2: 1234
+net.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Flow Class {
+v: 123
+}
+kotlin.collections.ArrayList by Yaml Flow Class {
+net.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Flow Sequence {
+v: 123
+}
+}
+}
+{ value2: 1234, myOtherData: { v: 123 }, myList: [ { v: 123 } ] }
+writeValueHead, elementName=value2
+encodeSerializableElement0, elementName=value2
+encodeValue, 1234
+writeValueHead, elementName=myOtherData
+encodeSerializableElement0, elementName=myOtherData
+writeValueHead, elementName=v
+encodeSerializableElement0, elementName=v
+encodeValue, 123
+endStructure0
+writeValueHead, elementName=myList
+encodeSerializableElement0, elementName=myList
+writeValueHead, elementName=v
+encodeSerializableElement0, elementName=v
+encodeValue, 123
+endStructure0
+endStructure0
+net.mamoe.yamlkt.encoder.BlockMapTest.MyData {
+value2: 1234
+net.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Block Class indented 0 {
+v: 123
+}
+kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+net.mamoe.yamlkt.encoder.BlockMapTest.MyData.Nested by Yaml Block Sequence indented 3 {
+v: 123
+}
+}
+}
+endStructure0
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

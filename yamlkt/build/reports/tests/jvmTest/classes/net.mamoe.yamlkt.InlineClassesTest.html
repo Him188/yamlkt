@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - Class net.mamoe.yamlkt.InlineClassesTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>Class net.mamoe.yamlkt.InlineClassesTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/net.mamoe.yamlkt.html">net.mamoe.yamlkt</a> &gt; InlineClassesTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">5</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.022s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Method name</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">testMixedPositions[jvm]</td>
+<td class="success">testMixedPositions</td>
+<td class="success">0.006s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainer[jvm]</td>
+<td class="success">testSimpleContainer</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForList[jvm]</td>
+<td class="success">testSimpleContainerForList</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer[jvm]</td>
+<td class="success">testSimpleContainerForMyTypeWithCustomSerializer</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">testUnsignedInBoxedPosition[jvm]</td>
+<td class="success">testUnsignedInBoxedPosition</td>
+<td class="success">0.003s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+[Serialized form] i: [ 2147483657 ]
+
+net.mamoe.yamlkt.ContainerForList {
+    kotlin.collections.ArrayList {
+        2147483657    }
+}
+[Restored form] ContainerForList(i=MyList(list=[2147483657]))
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+net.mamoe.yamlkt.UnsignedInBoxedPosition {
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = 2147483657
+    }
+}
+writeValueHead, elementName=int
+encodeSerializableElement0, elementName=int
+encodeValue, -2147483639
+writeValueHead, elementName=intNullable
+encodeSerializableElement0, elementName=intNullable
+encodeValue, -2147483639
+writeValueHead, elementName=uint
+encodeSerializableElement0, elementName=uint
+writeValueHead, elementName=uintNullable
+encodeSerializableElement0, elementName=uintNullable
+writeValueHead, elementName=boxedInt
+encodeSerializableElement0, elementName=boxedInt
+writeValueHead, elementName=boxedUInt
+encodeSerializableElement0, elementName=boxedUInt
+writeValueHead, elementName=boxedNullableInt
+encodeSerializableElement0, elementName=boxedNullableInt
+writeValueHead, elementName=boxedNullableUInt
+encodeSerializableElement0, elementName=boxedNullableUInt
+endStructure0
+net.mamoe.yamlkt.MixedPositions {
+    int: -2147483639
+    -2147483639 = 2147483657
+    2147483657    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = -2147483639
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        2147483657    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = &lt;null&gt;
+        -2147483639 = &lt;null&gt;
+    }
+    kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+        &lt;null&gt; = 2147483657
+        &lt;null&gt;    }
+}
+writeValueHead, elementName=i
+encodeSerializableElement0, elementName=i
+endStructure0
+net.mamoe.yamlkt.SimpleContainerForUInt {
+ = 2147483657
+}
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 7.3</a> at Mar 5, 2023, 7:32:06 PM</p>
+</div>
+</div>
+</body>
+</html>

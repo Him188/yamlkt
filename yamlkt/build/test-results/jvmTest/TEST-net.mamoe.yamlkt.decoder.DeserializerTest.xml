@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.DeserializerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.05">
+  <properties/>
+  <testcase name="testList[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.034"/>
+  <testcase name="testNestedMapAndList2[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.002"/>
+  <testcase name="testNestedMapAndList[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.003"/>
+  <testcase name="testPrimitiveTypes[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.003"/>
+  <testcase name="testNestedMapMap[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.003"/>
+  <testcase name="testNestedLists[jvm]" classname="net.mamoe.yamlkt.decoder.DeserializerTest" time="0.005"/>
+  <system-out><![CDATA[list:
+- 1
+- 1
+- 1
+- 1
+- 1
+list2:
+- "test"
+net.mamoe.yamlkt.decoder.DeserializerTest.TestListsData {
+kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+ = 1
+1 = 1
+1 = 1
+}
+kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+test}
+}
+data:
+  "food":
+  - "banana"
+  - "apple"
+  "book":
+  - "book1"
+net.mamoe.yamlkt.decoder.DeserializerTest.TestMapAndListData {
+kotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+ = food
+kotlin.collections.ArrayList by Yaml Block Map indented 2 {
+banana = apple
+}
+bookkotlin.collections.ArrayList by Yaml Block Map indented 2 {
+ = book1
+}
+}
+}
+negative:
+  "coconut":
+  - - 1
+    - 1
+    - 1
+    - 1
+    - 1
+  - - 1
+    - 1
+    - 1
+    - 1
+    - 1
+  "banana":
+  - - 2
+    - 2
+net.mamoe.yamlkt.decoder.DeserializerTest.TestMapAndNestedListData {
+kotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+coconutkotlin.collections.ArrayList by Yaml Block Map indented 2 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+ = 1
+1 = 1
+1 = 1
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+1 = 1
+1 = 1
+1}
+}
+ = banana
+kotlin.collections.ArrayList by Yaml Block Map indented 2 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 3 {
+2 = 2
+}
+}
+}
+}
+net.mamoe.yamlkt.decoder.DeserializerTest.TestPrimitiveTypesData {
+negative: 1
+int: 1
+short: 1
+byte: 1
+long: 1
+boolean: true
+float: 1.0
+double: 1.0
+char: c
+string: test
+quotedString: test
+}
+data:
+  "coconut":
+    "foo": 111
+    "bar": 222
+  "banana":
+    "sss": 333
+    "bbb": 6666
+net.mamoe.yamlkt.decoder.DeserializerTest.TestNestedMapData {
+kotlin.collections.LinkedHashMap by Yaml Block Class indented 0 {
+coconutkotlin.collections.LinkedHashMap by Yaml Block Map indented 2 {
+ = foo
+111 = bar
+222BlockMapDecoder exit: crt=2, base=4
+}
+ = banana
+kotlin.collections.LinkedHashMap by Yaml Block Map indented 2 {
+sss = 333
+bbb = 6666
+}
+}
+}
+negative:
+- - 1
+  - 1
+  - 1
+  - 1
+  - 1
+- - 2
+  - 2
+  - 2
+  - 2
+- - 4
+  - 4
+  - 4
+net.mamoe.yamlkt.decoder.DeserializerTest.TestNestedListsData {
+kotlin.collections.ArrayList by Yaml Block Class indented 0 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+1 = 1
+1 = 1
+1}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+ = 2
+2 = 2
+2}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+ = 4
+4 = 4
+}
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

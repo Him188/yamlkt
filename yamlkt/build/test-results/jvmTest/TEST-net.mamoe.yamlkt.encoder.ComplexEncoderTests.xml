@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.encoder.ComplexEncoderTests" tests="3" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:06" hostname="MacBook-Pro.lan" time="0.003">
+  <properties/>
+  <testcase name="testBlockNestedMap[jvm]" classname="net.mamoe.yamlkt.encoder.ComplexEncoderTests" time="0.002"/>
+  <testcase name="testFlowNestedMap[jvm]" classname="net.mamoe.yamlkt.encoder.ComplexEncoderTests" time="0.001"/>
+  <testcase name="testNestedList[jvm]" classname="net.mamoe.yamlkt.encoder.ComplexEncoderTests" time="0.0"/>
+  <system-out><![CDATA[writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, apple
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, test
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, ba
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, ba
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+encodeValue, na
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, fa
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+encodeValue, pa
+endStructure0
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, fa
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, ba
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+encodeValue, na
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, fa
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+endStructure0
+endStructure0
+endStructure0
+```
+apple: 
+- ba
+- na
+- na
+test: 
+  ba: 
+    ba: na
+    fa: pa
+  fa: 
+    ba: na
+    fa: 
+    - test
+    - ppp
+```
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+}
+YamlNullableDynamic by Yaml Block Map indented 0 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+BlockMapDecoder exit: crt=2, base=4
+}
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+```
+{ apple: [ ba, na, na ] ,test: { ba: { ba: na ,fa: pa } ,fa: { ba: na ,fa: [ test, ppp ] } } }
+```
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+}
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, test
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+encodeValue, p
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, tests
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+writeValueHead, elementName=0
+encodeSerializableElement0, elementName=0
+encodeValue, test
+writeValueHead, elementName=1
+encodeSerializableElement0, elementName=1
+encodeValue, p
+writeValueHead, elementName=2
+encodeSerializableElement0, elementName=2
+encodeValue, tests
+writeValueHead, elementName=3
+encodeSerializableElement0, elementName=3
+endStructure0
+endStructure0
+```
+- test: p
+  tests: 
+  - apple
+  - test: p
+    tests: 
+    - apple
+    - test
+- - apple
+  - - - apple
+      - test
+    - - apple
+      - test
+```
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+YamlNullableDynamic by Yaml Block Sequence indented 3 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 3 {
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+}
+YamlNullableDynamic by Yaml Block Map indented 4 {
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Sequence indented 3 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 3 {
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+YamlNullableDynamic by Yaml Block Sequence indented 7 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 7 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 5 {
+YamlNullableDynamic by Yaml Block Sequence indented 7 {
+}
+YamlNullableDynamic by Yaml Block Sequence indented 7 {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,2 @@
+
+2<org.jetbrains.kotlinx:kotlinx-serialization-core>:kotlinx.serialization:kotlinx.serialization.builtins:!kotlinx.serialization.descriptors:kotlinx.serialization.encoding:kotlinx.serialization.internal:kotlinx.serialization.modules

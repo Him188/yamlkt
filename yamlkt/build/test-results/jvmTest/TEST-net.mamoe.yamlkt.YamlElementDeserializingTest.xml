@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.YamlElementDeserializingTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.012">
+  <properties/>
+  <testcase name="testYamlMapSerializer[jvm]" classname="net.mamoe.yamlkt.YamlElementDeserializingTest" time="0.008"/>
+  <testcase name="testYamlLiteralSerializerWhenNull[jvm]" classname="net.mamoe.yamlkt.YamlElementDeserializingTest" time="0.001"/>
+  <testcase name="testYamlLiteralSerializer[jvm]" classname="net.mamoe.yamlkt.YamlElementDeserializingTest" time="0.001"/>
+  <testcase name="testYamlListSerializer[jvm]" classname="net.mamoe.yamlkt.YamlElementDeserializingTest" time="0.001"/>
+  <testcase name="testYamlNullSerializer[jvm]" classname="net.mamoe.yamlkt.YamlElementDeserializingTest" time="0.001"/>
+  <system-out><![CDATA[YamlMap {
+YamlElement by Yaml Block Map indented 0 {
+}
+YamlElement by Yaml Block Map indented 0 {
+}
+}
+}
+YamlLiteral {
+YamlLiteral {
+YamlLiteral {
+}
+YamlLiteral {
+}
+YamlLiteral {
+}
+YamlList {
+YamlElement by Yaml Flow Sequence {
+}
+YamlElement by Yaml Flow Sequence {
+}
+YamlElement by Yaml Flow Sequence {
+}
+}
+}
+YamlNull {
+}
+YamlNull {
+}
+YamlNull {
+YamlNull {
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

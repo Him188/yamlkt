@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="net.mamoe.yamlkt.decoder.BlockSequenceTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2023-03-06T00:32:04" hostname="MacBook-Pro.lan" time="0.124">
+  <properties/>
+  <testcase name="testMixedNestingList[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.007"/>
+  <testcase name="nested dynamic block sequence2[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.002"/>
+  <testcase name="testNestedList[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.004"/>
+  <testcase name="block seq with negative values[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.101"/>
+  <testcase name="nested descriptor block sequence[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.005"/>
+  <testcase name="simple dynamic block sequence[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.002"/>
+  <testcase name="simple descriptor block sequence[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.0"/>
+  <testcase name="nested descriptor block sequence2[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.0"/>
+  <testcase name="nested dynamic block sequence[jvm]" classname="net.mamoe.yamlkt.decoder.BlockSequenceTest" time="0.001"/>
+  <system-out><![CDATA[net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+kotlin.collections.ArrayList by Yaml Block Class indented 20 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 1
+item2: A
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 2
+item2: B
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 23 {
+item1: 3
+item2: C
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 21 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Flow Sequence {
+item1: 1
+item2: A
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 20 {
+}
+YamlNullableDynamic by Yaml Block Map indented 20 {
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Block Sequence indented 23 {
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+YamlNullableDynamic by Yaml Block Map indented 24 {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 21 {
+YamlNullableDynamic by Yaml Flow Sequence {
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+YamlNullableDynamic by Yaml Flow Map {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 1 {
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+YamlNullableDynamic by Yaml Block Map indented 2 {
+}
+}
+}
+}
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.TestData {
+kotlin.collections.ArrayList by Yaml Block Class indented 12 {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 1
+item2: A
+}
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 2
+item2: B
+}
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 13 {
+net.mamoe.yamlkt.decoder.BlockSequenceTest.NestedTestData by Yaml Block Sequence indented 15 {
+item1: 3
+item2: C
+}
+}
+}
+}
+YamlNullableDynamic {
+YamlNullableDynamic by Yaml Block Map indented 12 {
+}
+YamlNullableDynamic by Yaml Block Map indented 12 {
+YamlNullableDynamic by Yaml Block Sequence indented 13 {
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+}
+}
+YamlNullableDynamic by Yaml Block Sequence indented 13 {
+YamlNullableDynamic by Yaml Block Sequence indented 15 {
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+YamlNullableDynamic by Yaml Block Map indented 16 {
+}
+}
+}
+}
+}
+}
+}
+}
+}
+kotlin.collections.ArrayList {
+ = -1
+}
+kotlin.collections.ArrayList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+part_nox}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+ = test
+}
+kotlin.collections.ArrayList by Yaml Block Sequence indented 29 {
+pp}
+}
+[[part_nox], [test], [pp]]
+YamlList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 1 {
+YamlElement by Yaml Block Sequence indented 1 {
+}
+YamlElement by Yaml Block Sequence indented 1 {
+}
+YamlElement by Yaml Block Sequence indented 1 {
+}
+}
+}
+[part_nox,test,pp]
+kotlin.collections.ArrayList {
+YamlElement by Yaml Block Sequence indented 29 {
+}
+YamlElement by Yaml Block Sequence indented 29 {
+}
+YamlElement by Yaml Block Sequence indented 29 {
+}
+}
+[part_nox, test, pp]
+kotlin.collections.ArrayList {
+kotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+ = pp
+s = ss
+p}
+kotlin.collections.LinkedHashMap by Yaml Block Sequence indented 5 {
+ = pp
+s = ss
+p}
+}
+[{pp=s, ss=p}, {pp=s, ss=p}]
+YamlList {
+kotlin.collections.ArrayList by Yaml Block Sequence indented 25 {
+YamlElement by Yaml Block Sequence indented 25 {
+}
+YamlElement by Yaml Block Sequence indented 25 {
+}
+YamlElement by Yaml Block Sequence indented 25 {
+}
+}
+}
+[part_nox,test,pp]
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

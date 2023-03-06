@@ -1,0 +1,11 @@
+{
+  "name": "yamlkt-yamlkt",
+  "version": "0.12.0",
+  "main": "yamlkt-yamlkt.js",
+  "types": "yamlkt-yamlkt.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}
