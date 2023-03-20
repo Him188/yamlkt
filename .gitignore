@@ -1,6 +1,7 @@
 .idea/
 .gradle/
 build/
+**/build
 .idea_modules/
 hs_err_pid*
 *.hprof
