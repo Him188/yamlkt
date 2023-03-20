@@ -24,10 +24,15 @@ internal class InlineDecoder(
 ) : Decoder by delegate {
     override val serializersModule: SerializersModule get() = delegate.serializersModule
 
-    override fun decodeByte(): Byte = delegate.run { decodeString().withIntegerValue("UByte", null, -1).toUByte().toByte() }
-    override fun decodeShort(): Short = delegate.run { decodeString().withIntegerValue("UShort", null, -1).toUShort().toShort() }
+    override fun decodeByte(): Byte =
+        delegate.run { decodeString().withIntegerValue("UByte", null, -1).toUByte().toByte() }
+
+    override fun decodeShort(): Short =
+        delegate.run { decodeString().withIntegerValue("UShort", null, -1).toUShort().toShort() }
+
     override fun decodeInt(): Int = delegate.run { decodeString().withIntegerValue("UInt", null, -1).toUInt().toInt() }
-    override fun decodeLong(): Long = delegate.run { decodeString().withIntegerValue("ULong", null, -1).toULong().toLong() }
+    override fun decodeLong(): Long =
+        delegate.run { decodeString().withIntegerValue("ULong", null, -1).toULong().toLong() }
 }
 
 @OptIn(ExperimentalUnsignedTypes::class)
@@ -38,10 +43,23 @@ internal class InlineElementDecoder(
     private val index: Int
 ) : Decoder by compositeDecoder, CompositeDecoder by compositeDecoder {
     override val serializersModule: SerializersModule get() = yamlDecoder.serializersModule
-    override fun decodeElementIndex(descriptor: SerialDescriptor): Int = throw UnsupportedOperationException("InlineDecoder.decodeElementIndex")
+    override fun decodeElementIndex(descriptor: SerialDescriptor): Int =
+        throw UnsupportedOperationException("InlineDecoder.decodeElementIndex")
 
-    override fun decodeByte(): Byte = yamlDecoder.run { compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UByte", null, -1).toUByte().toByte() }
-    override fun decodeShort(): Short = yamlDecoder.run { compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UShort", null, -1).toUShort().toShort() }
-    override fun decodeInt(): Int = yamlDecoder.run { compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UInt", null, -1).toUInt().toInt() }
-    override fun decodeLong(): Long = yamlDecoder.run { compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("ULong", null, -1).toULong().toLong() }
+    override fun decodeByte(): Byte = yamlDecoder.run {
+        compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UByte", null, -1).toUByte().toByte()
+    }
+
+    override fun decodeShort(): Short = yamlDecoder.run {
+        compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UShort", null, -1).toUShort()
+            .toShort()
+    }
+
+    override fun decodeInt(): Int = yamlDecoder.run {
+        compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("UInt", null, -1).toUInt().toInt()
+    }
+
+    override fun decodeLong(): Long = yamlDecoder.run {
+        compositeDecoder.decodeStringElement(descriptor, index).withIntegerValue("ULong", null, -1).toULong().toLong()
+    }
 }

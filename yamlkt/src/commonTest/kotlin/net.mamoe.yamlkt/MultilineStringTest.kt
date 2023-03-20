@@ -2,7 +2,10 @@ package net.mamoe.yamlkt
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlin.test.*
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 
 class MultilineStringTest {
 

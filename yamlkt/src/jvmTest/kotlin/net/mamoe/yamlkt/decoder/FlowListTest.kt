@@ -115,8 +115,14 @@ internal class FlowListTest {
         assertEquals(TestDataA(-1, 1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: -1, b: 1 } """))
         assertEquals(TestDataA(1, -1), allFlow.decodeFromString(TestDataA.serializer(), """{ a: 1, b: -1 } """))
 
-        assertEquals(TestDataB(listOf(1, -1), 1), allFlow.decodeFromString(TestDataB.serializer(), """{ list : [1, -1], b: 1 } """))
-        assertEquals(TestDataB(listOf(-1, 1), -1), allFlow.decodeFromString(TestDataB.serializer(), """{ list : [-1, 1], b: -1 } """))
+        assertEquals(
+            TestDataB(listOf(1, -1), 1),
+            allFlow.decodeFromString(TestDataB.serializer(), """{ list : [1, -1], b: 1 } """)
+        )
+        assertEquals(
+            TestDataB(listOf(-1, 1), -1),
+            allFlow.decodeFromString(TestDataB.serializer(), """{ list : [-1, 1], b: -1 } """)
+        )
         println(
             allFlow.decodeFromString(
                 SvcReqPushMsg.serializer(),

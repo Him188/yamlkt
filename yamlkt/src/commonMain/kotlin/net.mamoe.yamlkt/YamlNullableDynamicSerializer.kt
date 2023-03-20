@@ -42,27 +42,35 @@ public object YamlNullableDynamicSerializer : KSerializer<Any?>, IYamlDynamicSer
      */
     public override fun deserialize(decoder: Decoder): Any? = decode(decoder)
 
-    internal inline fun decode(decoder: Decoder, crossinline whenNull: YamlDecoder.AbstractDecoder. () -> Unit = {}): Any? = decoder.decodeStructure(descriptor) {
+    internal inline fun decode(
+        decoder: Decoder,
+        crossinline whenNull: YamlDecoder.AbstractDecoder. () -> Unit = {}
+    ): Any? = decoder.decodeStructure(descriptor) {
         return@decodeStructure when ((this as YamlDecoder.AbstractDecoder).kind) {
             YamlDecoder.Kind.FLOW_MAP, YamlDecoder.Kind.BLOCK_MAP -> {
                 this.dontWrapNextStructure = true
                 mapSerializer.deserialize(this)
             }
+
             YamlDecoder.Kind.FLOW_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
+
             YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 this.dontWrapNextStructure = true
                 listSerializer.deserialize(this)
             }
+
             YamlDecoder.Kind.STRING -> {
                 return@decodeStructure parentYamlDecoder.tokenStream.strBuff!!.adjustDynamicString(parentYamlDecoder.tokenStream.quoted)
             }
+
             YamlDecoder.Kind.NULL_STRING -> {
                 whenNull()
                 return@decodeStructure null
             }
+
             else -> error("bad decoder returned: $this")
         }
     }

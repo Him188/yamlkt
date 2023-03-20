@@ -245,39 +245,48 @@ internal class TokenStream(
                     currentIndent++
                     return Token.COLON
                 }
+
                 '\n', '\r' -> {
                     newLined = true
                     currentIndent = 0
                     leadingSpace = 0
                 }
+
                 ',' -> {
                     currentIndent++
                     return Token.COMMA
                 }
+
                 '{' -> {
                     currentIndent++
                     return Token.MAP_BEGIN
                 }
+
                 '}' -> {
                     currentIndent++
                     return Token.MAP_END
                 }
+
                 '[' -> {
                     currentIndent++
                     return Token.LIST_BEGIN
                 }
+
                 ']' -> {
                     currentIndent++
                     return Token.LIST_END
                 }
+
                 '-' -> {
                     currentIndent++
                     return Token.MULTILINE_LIST_FLAG
                 }
+
                 '#' -> {
                     this.skipLine()
                     currentIndent = 0
                 }
+
                 else -> {
                     val str = prepareStringAndNextToken(stopOnComma, char) ?: return Token.STRING_NULL
                     this.strBuff = str
@@ -299,10 +308,12 @@ internal class TokenStream(
             quoted = true
             readSingleQuotedString()
         }
+
         DOUBLE_QUOTATION_CHAR -> {
             quoted = true
             readDoubleQuotedString()
         }
+
         else -> { // unquoted
             quoted = false
             readUnquotedString(stopOnComma, begin).optimizeNull()

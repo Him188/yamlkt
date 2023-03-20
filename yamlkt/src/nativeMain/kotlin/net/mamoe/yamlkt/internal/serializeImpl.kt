@@ -43,7 +43,7 @@ internal actual fun IYamlDynamicSerializer.serializeImpl(
         is Map.Entry<*, *> -> encoder.encodeSerializableValue(YamlMapEntrySerializer, value as Map.Entry<Any?, Any?>)
         else -> encoder.encodeSerializableValue(
             serializer = value::class.serializerOrNull()
-                as? KSerializer<Any>?
+                    as? KSerializer<Any>?
                 ?: error(
                     "Cannot find serializer for ${value.classSimpleName()}. Please use specify serializers manually."
                 ),

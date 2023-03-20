@@ -83,9 +83,9 @@ public sealed class Yaml(
         @Deprecated(
             "Please create your own nonStrict", replaceWith = ReplaceWith(
                 "Yaml {\n" +
-                    "nonStrictNumber = true\n" +
-                    "nonStrictNullability = true\n" +
-                    "}", "net.mamoe.yamlkt.Yaml"
+                        "nonStrictNumber = true\n" +
+                        "nonStrictNullability = true\n" +
+                        "}", "net.mamoe.yamlkt.Yaml"
             ), DeprecationLevel.ERROR
         )
         @JvmStatic
@@ -255,6 +255,7 @@ internal fun Yaml.parseMapOrNullImpl(@Language("yaml") yamlContent: String): Any
 
             result
         }
+
         else -> v
     }
 }

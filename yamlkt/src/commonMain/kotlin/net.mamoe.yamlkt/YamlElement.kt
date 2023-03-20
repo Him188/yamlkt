@@ -250,7 +250,8 @@ public data class YamlLiteral(
 @Serializable(with = YamlNullSerializer::class)
 public object YamlNull : YamlPrimitive() {
     public override val content: Nothing? get() = null
-//    public fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
+
+    //    public fun serializer(): KSerializer<YamlNull> = YamlNullSerializer
     public override fun equals(other: Any?): Boolean = other === this
     public override fun hashCode(): Int = 1
 }
@@ -509,6 +510,7 @@ internal fun Any?.asYamlElementOrNullImpl(): YamlElement? = when (this) {
         }
         YamlMap(map)
     }
+
     is List<*> -> YamlList(this.map { it.toYamlElement() })
     else -> null
 }

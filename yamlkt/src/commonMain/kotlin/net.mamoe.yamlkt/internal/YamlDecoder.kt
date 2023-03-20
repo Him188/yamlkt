@@ -39,13 +39,16 @@ internal class YamlDecoder(
             Token.MULTILINE_LIST_FLAG -> {
                 "-" + nextString(stopOnComma)
             }
+
             Token.STRING_NULL -> {
                 return token
             }
+
             Token.STRING
             -> {
                 tokenStream.strBuff!!
             }
+
             else -> throw contextualDecodingException("expected String, found token $token instead")
         }
     }
@@ -106,16 +109,35 @@ internal class YamlDecoder(
         }
 
         // region CompositeDecoder primitives override
-        final override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean = nextStringOrNull().decodeBooleanElementImpl(descriptor, index)
-        final override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte = nextStringOrNull().decodeByteElementImpl(descriptor, index)
-        final override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char = nextStringOrNull().decodeCharElementImpl(descriptor, index)
-        final override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double = nextStringOrNull().decodeDoubleElementImpl(descriptor, index)
-        final override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float = nextStringOrNull().decodeFloatElementImpl(descriptor, index)
-        final override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int = nextStringOrNull().decodeIntElementImpl(descriptor, index)
-        final override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long = nextStringOrNull().decodeLongElementImpl(descriptor, index)
-        final override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short = nextStringOrNull().decodeShortElementImpl(descriptor, index)
-        final override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String = nextStringOrNull().decodeStringElementImpl(descriptor, index)
-        final override fun decodeInlineElement(descriptor: SerialDescriptor, index: Int): Decoder = InlineElementDecoder(this@YamlDecoder, this, descriptor, index)
+        final override fun decodeBooleanElement(descriptor: SerialDescriptor, index: Int): Boolean =
+            nextStringOrNull().decodeBooleanElementImpl(descriptor, index)
+
+        final override fun decodeByteElement(descriptor: SerialDescriptor, index: Int): Byte =
+            nextStringOrNull().decodeByteElementImpl(descriptor, index)
+
+        final override fun decodeCharElement(descriptor: SerialDescriptor, index: Int): Char =
+            nextStringOrNull().decodeCharElementImpl(descriptor, index)
+
+        final override fun decodeDoubleElement(descriptor: SerialDescriptor, index: Int): Double =
+            nextStringOrNull().decodeDoubleElementImpl(descriptor, index)
+
+        final override fun decodeFloatElement(descriptor: SerialDescriptor, index: Int): Float =
+            nextStringOrNull().decodeFloatElementImpl(descriptor, index)
+
+        final override fun decodeIntElement(descriptor: SerialDescriptor, index: Int): Int =
+            nextStringOrNull().decodeIntElementImpl(descriptor, index)
+
+        final override fun decodeLongElement(descriptor: SerialDescriptor, index: Int): Long =
+            nextStringOrNull().decodeLongElementImpl(descriptor, index)
+
+        final override fun decodeShortElement(descriptor: SerialDescriptor, index: Int): Short =
+            nextStringOrNull().decodeShortElementImpl(descriptor, index)
+
+        final override fun decodeStringElement(descriptor: SerialDescriptor, index: Int): String =
+            nextStringOrNull().decodeStringElementImpl(descriptor, index)
+
+        final override fun decodeInlineElement(descriptor: SerialDescriptor, index: Int): Decoder =
+            InlineElementDecoder(this@YamlDecoder, this, descriptor, index)
         // endregion
 
         // region Decoder primitives override
@@ -128,7 +150,9 @@ internal class YamlDecoder(
         final override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, -1)
         final override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
         final override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
-        final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
+        final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int =
+            enumDescriptor.getElementIndexOrThrow(decodeString())
+
         final override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder = inlineDecoder
 
         override fun decodeNotNullMark(): Boolean =
@@ -141,7 +165,8 @@ internal class YamlDecoder(
                 }
             }
 
-        override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing?  // TODO: 2020/4/19 decode null
+        override fun decodeNull(): Nothing? =
+            null.debuggingLogDecoder(null, -1) as Nothing?  // TODO: 2020/4/19 decode null
         // endregion
 
         final override fun beginStructure(descriptor: SerialDescriptor): CompositeDecoder {
@@ -267,8 +292,8 @@ internal class YamlDecoder(
                          * mailAddress: cssxsh@gmail.com
                          */
                         return !(tokenStream.currentIndent == indent
-                            && !tokenStream.quoted
-                            && (tokenStream.newLined || tokenStream.strBuff!!.isBlank()))
+                                && !tokenStream.quoted
+                                && (tokenStream.newLined || tokenStream.strBuff!!.isBlank()))
                     }
 
                     false
@@ -301,6 +326,7 @@ internal class YamlDecoder(
                         decodeElementIndex(descriptor)
                     }
                 }
+
                 else -> { // even if the token is illegal, it's parent decoders' responsibility to throw the exception
                     tokenStream.reuseToken(token)
                     return READ_DONE
@@ -357,9 +383,9 @@ internal class YamlDecoder(
                     val current = tokenStream.nextToken()
                     if (current != Token.COLON) {
                         throw tokenStream.contextualDecodingException("There must be a COLON between map key and value but found $current for '${descriptor.serialName}'")
-                    } else if(!tokenStream.endOfInput) {
+                    } else if (!tokenStream.endOfInput) {
                         val char = tokenStream.source[tokenStream.cur]
-                        if(!char.isWhitespace()) {
+                        if (!char.isWhitespace()) {
                             throw tokenStream.contextualDecodingException("Expected whitespace after COLON but found $char for '${descriptor.serialName}'")
                         }
                     }
@@ -411,13 +437,16 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(token)
                     false
                 }
+
                 Token.STRING -> {
                     valueCache = tokenStream.strBuff
                     true
                 }
+
                 Token.COMMA -> {
                     false
                 }
+
                 else -> throw contextualDecodingException("Illegal token $token")
             }
         }
@@ -447,6 +476,7 @@ internal class YamlDecoder(
                     Token.COMMA -> {
                         // that's what we need
                     }
+
                     else -> throw contextualDecodingException("There must be a COMMA between flow map entries but found $token for '${descriptor.serialName}'")
                 }
             }
@@ -459,6 +489,7 @@ internal class YamlDecoder(
                         Token.COLON -> {
                             tokenStream.reuseToken(tokenStream.strBuff!!)
                         }
+
                         Token.COMMA,
                         Token.MAP_END
                         -> {
@@ -466,10 +497,12 @@ internal class YamlDecoder(
                             tokenStream.reuseToken(Token.STRING_NULL)
                             tokenStream.reuseToken(tokenStream.strBuff!!)
                         }
+
                         else -> throw contextualDecodingException("Illegal token $token")
                     }
                     index++
                 }
+
                 Token.MAP_END -> READ_DONE
                 Token.COMMA -> { // null entry, meaning `{ name: Bob, }` // we are at ','
                     /*
@@ -484,6 +517,7 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(Token.STRING_NULL) // for value
                     index++
                 }
+
                 else -> throw contextualDecodingException("Illegal token $token")
             }
         }
@@ -510,19 +544,23 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(token)
                     false
                 }
+
                 Token.MAP_BEGIN,
                 Token.LIST_BEGIN
                 -> {
                     tokenStream.reuseToken(token)
                     true
                 }
+
                 Token.STRING_NULL -> {
                     false
                 }
+
                 Token.STRING -> {
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     true
                 }
+
                 Token.MULTILINE_LIST_FLAG -> {
                     if (tokenStream.endOfInput) throw contextualDecodingException("Early EOF. Expected '}'.")
 
@@ -533,10 +571,12 @@ internal class YamlDecoder(
                         throw contextualDecodingException("Illegal token $token")
                     }
                 }
+
                 Token.COMMA -> {
                     //tokenStream.reuseToken(token)
                     false
                 }
+
                 else -> throw contextualDecodingException("Illegal token $token")
             }
         }
@@ -551,6 +591,7 @@ internal class YamlDecoder(
                     Token.COMMA -> {
                         // that's what we need
                     }
+
                     else -> throw contextualDecodingException("There must be a COMMA between flow map entries but found $token for '${descriptor.serialName}'")
                 }
             } else {
@@ -584,6 +625,7 @@ internal class YamlDecoder(
                         return decodeElementIndex(descriptor)
                     }
                 }
+
                 else -> throw contextualDecodingException("Illegal token $token for '${descriptor.serialName}'")
             }
         }
@@ -609,17 +651,20 @@ internal class YamlDecoder(
                             // ok
                             tokenStream.reuseToken(originString)
                         }
+
                         Token.LIST_END -> {
                             // meet with `, ]`, ok
                             // don't retain comma
                             tokenStream.reuseToken(next)
                             tokenStream.reuseToken(originString)
                         }
+
                         else -> {
                             throw contextualDecodingException("Illegal token $next")
                         }
                     }
                 }
+
                 Token.LIST_END -> return READ_DONE
                 Token.COMMA -> when (val next = tokenStream.nextToken()) {
                     Token.LIST_END -> {
@@ -658,6 +703,7 @@ internal class YamlDecoder(
                     handlePossibleNegativeValues(current)
                     return index++
                 }
+
                 else ->
                     throw contextualDecodingException("Illegal token $current")
             }
@@ -675,6 +721,7 @@ internal class YamlDecoder(
                     tokenStream.reuseToken(next)
                     tokenStream.strBuff = "-" + tokenStream.strBuff
                 }
+
                 else -> {
                     tokenStream.reuseToken(current)
                 }
@@ -728,10 +775,12 @@ internal class YamlDecoder(
                         READ_DONE
                     }
                 }
+
                 Token.STRING -> {
                     tokenStream.reuseToken(tokenStream.strBuff!!)
                     return READ_DONE
                 }
+
                 else -> { // even if the token is illegal, it's parent decoders' responsibility to throw the exception
                     tokenStream.reuseToken(token)
                     return READ_DONE
@@ -802,30 +851,37 @@ internal class YamlDecoder(
                         //   tokenStream.reuseToken(token)
                         FlowSequenceDecoder()
                     }
+
                     Token.MULTILINE_LIST_FLAG -> {
                         tokenStream.reuseToken(token)
                         BlockSequenceDecoder(tokenStream.currentIndent)
                     }
+
                     else -> throw contextualDecodingException("expected list(sequence), but found $token")
                 }
             }
+
             is PolymorphicKind,
             StructureKind.CLASS -> {
                 return when (val token = nextToken()) {
                     END_OF_FILE -> {
                         emptyClassDecoder
                     }
+
                     Token.MAP_BEGIN -> {
                         // tokenStream.reuseToken(token)
                         FlowClassDecoder()
                     }
+
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         BlockClassDecoder(tokenStream.currentIndent)
                     }
+
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding class")
                 }
             }
+
             StructureKind.MAP -> {
                 return when (val token = nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
@@ -833,13 +889,16 @@ internal class YamlDecoder(
                         // tokenStream.reuseToken(token)
                         FlowMapDecoder()
                     }
+
                     Token.STRING -> {
                         tokenStream.reuseToken(tokenStream.strBuff!!)
                         BlockMapDecoder(tokenStream.currentIndent)
                     }
+
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding map")
                 }
             }
+
             SerialKind.CONTEXTUAL -> {
                 return when (val token = nextToken()) {
                     END_OF_FILE -> throw contextualDecodingException("Early EOF")
@@ -847,9 +906,11 @@ internal class YamlDecoder(
                         // tokenStream.reuseToken(token)
                         FlowMapDecoder()
                     }
+
                     Token.STRING_NULL -> {
                         yamlNullStringDecoder
                     }
+
                     Token.STRING -> {
                         // if (originDecoder is YamlDecoder.IndentedDecoder) {
                         //     if (!originDecoder.checkIndent(tokenStream.currentIndent)) {
@@ -886,6 +947,7 @@ internal class YamlDecoder(
                                 tokenStream.strBuff = stringValue
                                 yamlStringDecoder
                             }
+
                             else -> {
                                 tokenStream.reuseToken(next)
                                 //  tokenStream.strBuff = stringValue
@@ -893,17 +955,21 @@ internal class YamlDecoder(
                             }
                         }
                     }
+
                     Token.LIST_BEGIN -> {
                         //  tokenStream.reuseToken(token)
                         FlowSequenceDecoder()
                     }
+
                     Token.MULTILINE_LIST_FLAG -> {
                         tokenStream.reuseToken(token)
                         BlockSequenceDecoder(tokenStream.currentIndent)
                     }
+
                     else -> throw contextualDecodingException("illegal beginning token $token on decoding contextual")
                 }
             }
+
             else -> throw contextualDecodingException("unsupported SerialKind ${descriptor.kind}")
         }
     }
@@ -920,7 +986,9 @@ internal class YamlDecoder(
 
     override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
     override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
-    override fun decodeEnum(enumDescriptor: SerialDescriptor): Int = enumDescriptor.getElementIndexOrThrow(decodeString())
+    override fun decodeEnum(enumDescriptor: SerialDescriptor): Int =
+        enumDescriptor.getElementIndexOrThrow(decodeString())
+
     override fun decodeNull(): Nothing? = null.debuggingLogDecoder(null, -1) as Nothing? // TODO: 2020/4/19 decode null
     // endregion
 

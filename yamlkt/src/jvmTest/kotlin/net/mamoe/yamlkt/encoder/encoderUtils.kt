@@ -36,7 +36,11 @@ $dump
         assertEquals(value.run(toString), decoded.run(toString))
     }.getOrElse {
         throw AssertionError(
-            "Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=${value.run(toString)}\ndecoded=${decoded.run(toString)}",
+            "Failed load, serializer=${serializer.descriptor.serialName} dump=\n```\n$dump\n``` \nvalue=${
+                value.run(
+                    toString
+                )
+            }\ndecoded=${decoded.run(toString)}",
             it
         )
     }

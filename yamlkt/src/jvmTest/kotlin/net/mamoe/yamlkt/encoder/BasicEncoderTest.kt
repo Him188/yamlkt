@@ -54,8 +54,14 @@ internal class BasicEncoderTest {
 
         allFlow.testDescriptorBased(Data2.serializer(), Data2())
 
-        allFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray()))
-        blockClassOtherFlow.testDescriptorBased(Data.serializer(), Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray()))
+        allFlow.testDescriptorBased(
+            Data.serializer(),
+            Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray())
+        )
+        blockClassOtherFlow.testDescriptorBased(
+            Data.serializer(),
+            Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".toByteArray())
+        )
     }
 
     /*

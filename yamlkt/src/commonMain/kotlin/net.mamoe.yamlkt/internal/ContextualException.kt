@@ -11,7 +11,13 @@ import kotlin.jvm.JvmName
 
 @kotlin.internal.InlineOnly // not shown in stacktrace
 @Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-internal inline fun contextualDecodingException(hint: String, text: String, cur: Int, position: String, throwable: Throwable? = null): YamlDecodingException {
+internal inline fun contextualDecodingException(
+    hint: String,
+    text: String,
+    cur: Int,
+    position: String,
+    throwable: Throwable? = null
+): YamlDecodingException {
     return YamlDecodingException(buildString {
         append(hint)
         append('\n')
@@ -125,12 +131,17 @@ internal fun TokenStream.skipLine() {
 }
 
 // this function is always shown only in stacktrace
-internal fun TokenStream.contextualDecodingException(hint: String, descriptor: SerialDescriptor?, index: Int, throwable: Throwable? = null): YamlDecodingException {
+internal fun TokenStream.contextualDecodingException(
+    hint: String,
+    descriptor: SerialDescriptor?,
+    index: Int,
+    throwable: Throwable? = null
+): YamlDecodingException {
     val message: String = if (descriptor == null)
         hint
     else
         hint + " for '${index.let { descriptor.getElementName(it) }}' " +
-            "in '${descriptor.serialName}'"
+                "in '${descriptor.serialName}'"
 
     /*
     val currentTokenLength = if (currentToken is Token.STRING) {

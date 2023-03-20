@@ -112,6 +112,7 @@ internal fun TokenStream.readSingleQuotedString(): String {
                     return takeStringBuf()
                 }
             }
+
             char.isLineSeparator() -> {
                 append(source, startCur, cur - 2)
                 runNewLineSkippingAndEscaping()
@@ -166,34 +167,42 @@ internal fun TokenStream.readUnquotedString(stopOnComma: Boolean, begin: Char): 
                 reuseToken(Token.COLON)
                 return doEnd()
             }
+
             ',' -> {
                 if (stopOnComma) {
                     reuseToken(Token.COMMA)
                     return doEnd()
                 }
             }
+
             '|' -> {
                 return readMultilineString(TokenStream::readLinesForMultilineLiteralString)
             }
+
             '>' -> {
                 return readMultilineString(TokenStream::readLinesForMultilineFoldedString)
             }
+
             '[' -> {
                 reuseToken(Token.LIST_BEGIN)
                 return doEnd()
             }
+
             ']' -> {
                 reuseToken(Token.LIST_END)
                 return doEnd()
             }
+
             '{' -> {
                 reuseToken(Token.MAP_BEGIN)
                 return doEnd()
             }
+
             '}' -> {
                 reuseToken(Token.MAP_END)
                 return doEnd()
             }
+
             '#' -> {
                 val toString = kotlin.run {
                     if (!escapedOnce) {
@@ -235,14 +244,14 @@ private fun TokenStream.readMultilineString(readLines: TokenStream.(foldingInden
     // If the line indent is less than the current indent, we may have reached the end of the string already
     if (firstLineIndent < currentIndent) {
         // Back up to avoid breaking other strings
-        if(!endOfInput) {
+        if (!endOfInput) {
             cur -= (firstLineIndent + 1)
         }
         return takeStringBufTrimEnd()
     }
 
     // Prepend any newlines
-    for(i in 0 until prependedNewlineCount) {
+    for (i in 0 until prependedNewlineCount) {
         append('\n')
     }
 
@@ -251,7 +260,7 @@ private fun TokenStream.readMultilineString(readLines: TokenStream.(foldingInden
     return if (trimEnd) {
         // Trim all trailing whitespace when trim flag set
         takeStringBufTrimEnd().trimEnd()
-    } else if(keepTrailingNewlines) {
+    } else if (keepTrailingNewlines) {
         takeStringBufTrimEnd()
     } else {
         takeStringBufTrimEnd().trimEnd() + "\n"
@@ -272,7 +281,7 @@ private fun TokenStream.readLinesForMultilineFoldedString(foldingIndent: Int, ke
         currentLineIndent = nextIndent
         // Append a new line if there is at least one blank line. Only one newline is appended because
         // the string is folded
-        if( blankLineCount > 0) {
+        if (blankLineCount > 0) {
             append('\n')
         }
         // Increment line number
@@ -399,7 +408,7 @@ private fun TokenStream.readLinesForMultilineLiteralString(foldingIndent: Int, k
         trailingBlankLines = blankLineCount
         currentLineIndent = nextIndent
         // Append a new line for each blank line since string is literal
-        for(i in 0 until blankLineCount) {
+        for (i in 0 until blankLineCount) {
             append('\n')
         }
         // Increment line number
@@ -451,7 +460,10 @@ private fun TokenStream.takeChompCharacter(): Pair<Boolean, Boolean> {
     return Pair(trimEnd, keepTrailingNewlines)
 }
 
-private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initialIntent: Int, addCaret: Boolean = true): Boolean {
+private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(
+    initialIntent: Int,
+    addCaret: Boolean = true
+): Boolean {
     if (endOfInput) return true
     val newIntent = countSkipIf { it == ' ' }
     if (newIntent <= initialIntent) {
@@ -466,6 +478,7 @@ private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(initial
             append('\n')
             runNewLineSkippingAndEscapingForUnquoted(initialIntent, false)
         }
+
         else -> {
             if (addCaret) append(' ')
             true
@@ -488,6 +501,7 @@ private tailrec fun TokenStream.runNewLineSkippingAndEscaping(addCaret: Boolean 
             append('\n')
             runNewLineSkippingAndEscaping(false)
         }
+
         else -> {
             if (addCaret) append(' ')
             return
@@ -518,12 +532,14 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                 append(source, startCur, cur - 2)
                 return takeStringBuf()
             }
+
             char.isLineSeparator() -> {
                 append(source, startCur, cur - 2)
                 runNewLineSkippingAndEscaping()
                 startCur = cur
                 escapedOnce = true
             }
+
             char == STRING_ESC -> {
                 append(source, startCur, cur - 2)
                 startCur = cur + 1
@@ -538,10 +554,12 @@ internal fun TokenStream.readDoubleQuotedString(): String {
                         skipIf(Char::isWhitespace)
                         startCur = cur
                     }
+
                     esChar.isWhitespace() -> {
                         append(' ')
                         startCur = cur
                     }
+
                     else -> {
                         val es = escapeToChar(esChar.code)
                         if (es != INVALID) {
@@ -585,7 +603,10 @@ internal inline fun <R> TokenStream.peekNext(block: (ch: Char) -> R?): R? {
 
 internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
-internal fun String.toEscapedString(buf: StringBufHolder, stringSerialization: YamlBuilder.StringSerialization): String {
+internal fun String.toEscapedString(
+    buf: StringBufHolder,
+    stringSerialization: YamlBuilder.StringSerialization
+): String {
     val availability = getQuotationAvailability()
     when {
         stringSerialization == SINGLE_QUOTATION && availability hasFlag SINGLE -> return "'$this'"
@@ -649,13 +670,16 @@ internal fun String.getQuotationAvailability(): Int {
                 // doubleWithoutEscape = false
                 // canBeUnquoted = false
             }
+
             doubleWithoutEscape && REPLACEMENT_CHARS.getOrNull(c.code) != null -> {
                 doubleWithoutEscape = false
             }
+
             c == '\'' -> {
                 canBeSingleQuoted = false
                 canBeUnquoted = false
             }
+
             c == '\"' -> {
                 doubleWithoutEscape = false
                 canBeUnquoted = false
@@ -674,6 +698,6 @@ internal fun String.getQuotationAvailability(): Int {
     if (lastIsColon) canBeUnquoted = false
 
     return (if (canBeSingleQuoted) SINGLE else 0) or
-        (if (canBeUnquoted) UNQUOTED else 0) or
-        (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
+            (if (canBeUnquoted) UNQUOTED else 0) or
+            (if (doubleWithoutEscape) DOUBLE_WITHOUT_ESCAPE else 0)
 }

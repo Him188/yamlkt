@@ -62,32 +62,38 @@ internal class YamlEncoder(
                     YamlBuilder.MapSerialization.BLOCK_MAP -> {
                         BlockMapOrClassEncoder(parent)
                     }
+
                     YamlBuilder.MapSerialization.FLOW_MAP -> {
                         FlowMapOrClassEncoder(parent is BlockEncoder)
                     }
                 }
             }
+
             StructureKind.MAP -> {
                 when (configuration.mapSerialization) {
                     YamlBuilder.MapSerialization.BLOCK_MAP -> {
                         BlockMapOrClassEncoder(parent)
                     }
+
                     YamlBuilder.MapSerialization.FLOW_MAP -> {
                         FlowMapOrClassEncoder(parent is BlockEncoder)
                     }
                 }
             }
+
             StructureKind.LIST -> {
                 when (configuration.listSerialization) {
                     YamlBuilder.ListSerialization.FLOW_SEQUENCE -> {
                         FlowSequenceEncoder(parent is BlockEncoder)
                     }
+
                     YamlBuilder.ListSerialization.BLOCK_SEQUENCE -> {
                         if (parent is BlockMapOrClassEncoder) {
                             writer.levelDecrease()
                             BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = true)
                         } else BlockSequenceEncoder(parent, linebreakAfterFinish = false, increaseBackLevel = false)
                     }
+
                     YamlBuilder.ListSerialization.AUTO -> {
                         //if (typeSerializers[0].descriptor is PrimitiveKind) {
                         // TODO: 2020/8/19 this typeSerializers is removed in serialization 1.0.0
@@ -97,6 +103,7 @@ internal class YamlEncoder(
                     }
                 }
             }
+
             else -> error("unsupported SerialKind: ${descriptor.kind}")
         }
     }
@@ -175,7 +182,12 @@ internal class YamlEncoder(
             }
         }
 
-        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun <T> encodeSerializableElement0(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             if (descriptor.kind == StructureKind.CLASS) {
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
             } else structuredKeyValue {
@@ -227,11 +239,19 @@ internal class YamlEncoder(
             writer.write(value)
         }
 
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("FlowSequenceEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) =
+            error("FlowSequenceEncoder.encodeElement shouldn't be called")
+
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) =
+            error("FlowSequenceEncoder.encodeElement shouldn't be called")
 
         private var justStarted = true
-        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun <T> encodeSerializableElement0(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             if (justStarted) justStarted = false
             else writer.write(", ")
 
@@ -251,15 +271,25 @@ internal class YamlEncoder(
     internal inner class EmptySequenceEncoder(linebreakAfterFinish: Boolean) : FlowEncoder(linebreakAfterFinish) {
         override fun encodeValue(value: Char) = error("EmptySequenceEncoder.encodeValue shouldn't be called")
         override fun encodeValue(value: String) = error("EmptySequenceEncoder.encodeValue shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("EmptySequenceEncoder.encodeElement shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("EmptySequenceEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) =
+            error("EmptySequenceEncoder.encodeElement shouldn't be called")
+
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) =
+            error("EmptySequenceEncoder.encodeElement shouldn't be called")
+
         override fun endStructure0(descriptor: SerialDescriptor) = writer.write("[]")
-        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) = error("EmptySequenceEncoder.writeValueHead shouldn't be called")
+        override fun writeValueHead(descriptor: SerialDescriptor, index: Int) =
+            error("EmptySequenceEncoder.writeValueHead shouldn't be called")
+
         override fun encodeSerializableUnquotedStringImpl(descriptor: SerialDescriptor, index: Int, value: String) =
             error("EmptySequenceEncoder.encodeSerializableUnquotedStringImpl shouldn't be called")
     }
 
-    internal inner class BlockSequenceEncoder(parent: AbstractEncoder?, linebreakAfterFinish: Boolean, private val increaseBackLevel: Boolean) :
+    internal inner class BlockSequenceEncoder(
+        parent: AbstractEncoder?,
+        linebreakAfterFinish: Boolean,
+        private val increaseBackLevel: Boolean
+    ) :
         BlockEncoder(linebreakAfterFinish) {
         init {
             if (parent is BlockMapOrClassEncoder) {
@@ -277,8 +307,12 @@ internal class YamlEncoder(
             writer.write(value)
         }
 
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
-        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) = error("BlockSequenceEncoder.encodeElement shouldn't be called")
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: Char) =
+            error("BlockSequenceEncoder.encodeElement shouldn't be called")
+
+        override fun encodeElement(descriptor: SerialDescriptor, index: Int, value: String) =
+            error("BlockSequenceEncoder.encodeElement shouldn't be called")
+
         override fun endStructure0(descriptor: SerialDescriptor) {
             if (increaseBackLevel) {
                 writer.levelIncrease()
@@ -286,7 +320,12 @@ internal class YamlEncoder(
         }
 
         private var justStarted = true
-        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun <T> encodeSerializableElement0(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             if (justStarted) {
                 justStarted = false
             } else {
@@ -348,7 +387,12 @@ internal class YamlEncoder(
             writer.write(value)
         }
 
-        override fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        override fun <T> encodeSerializableElement0(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             Debugging.logCustom { "encodeSerializableElement0, elementName=${descriptor.getElementName(index)}" }
             structuredKeyValue {
                 super.encodeSerializableElement0(descriptor, index, serializer, value)
@@ -363,7 +407,8 @@ internal class YamlEncoder(
         }
 
         private fun SerialDescriptor.getComments(index: Int): Sequence<String>? {
-            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.lines?.trimIndent()?.lineSequence()
+            return (getElementAnnotations(index).firstOrNull { it is Comment } as Comment?)?.lines?.trimIndent()
+                ?.lineSequence()
         }
 
         private fun YamlWriter.writeComments(descriptor: SerialDescriptor, index: Int) {
@@ -419,16 +464,21 @@ internal class YamlEncoder(
     override fun encodeByte(value: Byte) = writer.write(value.toInt().toString())
     override fun encodeChar(value: Char) = writer.write(value)
     override fun encodeDouble(value: Double) = writer.write(value.toString())
-    override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = writer.write(enumDescriptor.getElementName(index))
+    override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
+        writer.write(enumDescriptor.getElementName(index))
+
     override fun encodeFloat(value: Float) = writer.write(value.toString())
 
     @OptIn(ExperimentalUnsignedTypes::class)
-    override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder = InlineEncoder(writer, this, serializersModule)
+    override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder =
+        InlineEncoder(writer, this, serializersModule)
 
     override fun encodeInt(value: Int) = writer.write(value.toString())
     override fun encodeLong(value: Long) = writer.write(value.toString())
     override fun encodeShort(value: Short) = writer.write(value.toString())
-    override fun encodeString(value: String) = writer.write(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
+    override fun encodeString(value: String) =
+        writer.write(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
+
     override fun encodeNull() = writer.write(configuration.nullSerialization.value)
 
     /**
@@ -458,7 +508,8 @@ internal class YamlEncoder(
         }
     }
 
-    internal abstract inner class BlockEncoder constructor(linebreakAfterFinish: Boolean) : AbstractEncoder(linebreakAfterFinish) {
+    internal abstract inner class BlockEncoder constructor(linebreakAfterFinish: Boolean) :
+        AbstractEncoder(linebreakAfterFinish) {
         final override fun writeValueTail(descriptor: SerialDescriptor, index: Int) {
             ///  if (descriptor.kind is StructureKind) {
             ///      writer.writeln()
@@ -492,7 +543,12 @@ internal class YamlEncoder(
         abstract fun endStructure0(descriptor: SerialDescriptor)
         abstract fun writeValueHead(descriptor: SerialDescriptor, index: Int)
         abstract fun writeValueTail(descriptor: SerialDescriptor, index: Int)
-        open fun <T> encodeSerializableElement0(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        open fun <T> encodeSerializableElement0(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             serializer.serialize(this, value)
         }
 
@@ -500,7 +556,12 @@ internal class YamlEncoder(
         /**
          * @see encodeInlineElement
          */
-        final override fun <T> encodeSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T) {
+        final override fun <T> encodeSerializableElement(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T
+        ) {
             // if (descriptor.kind !is PrimitiveKind) {
             writeValueHead(descriptor, index)
             //  }
@@ -565,15 +626,27 @@ internal class YamlEncoder(
         final override fun encodeInlineElement(descriptor: SerialDescriptor, index: Int): Encoder {
             return object : kotlinx.serialization.encoding.AbstractEncoder() {
                 override val serializersModule: SerializersModule get() = this@AbstractEncoder.serializersModule
-                override fun encodeByte(value: Byte) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUByte().toString())
-                override fun encodeShort(value: Short) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUShort().toString())
-                override fun encodeInt(value: Int) = encodeSerializableUnquotedStringElement(descriptor, index, value.toUInt().toString())
-                override fun encodeLong(value: Long) = encodeSerializableUnquotedStringElement(descriptor, index, value.toULong().toString())
+                override fun encodeByte(value: Byte) =
+                    encodeSerializableUnquotedStringElement(descriptor, index, value.toUByte().toString())
+
+                override fun encodeShort(value: Short) =
+                    encodeSerializableUnquotedStringElement(descriptor, index, value.toUShort().toString())
+
+                override fun encodeInt(value: Int) =
+                    encodeSerializableUnquotedStringElement(descriptor, index, value.toUInt().toString())
+
+                override fun encodeLong(value: Long) =
+                    encodeSerializableUnquotedStringElement(descriptor, index, value.toULong().toString())
             }
         }
 
 
-        final override fun <T : Any> encodeNullableSerializableElement(descriptor: SerialDescriptor, index: Int, serializer: SerializationStrategy<T>, value: T?) {
+        final override fun <T : Any> encodeNullableSerializableElement(
+            descriptor: SerialDescriptor,
+            index: Int,
+            serializer: SerializationStrategy<T>,
+            value: T?
+        ) {
             if (value == null) {
                 encodeSerializableUnquotedStringElement(descriptor, index, configuration.nullSerialization.value)
             } else encodeSerializableElement(descriptor, index, serializer, value)
@@ -585,17 +658,26 @@ internal class YamlEncoder(
         final override fun encodeByte(value: Byte) = encodeValue(value.toString())
         final override fun encodeChar(value: Char) = encodeValue(value)
         final override fun encodeDouble(value: Double) = encodeValue(value.toString())
-        final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) = encodeValue(enumDescriptor.getElementName(index))
+        final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
+            encodeValue(enumDescriptor.getElementName(index))
+
         final override fun encodeFloat(value: Float) = encodeValue(value.toString())
         final override fun encodeInt(value: Int) = encodeValue(value.toString())
         final override fun encodeLong(value: Long) = encodeValue(value.toString())
         final override fun encodeNull() = encodeUnquotedString(configuration.nullSerialization.value)
         final override fun encodeShort(value: Short) = encodeValue(value.toString())
-        final override fun encodeString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
-        fun encodeUnquotedString(value: String) = encodeValue(value.toEscapedString(writer.escapeBuf, YamlBuilder.StringSerialization.NONE))
-        final override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder = InlineEncoder(writer, this, serializersModule)
+        final override fun encodeString(value: String) =
+            encodeValue(value.toEscapedString(writer.escapeBuf, configuration.stringSerialization))
 
-        final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean = configuration.encodeDefaultValues
+        fun encodeUnquotedString(value: String) =
+            encodeValue(value.toEscapedString(writer.escapeBuf, YamlBuilder.StringSerialization.NONE))
+
+        final override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder =
+            InlineEncoder(writer, this, serializersModule)
+
+        final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean =
+            configuration.encodeDefaultValues
+
         final override val serializersModule: SerializersModule get() = this@YamlEncoder.serializersModule
     }
 }

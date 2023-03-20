@@ -1,4 +1,5 @@
 # YamlKt
+
 ![Gradle CI](https://github.com/mamoe/yamlkt/workflows/Gradle%20CI/badge.svg?branch=master)
 [![Download](https://api.bintray.com/packages/mamoe/yamlkt/yamlkt/images/download.svg)](https://bintray.com/mamoe/yamlkt/yamlkt/)
 
@@ -28,12 +29,11 @@ Note that normally you may use higher versions within the minor version range, e
 | 0.12.0 | 1.6.21 |           1.3.3            |
 | 0.12.0 | 1.7.10 |           1.3.3            |
 
-
 #### Gradle
 
 ```kotlin
 repositories {
-  mavenCentral()
+    mavenCentral()
 }
 ```
 
@@ -42,7 +42,9 @@ dependencies {
     implementation("net.mamoe.yamlkt:yamlkt:0.12.0")
 }
 ```
-**If your project is multiplatform, you need only to add this dependency for commonMain:**  
+
+**If your project is multiplatform, you need only to add this dependency for commonMain:**
+
 ```kotlin
 commonMain {
     dependencies {
@@ -50,7 +52,6 @@ commonMain {
     }
 }
 ```
-
 
 #### Maven
 
@@ -65,7 +66,9 @@ Only JVM target is available for Maven.
 ```
 
 ## Overview
+
 This library supports:
+
 - fast deserializing YAML text to a structured object
 - contextual and polymorphic serialization: `@Contextual`, `@Polymorphic`
 - dynamic types: `YamlDynamicSerializer` which works on `Any`
@@ -73,6 +76,7 @@ This library supports:
 - comments encoding (Using annotation `Comment`)
 
 The features that aren't yet supported:
+
 - Anchors (`*`, `&`)
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|` and `>` are partially supported; `\` is not)
@@ -80,7 +84,9 @@ The features that aren't yet supported:
 ## Learn to use
 
 #### Serialize / deserialize with compiled serializers
+
 This approach is fastest and recommended way as the type is already provided.
+
 ```kotlin
 @Serializable
 data class Test(
@@ -104,11 +110,13 @@ list: [str, "str2"]
 ```
 
 #### Contextual serializing / deserializing
+
 YamlKt provides a contextual serializer `YamlDynamicSerializer` for `Any`  
 and `YamlNullDynamicSerializer` for `Any?`
 
 By default, `YamlDynamicSerializer` is installed to `Any`.  
 You can start by using `@Contextual`:
+
 ```kotlin
 @Serializable
 data class Test(
@@ -117,28 +125,32 @@ data class Test(
 
 Yaml.parse(Test.serializer(), yamlText)
 ```
+
 For input YAML text:
+
 ```yaml
 test: { key1: v1, key2: [v2, v3, v4] }
 ```
 
-
-
 Alternatively, you can deserialize without any class:
+
 ```kotlin
 val map: Map<String?, Any?> = Yaml.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
-
 #### `YamlElement`
+
 `YamlElement` is a type-safe way to deserialize without descriptors.
+
 ```kotlin
 val map: YamlMap = Yaml.decodeYamlMapFromString("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
 #### Comments
+
 Annotate your comments to a field(property) using `@Comment`:  
 Example:
+
 ```kotlin
 @Serializable
 data class User(
@@ -146,7 +158,9 @@ data class User(
   val name: String = "value"
 )
 ```
+
 gives yaml text:
+
 ```yaml
 # The name of the user
 name: ""

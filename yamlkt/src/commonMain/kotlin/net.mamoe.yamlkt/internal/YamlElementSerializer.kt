@@ -39,17 +39,20 @@ internal object YamlElementSerializer : KSerializer<YamlElement> {
                 this.dontWrapNextStructure = true
                 YamlMap(YamlElementMapSerializer.deserialize(this))
             }
+
             YamlDecoder.Kind.FLOW_SEQUENCE,
             YamlDecoder.Kind.BLOCK_SEQUENCE
             -> {
                 this.dontWrapNextStructure = true
                 YamlList(YamlElementListSerializer.deserialize(this))
             }
+
             YamlDecoder.Kind.NULL_STRING -> YamlNull
             YamlDecoder.Kind.STRING
             -> {
                 YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
+
             else -> error("Yaml Internal error: bad decoder: $this")
         }
     }
@@ -75,6 +78,7 @@ internal object YamlPrimitiveSerializer : KSerializer<YamlPrimitive> {
             -> {
                 YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
+
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlPrimitive from a ${this.name}")
             }
@@ -98,9 +102,11 @@ internal object YamlLiteralSerializer : KSerializer<YamlLiteral> {
             YamlDecoder.Kind.NULL_STRING -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlLiteral, but found YamlNull")
             }
+
             YamlDecoder.Kind.STRING -> {
                 YamlLiteral(this.parentYamlDecoder.tokenStream.strBuff!!)
             }
+
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlLiteral from a ${this.name}")
             }
@@ -125,6 +131,7 @@ internal object YamlNullSerializer : KSerializer<YamlNull> {
             YamlDecoder.Kind.STRING -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Expected a YamlNull, but found YamlLiteral(\"${parentYamlDecoder.tokenStream.strBuff}\")")
             }
+
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlNull from a ${this.name}")
             }
@@ -149,10 +156,12 @@ internal object YamlMapSerializer : KSerializer<YamlMap> {
                 this.dontWrapNextStructure = true
                 YamlMap(YamlElementMapSerializer.deserialize(this))
             }
+
             YamlDecoder.Kind.FLOW_MAP -> {
                 this.dontWrapNextStructure = true
                 YamlMap(YamlElementMapSerializer.deserialize(this))
             }
+
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlMap from a ${this.name}")
             }
@@ -177,10 +186,12 @@ internal object YamlListSerializer : KSerializer<YamlList> {
                 this.dontWrapNextStructure = true
                 YamlList(YamlElementListSerializer.deserialize(this))
             }
+
             YamlDecoder.Kind.BLOCK_SEQUENCE -> {
                 this.dontWrapNextStructure = false
                 YamlList(YamlElementListSerializer.deserialize(this))
             }
+
             else -> {
                 throw this.parentYamlDecoder.contextualDecodingException("Cannot read YamlList from a ${this.name}")
             }
