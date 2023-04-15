@@ -153,7 +153,7 @@ internal class YamlDecoder(
         final override fun decodeEnum(enumDescriptor: SerialDescriptor): Int =
             enumDescriptor.getElementIndexOrThrow(decodeString())
 
-        final override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder = inlineDecoder
+        final override fun decodeInline(descriptor: SerialDescriptor): Decoder = inlineDecoder
 
         override fun decodeNotNullMark(): Boolean =
             when (val token = tokenStream.nextToken()) {
@@ -229,7 +229,7 @@ internal class YamlDecoder(
     private val emptyClassDecoder = EmptyClassDecoder()
 
     /**
-     * When reached end of file, but a class is required to be deserialized
+     * When reached EOF, but a class is required to be deserialized
      * Only used with descriptors. Has nothing to do with dynamic deserializing.
      */
     inner class EmptyClassDecoder : AbstractDecoder("Yaml Empty Class") {
@@ -260,7 +260,7 @@ internal class YamlDecoder(
             get() = Kind.BLOCK_CLASS
 
         /**
-         * Peek next token, check if it is null.
+         * Peek the next token, check if it is null.
          * @return `true` if not null, `false` if null.
          */
         @Suppress("DuplicatedCode")
@@ -982,7 +982,7 @@ internal class YamlDecoder(
     override fun decodeChar(): Char = nextStringOrNull().decodeCharElementImpl(null, -1)
     override fun decodeDouble(): Double = nextStringOrNull().decodeDoubleElementImpl(null, -1)
     override fun decodeFloat(): Float = nextStringOrNull().decodeFloatElementImpl(null, -1)
-    override fun decodeInline(inlineDescriptor: SerialDescriptor): Decoder = inlineDecoder
+    override fun decodeInline(descriptor: SerialDescriptor): Decoder = inlineDecoder
 
     override fun decodeInt(): Int = nextStringOrNull().decodeIntElementImpl(null, -1)
     override fun decodeLong(): Long = nextStringOrNull().decodeLongElementImpl(null, -1)
@@ -1172,7 +1172,6 @@ internal class YamlDecoder(
     }
 }
 
-@Suppress("NOTHING_TO_INLINE")
 internal inline fun Int.isOdd(): Boolean {
     return this and 0b1 != 0
 }

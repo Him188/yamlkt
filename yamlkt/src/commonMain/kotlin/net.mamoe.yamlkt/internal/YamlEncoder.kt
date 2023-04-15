@@ -1,8 +1,6 @@
 @file:JvmMultifileClass
 @file:JvmName("YamlUtils")
 
-@file:Suppress("NOTHING_TO_INLINE")
-
 package net.mamoe.yamlkt.internal
 
 import kotlinx.serialization.KSerializer
@@ -39,7 +37,7 @@ import kotlin.jvm.JvmName
  * 3. [BlockMapOrClassEncoder] starts serialize the data sequentially.
  *   The key is passed by `encode*` functions, e.g. [BlockMapOrClassEncoder.encodeString], then the value corresponding to the key,
  *   then the key, the value...
- *   Therefore, if there are 10 map entries, the `encode*` functions will be called 20 times, interlaced with key and values.
+ *   Therefore, if there are 10 map entries, the `encode*` functions will be called 20 times, interlaced with keys and values.
  */
 internal class YamlEncoder(
     private val configuration: YamlConfigurationInternal,
@@ -469,8 +467,7 @@ internal class YamlEncoder(
 
     override fun encodeFloat(value: Float) = writer.write(value.toString())
 
-    @OptIn(ExperimentalUnsignedTypes::class)
-    override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder =
+    override fun encodeInline(descriptor: SerialDescriptor): Encoder =
         InlineEncoder(writer, this, serializersModule)
 
     override fun encodeInt(value: Int) = writer.write(value.toString())
@@ -508,7 +505,7 @@ internal class YamlEncoder(
         }
     }
 
-    internal abstract inner class BlockEncoder constructor(linebreakAfterFinish: Boolean) :
+    internal abstract inner class BlockEncoder(linebreakAfterFinish: Boolean) :
         AbstractEncoder(linebreakAfterFinish) {
         final override fun writeValueTail(descriptor: SerialDescriptor, index: Int) {
             ///  if (descriptor.kind is StructureKind) {
@@ -518,7 +515,7 @@ internal class YamlEncoder(
     }
 
     /**
-     * The parent for all encoders. It have a skeleton of wrapped value encoding and indent arrangers.
+     * The parent for all encoders. It has a skeleton of wrapped value encoding and indent arrangers.
      */
     internal abstract inner class AbstractEncoder(
         /**
@@ -622,7 +619,6 @@ internal class YamlEncoder(
         final override fun encodeStringElement(descriptor: SerialDescriptor, index: Int, value: String) =
             encodeSerializableElement(descriptor, index, String.serializer(), value)
 
-        @OptIn(ExperimentalUnsignedTypes::class)
         final override fun encodeInlineElement(descriptor: SerialDescriptor, index: Int): Encoder {
             return object : kotlinx.serialization.encoding.AbstractEncoder() {
                 override val serializersModule: SerializersModule get() = this@AbstractEncoder.serializersModule
@@ -672,7 +668,7 @@ internal class YamlEncoder(
         fun encodeUnquotedString(value: String) =
             encodeValue(value.toEscapedString(writer.escapeBuf, YamlBuilder.StringSerialization.NONE))
 
-        final override fun encodeInline(inlineDescriptor: SerialDescriptor): Encoder =
+        final override fun encodeInline(descriptor: SerialDescriptor): Encoder =
             InlineEncoder(writer, this, serializersModule)
 
         final override fun shouldEncodeElementDefault(descriptor: SerialDescriptor, index: Int): Boolean =

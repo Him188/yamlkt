@@ -16,7 +16,7 @@ internal class AdjustDynamicStringTest {
     }
 
     @Test
-    fun `test double`() {
+    fun double() {
         test(1.0, "1.0")
         test(12.0, "12.0")
         test(12.1, "12.1")
@@ -29,7 +29,7 @@ internal class AdjustDynamicStringTest {
     }
 
     @Test
-    fun `test integer`() {
+    fun integer() {
         test(1, "1")
         test(12, "12")
 
@@ -40,12 +40,12 @@ internal class AdjustDynamicStringTest {
     }
 
     @Test
-    fun `test string`() {
+    fun string() {
         test("1.0xx", "1.0xx")
     }
 
     @Test
-    fun `test boundaries`() {
+    fun boundaries() {
         test(Int.MAX_VALUE, Int.MAX_VALUE.toString())
         test(Int.MIN_VALUE, Int.MIN_VALUE.toString())
 
