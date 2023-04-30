@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "yamlkt"
+rootProject.name = "yamlkt-root"
 
 include(":yamlkt")
 include(":benchmark")
