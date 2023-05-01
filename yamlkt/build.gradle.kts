@@ -44,17 +44,66 @@ kotlin {
                 else -> linuxX64("native")
             }
         } else {
-            // 1.6.0
+            // https://kotlinlang.org/docs/native-target-support.html
+            // Updated for Kotlin 1.8.0, serialization 1.5.0
+            //kotlinx-serialization-core-iosarm32/                             -         -      
+            //kotlinx-serialization-core-iosarm64/                             -         -      
+            //kotlinx-serialization-core-iossimulatorarm64/                    -         -      
+            //kotlinx-serialization-core-iosx64/                               -         -      
+            //kotlinx-serialization-core-js/                                   -         -      
+            //kotlinx-serialization-core-jvm/                                  -         -      
+            //kotlinx-serialization-core-linuxarm32hfp/                        -         -      
+            //kotlinx-serialization-core-linuxarm64/                           -         -      
+            //kotlinx-serialization-core-linuxx64/                             -         -      
+            //kotlinx-serialization-core-macosarm64/                           -         -      
+            //kotlinx-serialization-core-macosx64/                             -         -      
+            //kotlinx-serialization-core-metadata/                             -         -      
+            //kotlinx-serialization-core-mingwx64/                             -         -      
+            //kotlinx-serialization-core-mingwx86/                             -         -      
+            //kotlinx-serialization-core-tvosarm64/                            -         -      
+            //kotlinx-serialization-core-tvossimulatorarm64/                   -         -      
+            //kotlinx-serialization-core-tvosx64/                              -         -      
+            //kotlinx-serialization-core-watchosarm32/                         -         -      
+            //kotlinx-serialization-core-watchosarm64/                         -         -      
+            //kotlinx-serialization-core-watchossimulatora.../                 -         -      
+            //kotlinx-serialization-core-watchosx64/                           -         -      
+            //kotlinx-serialization-core-watchosx86/            
+            // Commented ones are not supported by kotlinx-coroutines-core
             val nativeTargets: List<String> = arrayOf(
-                // serialization doesn't support those commented targets
-//                "androidNativeArm32, androidNativeArm64, androidNativeX86, androidNativeX64",
-                "iosArm32, iosArm64, iosX64, iosSimulatorArm64",
-                "watchosArm32, watchosArm64, watchosX86, watchosX64, watchosSimulatorArm64",
-                "tvosArm64, tvosX64, tvosSimulatorArm64",
-                "macosX64, macosArm64",
-                "linuxArm64, linuxArm32Hfp, linuxX64",
-                "mingwX64, mingwX86",
-//                "wasm32"
+                // Tier 1:
+                "linuxX64",
+                "macosX64",
+                "macosArm64",
+                "iosSimulatorArm64",
+                "iosX64",
+
+                // Tier 2:
+                "linuxArm64",
+//                "watchosSimulatorArm64",
+                "watchosX64w",
+                "wwatchosArm32",
+                "watchosArm64",
+                "tvosSimulatorArm64",
+                "tvosX64",
+                "tvosArm64",
+                "iosArm64",
+
+                // Tier 3:
+//                "androidNativeArm32",
+//                "androidNativeArm64",
+//                "androidNativeX86",
+//                "androidNativeX64",
+                "mingwX64",
+//                "watchosDeviceArm64",
+
+                // Deprecated:
+                "iosArm32",
+                "watchosX86",
+//                "wasm32",
+                "mingwX86",
+                "linuxArm32Hfp",
+//                "linuxMips32",
+//                "linuxMipsel32",
             ).flatMap { it.split(", ") }
             presets.filter { it.name in nativeTargets }
                 .forEach { preset ->
