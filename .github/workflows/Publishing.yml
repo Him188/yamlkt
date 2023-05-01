@@ -18,7 +18,7 @@ jobs:
         -   run: ./gradlew checkMavenCentralPublication  --scan
             env:
                 PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
-        -   run: ./gradlew build --scan -Dkotlin.daemon.jvm.options=-Xmx3g
+        -   run: ./gradlew build --scan "-Dkotlin.daemon.jvm.options=-Xmx3g"
         -   run: ./gradlew publishMingwX64PublicationToMavenRepository --scan
             env:
                 PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
@@ -36,7 +36,7 @@ jobs:
         -   run: ./gradlew checkMavenCentralPublication --scan
             env:
                 PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
-        -   run: ./gradlew build --scan -Dkotlin.daemon.jvm.options=-Xmx3g
+        -   run: ./gradlew build --scan "-Dkotlin.daemon.jvm.options=-Xmx3g"
         -   run: ./gradlew publish --scan
             env:
                 PUBLICATION_CREDENTIALS: ${{ secrets.PUBLICATION_CREDENTIALS }}
