@@ -28,6 +28,7 @@ Note that normally you may use higher versions within the minor version range, e
 | 0.11.0 | 1.6.21 |           1.3.3            |
 | 0.12.0 | 1.6.21 |           1.3.3            |
 | 0.12.0 | 1.7.10 |           1.3.3            |
+| 0.13.0 | 1.8.0  |           1.5.0            |
 
 #### Gradle
 
@@ -39,7 +40,7 @@ repositories {
 
 ```kotlin
 dependencies {
-    implementation("net.mamoe.yamlkt:yamlkt:0.12.0")
+    implementation("net.mamoe.yamlkt:yamlkt:0.13.0")
 }
 ```
 
@@ -48,7 +49,7 @@ dependencies {
 ```kotlin
 commonMain {
     dependencies {
-        implementation("net.mamoe.yamlkt:yamlkt:0.12.0")
+        implementation("net.mamoe.yamlkt:yamlkt:0.13.0")
     }
 }
 ```
@@ -61,7 +62,7 @@ Only JVM target is available for Maven.
 <dependency>
     <groupId>net.mamoe.yamlkt</groupId>
     <artifactId>yamlkt-jvm</artifactId>
-    <version>0.12.0</version>
+    <version>0.13.0</version>
 </dependency>
 ```
 
@@ -81,11 +82,11 @@ The features that aren't yet supported:
 - Explicit types (e.g. `!!map`)
 - Multiline string (`|` and `>` are partially supported; `\` is not)
 
-## Learn to use
+## Usage
 
-#### Serialize / deserialize with compiled serializers
+### Serialize / deserialize with compiled serializers
 
-This approach is fastest and recommended way as the type is already provided.
+This is the fastest and recommended way.
 
 ```kotlin
 @Serializable
@@ -109,7 +110,7 @@ list: [str, "str2"]
 """))
 ```
 
-#### Contextual serializing / deserializing
+### Contextual serializing / deserializing
 
 YamlKt provides a contextual serializer `YamlDynamicSerializer` for `Any`  
 and `YamlNullDynamicSerializer` for `Any?`
@@ -138,7 +139,7 @@ Alternatively, you can deserialize without any class:
 val map: Map<String?, Any?> = Yaml.parseMap("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
-#### `YamlElement`
+### `YamlElement`
 
 `YamlElement` is a type-safe way to deserialize without descriptors.
 
@@ -146,7 +147,7 @@ val map: Map<String?, Any?> = Yaml.parseMap("""test: { key1: v1, key2: [v2, v3, 
 val map: YamlMap = Yaml.decodeYamlMapFromString("""test: { key1: v1, key2: [v2, v3, v4] }""")
 ```
 
-#### Comments
+### Comments
 
 Annotate your comments to a field(property) using `@Comment`:  
 Example:
