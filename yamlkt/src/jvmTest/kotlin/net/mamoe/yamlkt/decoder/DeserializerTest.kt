@@ -2,7 +2,7 @@ package net.mamoe.yamlkt.decoder
 
 import kotlinx.serialization.Serializable
 import net.mamoe.yamlkt.Yaml
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import com.charleskorn.kaml.Yaml.Companion as Kaml
 

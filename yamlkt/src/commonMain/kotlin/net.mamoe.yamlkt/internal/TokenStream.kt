@@ -9,9 +9,7 @@ import kotlin.contracts.contract
 import kotlin.jvm.JvmField
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
-import kotlin.native.concurrent.SharedImmutable
 
-@Suppress("ClassName", "PropertyName")
 internal enum class Token(val value: Char) {
     COMMA(','),
     COLON(':'),
@@ -31,20 +29,16 @@ internal enum class Token(val value: Char) {
     companion object {
         // char-TokenClass mapping
         @JvmField
-        val values: Array<Token?> = __values__init
+        val values: Array<Token?> = createTokenValues()
 
         private const val valuesLastIndex: Char = 125.toChar()
 
-        @Suppress("NOTHING_TO_INLINE")
-        inline operator fun get(char: Char): Token? =
+        operator fun get(char: Char): Token? =
             if (char > valuesLastIndex) null else values[char.code]
     }
 }
 
-// https://youtrack.jetbrains.com/issue/KT-38383
-@Suppress("ObjectPropertyName")
-@SharedImmutable
-private val __values__init: Array<Token?> = run {
+private fun createTokenValues(): Array<Token?> {
     val all = arrayOf(
         Token.COMMA,
         Token.COLON,
@@ -53,7 +47,7 @@ private val __values__init: Array<Token?> = run {
         Token.MULTILINE_LIST_FLAG
     )
 
-    arrayOfNulls<Token>(
+    return arrayOfNulls<Token>(
         all.maxOf { it.value.code } + 1
     ).apply {
         for (tokenClass in all) {

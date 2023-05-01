@@ -25,3 +25,5 @@ inline fun noLegacyJs(test: () -> Unit) {
 inline fun jvmOnly(test: () -> Unit) {
     if (isJvm()) test()
 }
+
+expect fun createAssertionError(message: String?, cause: Throwable?): AssertionError

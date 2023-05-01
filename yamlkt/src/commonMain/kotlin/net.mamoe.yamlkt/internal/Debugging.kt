@@ -11,24 +11,13 @@ import kotlin.native.concurrent.ThreadLocal
 
 
 @ThreadLocal
-private var enabled0: Boolean = false
-
-@ThreadLocal
-private var logIndent0 = 0
-
-@ThreadLocal
-private var decodeValue0 = 0
-
-@Suppress("ConstantConditionIf")
 internal object Debugging {
-    @JvmStatic
-    internal var enabled: Boolean by ::enabled0
+    internal var enabled: Boolean = false
+
+    var logIndent: Int = 0
 
     @JvmStatic
-    var logIndent by ::logIndent0
-
-    @JvmStatic
-    private var decodeValue by ::decodeValue0
+    private var decodeValue: Int = 0
 
     @JvmStatic
     fun beginStructure(descriptor: SerialDescriptor, decoder: YamlDecoder.AbstractDecoder?) {
@@ -78,8 +67,7 @@ internal object Debugging {
     private fun space(count: Int) = " ".repeat(count.coerceAtLeast(0))
 }
 
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun String?.debuggingLogDecoder(descriptor: SerialDescriptor?, index: Int): String? {
+internal fun String?.debuggingLogDecoder(descriptor: SerialDescriptor?, index: Int): String? {
     Debugging.logDecode(descriptor, index, this ?: "<null>")
     return this
 }
