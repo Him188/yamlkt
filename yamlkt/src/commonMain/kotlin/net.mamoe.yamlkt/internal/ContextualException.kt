@@ -9,9 +9,7 @@ import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 
 
-@kotlin.internal.InlineOnly // not shown in stacktrace
-@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-internal inline fun contextualDecodingException(
+internal fun contextualDecodingException(
     hint: String,
     text: String,
     cur: Int,
@@ -34,9 +32,7 @@ internal inline fun contextualDecodingException(
 }
 
 
-@kotlin.internal.InlineOnly // not shown in stacktrace
-@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-internal inline fun YamlDecoder.contextualDecodingException(
+internal fun YamlDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
     index: Int = -1,
@@ -45,9 +41,7 @@ internal inline fun YamlDecoder.contextualDecodingException(
     return tokenStream.contextualDecodingException("Top-level decoder: $hint", descriptor, index, throwable)
 }
 
-@kotlin.internal.InlineOnly // not shown in stacktrace
-@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(
+internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(
     hint: String,
     descriptor: SerialDescriptor? = null,
     index: Int = -1,
@@ -56,18 +50,11 @@ internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(
     return this.parentYamlDecoder.contextualDecodingException(hint, descriptor, index, throwable)
 }
 
-@Suppress("NOTHING_TO_INLINE") // reduce unnecessary stack
-internal inline fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
+internal fun YamlDecoder.AbstractDecoder.contextualDecodingException(hint: String): YamlDecodingException {
     return this.parentYamlDecoder.contextualDecodingException(this.name + ": " + hint)
 }
 
-/*
- * I made them inline to reduce useless stacktrace
- */
-
-@kotlin.internal.InlineOnly // not shown in stacktrace
-@Suppress("NOTHING_TO_INLINE", "INVISIBLE_MEMBER", "INVISIBLE_REFERENCE")
-internal inline fun TokenStream.contextualDecodingException(hint: String): YamlDecodingException {
+internal fun TokenStream.contextualDecodingException(hint: String): YamlDecodingException {
     return contextualDecodingException(hint, null, -1)
 }
 
@@ -183,5 +170,4 @@ internal fun String.limitFirst(length: Int): String {
     return this.take(length) + "..."
 }
 
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun Char.isLineSeparator() = this == '\n' || this == '\r'
+internal fun Char.isLineSeparator() = this == '\n' || this == '\r'
