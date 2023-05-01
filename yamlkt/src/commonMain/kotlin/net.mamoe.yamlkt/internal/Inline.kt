@@ -6,7 +6,6 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.modules.SerializersModule
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal class InlineEncoder(
     private val writer: YamlWriter,
     private val encoder: Encoder,
@@ -18,7 +17,6 @@ internal class InlineEncoder(
     override fun encodeShort(value: Short) = writer.write(value.toUShort().toString())
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal class InlineDecoder(
     private val delegate: YamlDecoder,
 ) : Decoder by delegate {
@@ -35,7 +33,6 @@ internal class InlineDecoder(
         delegate.run { decodeString().withIntegerValue("ULong", null, -1).toULong().toLong() }
 }
 
-@OptIn(ExperimentalUnsignedTypes::class)
 internal class InlineElementDecoder(
     private val yamlDecoder: YamlDecoder,
     private val compositeDecoder: YamlDecoder.AbstractDecoder,

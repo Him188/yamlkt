@@ -1172,7 +1172,7 @@ internal class YamlDecoder(
     }
 }
 
-internal inline fun Int.isOdd(): Boolean {
+internal fun Int.isOdd(): Boolean {
     return this and 0b1 != 0
 }
 

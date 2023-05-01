@@ -103,7 +103,6 @@ public fun YamlElement.asLiteralOrNull(): YamlLiteral? {
 /**
  * @return [this] as a [YamlLiteral], `null` otherwise
  */
-@OptIn(ExperimentalContracts::class)
 public inline fun YamlElement.asLiteral(
     crossinline lazyMessage: (YamlElement) -> String = { "$this is not a YamlLiteral" }
 ): YamlLiteral {
@@ -125,7 +124,6 @@ public fun YamlElement.asPrimitiveOrNull(): YamlPrimitive? {
 /**
  * @return [this] as a [YamlPrimitive], `null` otherwise
  */
-@OptIn(ExperimentalContracts::class)
 public inline fun YamlElement.asPrimitive(
     crossinline lazyMessage: (YamlElement) -> String = { "$this is not a YamlPrimitive" }
 ): YamlPrimitive {
@@ -135,7 +133,6 @@ public inline fun YamlElement.asPrimitive(
 /**
  * @return [YamlLiteral.content] if this is a [YamlLiteral], `null` otherwise
  */
-@OptIn(ExperimentalContracts::class)
 public val YamlElement.literalContentOrNull: String?
     get() = (this as? YamlLiteral)?.content
 
@@ -515,7 +512,7 @@ internal fun Any?.asYamlElementOrNullImpl(): YamlElement? = when (this) {
     else -> null
 }
 
-@Suppress("UNCHECKED_CAST", "IMPLICIT_CAST_TO_ANY")
+@Suppress("UNCHECKED_CAST")
 @PublishedApi
 internal fun <R : Any> YamlElement.smartCastPrimitive(clazz: KClass<R>): R { // reduce inlined bytecode size
     require(this is YamlPrimitive) { "the element is not YamlPrimitive" }

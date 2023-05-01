@@ -9,10 +9,7 @@ import kotlin.jvm.JvmName
 import kotlin.math.pow
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance
-@Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-// TODO(#27): This breaks the compiler
-// @kotlin.internal.InlineOnly
-private inline fun CharSequence.foldFromRightOffsetIndexed(
+private fun CharSequence.foldFromRightOffsetIndexed(
     offset: Int,
     initial: Long,
     operation: (index: Int, acc: Long, Char) -> Long
@@ -29,9 +26,6 @@ private inline fun CharSequence.foldFromRightOffsetIndexed(
 }
 
 // No generic type: Long will be transformed to primitive `long` on JVM, best performance
-@Suppress("INVISIBLE_REFERENCE", "INVISIBLE_MEMBER")
-// TODO(#27): This breaks the compiler
-// @kotlin.internal.InlineOnly
 private inline fun CharArray.foldFromRightOffsetIndexed(
     offset: Int,
     length: Int,
@@ -91,7 +85,6 @@ internal object HexConverter {
  * The converter that converts binary [String]s from or to numbers
  */
 internal object BinaryConverter {
-    @OptIn(ExperimentalUnsignedTypes::class)
     private val BINARY_POW_TABLE: Array<Long> = Array(Long.SIZE_BITS) { 2.0.pow(it).toULong().toLong() }
 
     fun binToLong(value: String, offset: Int): Long {
@@ -124,14 +117,12 @@ internal fun Long.limitToInt(): Int {
 }
 
 // this is very frequently used
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun String.optimizeNull(): String? = when (this) {
+internal fun String.optimizeNull(): String? = when (this) {
     "~", "null", "NULL" -> null
     else -> this
 }
 
 
-@Suppress("NOTHING_TO_INLINE")
-internal inline fun Any.classSimpleName(): String? {
+internal fun Any.classSimpleName(): String? {
     return this::class.simpleName
 }

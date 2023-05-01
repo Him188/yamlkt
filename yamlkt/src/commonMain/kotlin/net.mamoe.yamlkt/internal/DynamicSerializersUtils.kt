@@ -37,7 +37,6 @@ internal interface IYamlDynamicSerializer
 
 internal expect fun IYamlDynamicSerializer.serializeImpl(encoder: Encoder, value: Any)
 
-@Suppress("RemoveExplicitTypeArguments") // compiler bug
 internal object AnyTypedArraySerializer :
     KSerializer<Array<Any?>> by ArraySerializer<Any, Any?>(YamlNullableDynamicSerializer)
 

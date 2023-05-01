@@ -1,8 +1,6 @@
 @file:JvmMultifileClass
 @file:JvmName("YamlUtils")
 
-@file:Suppress("NOTHING_TO_INLINE")
-
 package net.mamoe.yamlkt.internal
 
 import kotlin.jvm.JvmField
@@ -32,23 +30,23 @@ internal class YamlWriter(
         level--
     }
 
-    inline fun append(char: Char) {
+    fun append(char: Char) {
         if (char == '\n') {
             currentIndent = 0
         } else currentIndent++
         output.append(char)
     }
 
-    inline fun append(char: String) { // String doesn't matter indenting
+    fun append(char: String) { // String doesn't matter indenting
         currentIndent += char.length
         output.append(char)
     }
 
-    inline operator fun String.unaryPlus() {
+    operator fun String.unaryPlus() {
         write(this)
     }
 
-    inline operator fun Char.unaryPlus() {
+    operator fun Char.unaryPlus() {
         write(this)
     }
 
@@ -56,20 +54,20 @@ internal class YamlWriter(
     internal val escapeBuf: StringBufHolder = StringBufHolder()
 }
 
-internal inline fun YamlWriter.write(char: Char) {
+internal fun YamlWriter.write(char: Char) {
     append(char)
 }
 
-internal inline fun YamlWriter.writeln(char: Char) {
+internal fun YamlWriter.writeln(char: Char) {
     write(char)
     writeln()
 }
 
-internal inline fun YamlWriter.writeln() {
+internal fun YamlWriter.writeln() {
     write('\n')
 }
 
-internal inline fun YamlWriter.write(chars: String) {
+internal fun YamlWriter.write(chars: String) {
     append(chars)
 }
 
@@ -84,17 +82,17 @@ internal inline fun YamlWriter.writeLineIndented(line: YamlWriter.() -> Unit) {
     writeln()
 }
 
-internal inline fun YamlWriter.writeln(chars: String) {
+internal fun YamlWriter.writeln(chars: String) {
     write(chars)
     writeln()
 }
 
-internal inline fun YamlWriter.writelnIndented(chars: String) {
+internal fun YamlWriter.writelnIndented(chars: String) {
     writeIndented(chars)
     writeln()
 }
 
-internal inline fun YamlWriter.writeIndented(chars: String) {
+internal fun YamlWriter.writeIndented(chars: String) {
     writeIndent()
     write(chars)
 }
@@ -115,18 +113,18 @@ internal fun YamlWriter.writeIndentSmart() {
     }
 }
 
-internal inline fun YamlWriter.writelnIndented(char: Char) {
+internal fun YamlWriter.writelnIndented(char: Char) {
     writeIndented(char)
     writeln()
 }
 
-internal inline fun YamlWriter.writeIndent() {
+internal fun YamlWriter.writeIndent() {
     repeat(level) {
         write(INDENT_STRING)
     }
 }
 
-internal inline fun YamlWriter.writeIndented(char: Char) {
+internal fun YamlWriter.writeIndented(char: Char) {
     writeIndent()
     write(char)
 }

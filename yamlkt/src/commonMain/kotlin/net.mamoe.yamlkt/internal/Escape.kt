@@ -1,6 +1,5 @@
 @file:JvmMultifileClass
 @file:JvmName("YamlUtils")
-@file:Suppress("NOTHING_TO_INLINE")
 
 package net.mamoe.yamlkt.internal
 
@@ -486,7 +485,7 @@ private tailrec fun TokenStream.runNewLineSkippingAndEscapingForUnquoted(
     }
 }
 
-internal inline fun TokenStream.ensureNotEOF() {
+internal fun TokenStream.ensureNotEOF() {
     if (endOfInput) throw contextualDecodingException("Unexpected EOF")
 }
 
@@ -601,7 +600,7 @@ internal inline fun <R> TokenStream.peekNext(block: (ch: Char) -> R?): R? {
     return source[cur + 1].let(block)
 }
 
-internal inline fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
+internal fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
 internal fun String.toEscapedString(
     buf: StringBufHolder,
@@ -641,7 +640,7 @@ private fun String.toDoubleQuotedString(buf: StringBufHolder): String = with(buf
     takeStringBuf()
 }
 
-private inline infix fun Int.hasFlag(flag: Int): Boolean = this and flag != 0
+private infix fun Int.hasFlag(flag: Int): Boolean = this and flag != 0
 
 private const val SINGLE = /*          */ 0b001
 private const val UNQUOTED = /*        */ 0b010
