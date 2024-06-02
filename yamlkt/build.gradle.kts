@@ -79,7 +79,7 @@ kotlin {
 
                 // Tier 2:
                 "linuxArm64",
-//                "watchosSimulatorArm64",
+                "watchosSimulatorArm64",
                 "watchosX64w",
                 "wwatchosArm32",
                 "watchosArm64",
@@ -94,7 +94,7 @@ kotlin {
 //                "androidNativeX86",
 //                "androidNativeX64",
                 "mingwX64",
-//                "watchosDeviceArm64",
+                "watchosDeviceArm64",
 
                 // Deprecated:
                 "iosArm32",
