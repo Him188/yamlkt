@@ -9,17 +9,8 @@ kotlin {
     explicitApi()
 
     jvmToolchain(8)
-    jvm {
-        withJava()
-    }
+    jvm()
     js {
-        compilations.all {
-            kotlinOptions {
-                moduleKind = "umd"
-                sourceMap = true
-                metaInfo = true
-            }
-        }
         browser()
         nodejs()
     }
