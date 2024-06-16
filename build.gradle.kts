@@ -3,7 +3,7 @@ plugins {
     kotlin("multiplatform") version Versions.kotlin apply false
     kotlin("plugin.serialization") version Versions.kotlin apply false
 
-    id("me.champeau.gradle.jmh") version "0.5.3" apply false
+    id("me.champeau.jmh") version "0.7.2" apply false
 }
 
 allprojects {
