@@ -11,7 +11,7 @@ jobs:
         with:
           java-version: 1.8
       - run: chmod +x gradlew
-      - run: ./gradlew build --info  --scan
+      - run: ./gradlew build
   build-on-macos:
     runs-on: macos-latest
     steps:
@@ -20,4 +20,4 @@ jobs:
         with:
           java-version: 1.8
       - run: chmod +x gradlew
-      - run: ./gradlew build --info  --scan
+      - run: ./gradlew build
