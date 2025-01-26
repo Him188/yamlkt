@@ -54,6 +54,12 @@ public class YamlBuilder internal constructor(
     public var stringSerialization: StringSerialization = conf.stringSerialization
 
     /**
+     * Configure how to serialize chars
+     * */
+    @JvmField
+    public var charSerialization: CharSerialization = conf.charSerialization
+
+    /**
      * The value set for `null` serialization.
      * Default: serialize `null` as "null"
      */
@@ -79,6 +85,43 @@ public class YamlBuilder internal constructor(
      */
     @JvmField
     public var listSerialization: ListSerialization = conf.listSerialization
+
+    /**
+     * The suggested format for [Char] serialization.
+     *
+     * [Char] isn't always serialized in this format, depending on the content.
+     *
+     * Some escape sequences of special characters will be processed as escaped characters _(such as '\n')_
+     * */
+    public enum class CharSerialization {
+        /**
+         * Quote all [Char]s with `'`
+         *
+         * If a value can't be serialized using single quotation, it will use [CHAR_DOUBLE_QUOTATION]
+         */
+        CHAR_SINGLE_QUOTATION,
+
+        /**
+         * Quote all [Char]s with `"`
+         */
+        CHAR_DOUBLE_QUOTATION,
+
+        /**
+         * Convert all [Char]s to their corresponding Unicode code points [Int]
+         *
+         * For example, the character 'A' will be converted to 65
+         *
+         * It will work like [Byte]
+         */
+        CHAR_UNICODE_CODE,
+
+        /**
+         * Directly use the character content of [Char]
+         *
+         * When escaping is necessary, it defaults to using [CHAR_SINGLE_QUOTATION]
+         */
+        NORMAL,
+    }
 
 
     /**
@@ -213,6 +256,7 @@ public class YamlBuilder internal constructor(
         nonStrictNumber,
         encodeDefaultValues,
         stringSerialization,
+        charSerialization,
         nullSerialization,
         mapSerialization,
         classSerialization,
@@ -229,6 +273,7 @@ internal class YamlConfigurationInternal internal constructor(
     // encoding
     @JvmField val encodeDefaultValues: Boolean = true,
     @JvmField val stringSerialization: YamlBuilder.StringSerialization = YamlBuilder.StringSerialization.NONE,
+    @JvmField val charSerialization: YamlBuilder.CharSerialization = YamlBuilder.CharSerialization.NORMAL,
     @JvmField val nullSerialization: YamlBuilder.NullSerialization = YamlBuilder.NullSerialization.NULL,
     @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     @JvmField val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,

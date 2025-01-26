@@ -1014,8 +1014,11 @@ internal class YamlDecoder(
 
     private fun String?.decodeCharElementImpl(descriptor: SerialDescriptor?, index: Int): Char =
         this.debuggingLogDecoder(descriptor, index)?.let {
-            check(it.length == 1) { "too many chars for a char: $it" }
-            it.first()
+            when {
+                it.length == 1 -> it.first()
+                it.any { !it.isDigit() } -> error("too many chars for a char: $it")
+                else -> withIntegerValue("char", descriptor, index).limitToChar()
+            }
         } ?: checkNonStrictNullability(descriptor, index)
         ?: 0.toChar()
 

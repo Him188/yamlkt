@@ -4,6 +4,7 @@
 package net.mamoe.yamlkt.internal
 
 import net.mamoe.yamlkt.YamlBuilder
+import net.mamoe.yamlkt.YamlBuilder.CharSerialization.*
 import net.mamoe.yamlkt.YamlBuilder.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -602,6 +603,26 @@ internal inline fun <R> TokenStream.peekNext(block: (ch: Char) -> R?): R? {
 
 internal fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
+private const val ESCAPED_CHARACTERS: String = "[]{}\"'\\$^*|>-?/~,:#"
+
+internal fun Char.encodeEscapedString(
+    charSerialization: YamlBuilder.CharSerialization
+): String {
+    if (charSerialization == CHAR_UNICODE_CODE) {
+        return this.code.toString()
+    }
+    var requiresDoubleQuoted = charSerialization == CHAR_DOUBLE_QUOTATION || this == '\''
+    val requiresSingleQuoted = charSerialization == CHAR_SINGLE_QUOTATION || this in ESCAPED_CHARACTERS || this == ' '
+
+    val escapedChars = REPLACEMENT_CHARS.getOrNull(this.code)?.also { requiresDoubleQuoted = true } ?: this.toString()
+
+    return when{
+        requiresDoubleQuoted -> "\"$escapedChars\""
+        requiresSingleQuoted ->  "'$escapedChars'"
+        else -> escapedChars
+    }
+}
+
 internal fun String.toEscapedString(
     buf: StringBufHolder,
     stringSerialization: YamlBuilder.StringSerialization
@@ -687,9 +708,7 @@ internal fun String.getQuotationAvailability(): Int {
             c == '#' -> canBeUnquoted = false
             c == ':' -> lastIsColon = true
             c == ' ' && lastIsColon -> canBeUnquoted = false
-            c in """
-                []{}"'$^*|>-?/~,
-                """.trimIndent() -> { // less mistakes
+            c in ESCAPED_CHARACTERS -> { // less mistakes
                 canBeUnquoted = false
             }
         }
