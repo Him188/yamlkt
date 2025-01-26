@@ -688,7 +688,7 @@ internal fun String.getQuotationAvailability(): Int {
             c == ':' -> lastIsColon = true
             c == ' ' && lastIsColon -> canBeUnquoted = false
             c in """
-                []{}"'$^*|>-?/~
+                []{}"'$^*|>-?/~,
                 """.trimIndent() -> { // less mistakes
                 canBeUnquoted = false
             }

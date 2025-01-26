@@ -133,4 +133,11 @@ internal class FlowListTest {
             )
         )
     }
+
+    @Test
+    fun testContainingCommasFlow() {
+        // https://github.com/Him188/yamlkt/issues/68
+        assertEquals("[ foo, 'bar, baz' ]", allFlow.encodeToString(listOf("foo", "bar, baz")))
+        assertEquals(listOf("foo", "bar, baz"), allFlow.decodeFromString("[ foo, 'bar, baz' ]"))
+    }
 }
