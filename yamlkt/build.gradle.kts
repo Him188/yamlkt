@@ -19,7 +19,7 @@ kotlin {
                 kotlinOptions.jvmTarget = "1.8"
             }
         }
-        js(BOTH) {
+        js(IR) {
             compilations.all {
                 kotlinOptions {
                     moduleKind = "umd"
