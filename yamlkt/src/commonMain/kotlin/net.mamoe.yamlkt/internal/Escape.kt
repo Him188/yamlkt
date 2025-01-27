@@ -9,7 +9,6 @@ import net.mamoe.yamlkt.YamlBuilder.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-import kotlin.native.concurrent.SharedImmutable
 
 
 // region EscapeCharMappings
@@ -25,7 +24,6 @@ internal const val STRING_ESC = '\\'
 internal const val INVALID = 0.toChar()
 internal const val UNICODE_ESC = 'u'
 
-@SharedImmutable
 internal val REPLACEMENT_CHARS: Array<String?> = arrayOfNulls<String?>(128).apply {
     for (i in 0..0xf) {
         this[i] = "\\u000$i"

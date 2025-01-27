@@ -1,7 +1,9 @@
 .idea/
 .gradle/
+.kotlin/
 build/
 .idea_modules/
 hs_err_pid*
 *.hprof
 local.properties
+
