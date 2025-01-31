@@ -4,7 +4,7 @@
 package net.mamoe.yamlkt.internal
 
 import net.mamoe.yamlkt.YamlBuilder
-import net.mamoe.yamlkt.YamlBuilder.CharSerialization.*
+import net.mamoe.yamlkt.YamlBuilder.CharSerialization
 import net.mamoe.yamlkt.YamlBuilder.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
@@ -604,13 +604,13 @@ internal fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' |
 private const val ESCAPED_CHARACTERS: String = "[]{}\"'\\$^*|>-?/~,:#"
 
 internal fun Char.encodeEscapedString(
-    charSerialization: YamlBuilder.CharSerialization
+    charSerialization: CharSerialization
 ): String {
-    if (charSerialization == CHAR_UNICODE_CODE) {
+    if (charSerialization == CharSerialization.UNICODE_CODE) {
         return this.code.toString()
     }
-    var requiresDoubleQuoted = charSerialization == CHAR_DOUBLE_QUOTATION || this == '\''
-    val requiresSingleQuoted = charSerialization == CHAR_SINGLE_QUOTATION || this in ESCAPED_CHARACTERS || this == ' '
+    var requiresDoubleQuoted = charSerialization == CharSerialization.DOUBLE_QUOTATION || this == '\''
+    val requiresSingleQuoted = charSerialization == CharSerialization.SINGLE_QUOTATION || this in ESCAPED_CHARACTERS || this == ' '
 
     val escapedChars = REPLACEMENT_CHARS.getOrNull(this.code)?.also { requiresDoubleQuoted = true } ?: this.toString()
 

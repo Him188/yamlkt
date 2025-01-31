@@ -20,17 +20,17 @@ private val best = Yaml {
     stringSerialization = YamlBuilder.StringSerialization.BEST_PERFORMANCE
 }
 
-private val normal = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.NORMAL
+private val PLAIN = Yaml {
+    charSerialization = YamlBuilder.CharSerialization.PLAIN
 }
 private val singleChar = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.CHAR_SINGLE_QUOTATION
+    charSerialization = YamlBuilder.CharSerialization.SINGLE_QUOTATION
 }
 private val doubleChar = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.CHAR_DOUBLE_QUOTATION
+    charSerialization = YamlBuilder.CharSerialization.DOUBLE_QUOTATION
 }
 private val unicode = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.CHAR_UNICODE_CODE
+    charSerialization = YamlBuilder.CharSerialization.UNICODE_CODE
 }
 
 internal class TestEncoderEscape {
@@ -72,7 +72,7 @@ internal class TestEncoderEscape {
     fun testCharEscape() {
         assertEquals("\" \"", doubleChar.encodeToString<Char>(' '))
         assertEquals("\' \'", singleChar.encodeToString<Char>(' '))
-        assertEquals("\' \'", normal.encodeToString<Char>(' '))
+        assertEquals("\' \'", PLAIN.encodeToString<Char>(' '))
         assertEquals("32", unicode.encodeToString<Char>(' '))
 
         assertEquals(' ', unicode.decodeFromString<Char>("32"))

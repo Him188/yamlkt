@@ -97,14 +97,14 @@ public class YamlBuilder internal constructor(
         /**
          * Quote all [Char]s with `'`
          *
-         * If a value can't be serialized using single quotation, it will use [CHAR_DOUBLE_QUOTATION]
+         * If a value can't be serialized using single quotation, it will use [DOUBLE_QUOTATION]
          */
-        CHAR_SINGLE_QUOTATION,
+        SINGLE_QUOTATION,
 
         /**
          * Quote all [Char]s with `"`
          */
-        CHAR_DOUBLE_QUOTATION,
+        DOUBLE_QUOTATION,
 
         /**
          * Encode [Char]s as their [code][Char.code] in integer.
@@ -112,14 +112,14 @@ public class YamlBuilder internal constructor(
          *
          * For example, the character 'A' will be converted to 65
          */
-        CHAR_UNICODE_CODE,
+        UNICODE_CODE,
 
         /**
          * Don't quote any [Char].
          *
-         * When escaping is necessary, it defaults to using [CHAR_SINGLE_QUOTATION]
+         * When escaping is necessary, it defaults to using [SINGLE_QUOTATION]
          */
-        NORMAL,
+        PLAIN,
     }
 
 
@@ -272,7 +272,7 @@ internal class YamlConfigurationInternal internal constructor(
     // encoding
     @JvmField val encodeDefaultValues: Boolean = true,
     @JvmField val stringSerialization: YamlBuilder.StringSerialization = YamlBuilder.StringSerialization.NONE,
-    @JvmField val charSerialization: YamlBuilder.CharSerialization = YamlBuilder.CharSerialization.NORMAL,
+    @JvmField val charSerialization: YamlBuilder.CharSerialization = YamlBuilder.CharSerialization.PLAIN,
     @JvmField val nullSerialization: YamlBuilder.NullSerialization = YamlBuilder.NullSerialization.NULL,
     @JvmField val mapSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
     @JvmField val classSerialization: MapSerialization = MapSerialization.BLOCK_MAP,
