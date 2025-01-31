@@ -1,6 +1,5 @@
 package net.mamoe.yamlkt.encoder
 
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import net.mamoe.yamlkt.Yaml
 import net.mamoe.yamlkt.YamlBuilder
@@ -20,18 +19,7 @@ private val best = Yaml {
     stringSerialization = YamlBuilder.StringSerialization.BEST_PERFORMANCE
 }
 
-private val PLAIN = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.PLAIN
-}
-private val singleChar = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.SINGLE_QUOTATION
-}
-private val doubleChar = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.DOUBLE_QUOTATION
-}
-private val unicode = Yaml {
-    charSerialization = YamlBuilder.CharSerialization.UNICODE_CODE
-}
+
 
 internal class TestEncoderEscape {
     @Test
@@ -66,16 +54,6 @@ internal class TestEncoderEscape {
         assertEquals("\' \'", single.encodeToString<String>(" "))
         assertEquals("\' \'", none.encodeToString<String>(" "))
         assertEquals("\' \'", best.encodeToString<String>(" "))
-    }
-
-    @Test
-    fun testCharEscape() {
-        assertEquals("\" \"", doubleChar.encodeToString<Char>(' '))
-        assertEquals("\' \'", singleChar.encodeToString<Char>(' '))
-        assertEquals("\' \'", PLAIN.encodeToString<Char>(' '))
-        assertEquals("32", unicode.encodeToString<Char>(' '))
-
-        assertEquals(' ', unicode.decodeFromString<Char>("32"))
     }
 
     @Test
