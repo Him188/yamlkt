@@ -107,16 +107,15 @@ public class YamlBuilder internal constructor(
         CHAR_DOUBLE_QUOTATION,
 
         /**
-         * Convert all [Char]s to their corresponding Unicode code points [Int]
+         * Encode [Char]s as their [code][Char.code] in integer.
+         * _(It will work like [Byte])_
          *
          * For example, the character 'A' will be converted to 65
-         *
-         * It will work like [Byte]
          */
         CHAR_UNICODE_CODE,
 
         /**
-         * Directly use the character content of [Char]
+         * Don't quote any [Char].
          *
          * When escaping is necessary, it defaults to using [CHAR_SINGLE_QUOTATION]
          */

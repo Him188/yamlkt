@@ -1016,7 +1016,7 @@ internal class YamlDecoder(
         this.debuggingLogDecoder(descriptor, index)?.let {
             when {
                 it.length == 1 -> it.first()
-                it.any { !it.isDigit() } -> error("too many chars for a char: $it")
+                it.any { !it.isDigit() } -> throw contextualDecodingException("too many chars for a char: $it")
                 else -> withIntegerValue("char", descriptor, index).limitToChar()
             }
         } ?: checkNonStrictNullability(descriptor, index)
