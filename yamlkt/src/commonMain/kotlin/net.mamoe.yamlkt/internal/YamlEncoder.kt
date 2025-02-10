@@ -460,7 +460,7 @@ internal class YamlEncoder(
 
     override fun encodeBoolean(value: Boolean) = writer.write(if (value) "true" else "false")
     override fun encodeByte(value: Byte) = writer.write(value.toInt().toString())
-    override fun encodeChar(value: Char) = writer.write(value)
+    override fun encodeChar(value: Char) = writer.write(value.encodeEscapedString(configuration.charSerialization))
     override fun encodeDouble(value: Double) = writer.write(value.toString())
     override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
         writer.write(enumDescriptor.getElementName(index))
@@ -652,7 +652,7 @@ internal class YamlEncoder(
             encodeValue(if (value) "true" else "false")
 
         final override fun encodeByte(value: Byte) = encodeValue(value.toString())
-        final override fun encodeChar(value: Char) = encodeValue(value)
+        final override fun encodeChar(value: Char) = encodeValue(value.encodeEscapedString(configuration.charSerialization))
         final override fun encodeDouble(value: Double) = encodeValue(value.toString())
         final override fun encodeEnum(enumDescriptor: SerialDescriptor, index: Int) =
             encodeValue(enumDescriptor.getElementName(index))

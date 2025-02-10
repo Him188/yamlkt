@@ -4,11 +4,11 @@
 package net.mamoe.yamlkt.internal
 
 import net.mamoe.yamlkt.YamlBuilder
+import net.mamoe.yamlkt.YamlBuilder.CharSerialization
 import net.mamoe.yamlkt.YamlBuilder.StringSerialization.*
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-import kotlin.native.concurrent.SharedImmutable
 
 
 // region EscapeCharMappings
@@ -24,7 +24,6 @@ internal const val STRING_ESC = '\\'
 internal const val INVALID = 0.toChar()
 internal const val UNICODE_ESC = 'u'
 
-@SharedImmutable
 internal val REPLACEMENT_CHARS: Array<String?> = arrayOfNulls<String?>(128).apply {
     for (i in 0..0xf) {
         this[i] = "\\u000$i"
@@ -602,6 +601,26 @@ internal inline fun <R> TokenStream.peekNext(block: (ch: Char) -> R?): R? {
 
 internal fun Char.isHexDigit(): Boolean = this in '0'..'9' || this in 'a'..'f' || this in 'A'..'F'
 
+private const val ESCAPED_CHARACTERS: String = "[]{}\"'\\$^*|>-?/~,:#"
+
+internal fun Char.encodeEscapedString(
+    charSerialization: CharSerialization
+): String {
+    if (charSerialization == CharSerialization.UNICODE_CODE) {
+        return this.code.toString()
+    }
+    var requiresDoubleQuoted = charSerialization == CharSerialization.DOUBLE_QUOTATION || this == '\''
+    val requiresSingleQuoted = charSerialization == CharSerialization.SINGLE_QUOTATION || this in ESCAPED_CHARACTERS || this == ' '
+
+    val escapedChars = REPLACEMENT_CHARS.getOrNull(this.code)?.also { requiresDoubleQuoted = true } ?: this.toString()
+
+    return when{
+        requiresDoubleQuoted -> "\"$escapedChars\""
+        requiresSingleQuoted ->  "'$escapedChars'"
+        else -> escapedChars
+    }
+}
+
 internal fun String.toEscapedString(
     buf: StringBufHolder,
     stringSerialization: YamlBuilder.StringSerialization
@@ -687,9 +706,7 @@ internal fun String.getQuotationAvailability(): Int {
             c == '#' -> canBeUnquoted = false
             c == ':' -> lastIsColon = true
             c == ' ' && lastIsColon -> canBeUnquoted = false
-            c in """
-                []{}"'$^*|>-?/~
-                """.trimIndent() -> { // less mistakes
+            c in ESCAPED_CHARACTERS -> { // less mistakes
                 canBeUnquoted = false
             }
         }

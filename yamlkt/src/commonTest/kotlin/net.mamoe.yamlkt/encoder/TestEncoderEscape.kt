@@ -20,6 +20,7 @@ private val best = Yaml {
 }
 
 
+
 internal class TestEncoderEscape {
     @Test
     fun testNewLineEscape() {

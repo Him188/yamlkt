@@ -100,6 +100,10 @@ internal object BinaryConverter {
     }
 }
 
+internal fun Long.limitToChar(): Char {
+    if (this in Char.MIN_VALUE.code.toLong()..Char.MAX_VALUE.code.toLong()) return toInt().toChar()
+    error("value is too large for byte: $this")
+}
 
 internal fun Long.limitToByte(): Byte {
     if (this in Byte.MIN_VALUE.toLong()..Byte.MAX_VALUE.toLong()) return this.toByte()

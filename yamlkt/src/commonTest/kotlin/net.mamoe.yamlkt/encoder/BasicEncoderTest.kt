@@ -1,8 +1,11 @@
 package net.mamoe.yamlkt.encoder
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import net.mamoe.yamlkt.Yaml.Default
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 
 internal class BasicEncoderTest {
@@ -67,6 +70,18 @@ internal class BasicEncoderTest {
             Data("value1", 123456, anotherData = Data(number = 111), byteArray = "test byteArray".encodeToByteArray())
         )
     }
+
+    @Test
+    fun testSpecialChar() {
+        val origin = listOf(':','#','\n','\r','a','c')
+        assertEquals(
+            origin,
+            allFlow.decodeFromString<List<Char>>(
+                allFlow.encodeToString<List<Char>>(origin)
+            )
+        )
+    }
+
 
     /*
     Data(v1=value1, number=123456, map={bob=2}, list=[value1, value2], anotherData=Data(v1=, number=111, map={bob=2}, list=[value1, value2], anotherData=null))
